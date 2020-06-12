@@ -13,6 +13,37 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::prefix('auth')->group(function () {
+    Route::post('login', 'AuthController@login')->name('login');
+    /* Except the login page, all the rest of auth actions are under jwt authorization */
+    Route::middleware('jwt')->group(function () {
+        Route::post('refresh', 'AuthController@refresh');
+        Route::get('user', 'AuthController@user');
+        Route::post('me', 'AuthController@me');
+        Route::post('logout', 'AuthController@logout');
+    });
+});
+Route::namespace('Api')->group(function() {
+    /* All the regular actions are under token authorization */
+    Route::middleware('jwt')->group(function () {
+        /* Belts */
+        Route::post('autoBelts', 'BeltsController@autoBelts');
+        Route::post('deleteBelts', 'BeltsController@deleteBelts');
+        Route::post('updateBelts', 'BeltsController@updateBelts');
+        /* Customers */
+        Route::get('customers', 'CustomersController@index');
+        Route::get('customer/{id}', 'CustomersController@show');
+        Route::put('customer/{id}/edit', 'CustomersController@edit');
+        Route::post('newCustomer', 'CustomersController@newCustomer');
+        Route::post('updatePaymentData', 'CustomersController@updatePaymentData');
+        /* Payments */
+        Route::post('deletePayments', 'PaymentsController@deletePayments');
+        Route::post('monthlyPayments', 'PaymentsController@monthlyPayments');
+        Route::post('newPayment', 'PaymentsController@newPayment');
+        Route::post('updatePayments', 'PaymentsController@updatePayments');
+        /* Users */
+        Route::post('register', 'UsersController@register');
+        Route::post('usersearch', 'UsersController@search');
+
+    });
 });
