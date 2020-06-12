@@ -11,7 +11,7 @@
 
 
 import store from './store/customers';
-import validations from './api/validator';
+import validations from './validator/validator';
 import Vue from 'vue';
 
 import BootstrapVue from 'bootstrap-vue'; /* https://www.npmjs.com/package/bootstrap-vue */
