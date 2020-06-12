@@ -1,0 +1,1252 @@
+<template>
+    <div>
+        <!-- Invoke the wizard -->
+        <wizard
+            name="wzd-cinturones-update"
+            v-show="updating"
+            :steps=wcuSteps></wizard>
+        <wizard
+            name="wzd-cinturones-download"
+            v-show="downloadGrades"
+            :steps=wcdSteps></wizard>
+        <wizard
+            name="wzd-main-cinturones"
+            v-show="!updating && !downloadGrades && !wizardOnModalOpen"
+            :steps=wmcSteps></wizard>
+        <b-card>
+            <b-form-group>
+                <h5 class="subtitle" md="4">Gestión y consulta de grados de Karate</h5>
+            </b-form-group>
+            <b-collapse
+                :visible="$route.name == 'belts.index' && rowsSelected.length > 200">
+                <b-alert
+                    show
+                    variant="danger">
+                    Has seleccionado más de 200 filas, asegúrate que hayas escogido las filas correctas antes de guardar los cambios.
+                </b-alert>
+            </b-collapse>
+            <!-- Update grades -->
+            <b-collapse
+                id="collapse-update"
+                :visible="updating">
+                <h5 class="subtitle subtitle-sub" md="4">
+                    Actualización masiva de grados
+                </h5>
+                <b-row class="mb-2" no-gutters>
+                        <b-form-input
+                            id="date-cinturones"
+                            key="trans-datepicker"
+                            size="sm"
+                            type="date"
+                            v-model="beltsNewDate"
+                            class="col-4 mr-1 px-2"></b-form-input>
+                        <span
+                            class="d-inline-block"
+                            data-v-step="wzd-cinturones-update-3"
+                            key="trans-btns-update"
+                            tabindex="0"
+                            v-b-tooltip.hover.noninteractive
+                            :title="deleteInCourse ? 'No puedes actualizar cinturones mientras editas una línea de la tabla' : rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : beltsNewDate == '' ? 'Selecciona una fecha' : updateCsv ? 'Descargando...' : 'Guardar y descargar archivo'">
+                            <!-- Disabled when no grades are selected and no date was selected or if the process to save the file and download it has been started -->
+                            <b-button
+                                size="sm"
+                                :disabled="beltsNewDate == '' || rowsSelected.length == 0 || updateCsv == true"
+                                :variant="beltsNewDate == '' || rowsSelected.length == 0 || updating == false ? 'outline-success' : 'success'"
+                                @click="beltsMassUpdate()">
+                                <!-- Shown during the download of the file -->
+                                <b-spinner
+                                    small
+                                    type="grow"
+                                    v-if="updateCsv == true"></b-spinner>
+                                <!-- If no download is being processed, shown this -->
+                                <fa-icon
+                                    icon="save"
+                                    v-else></fa-icon>
+                                <span class="d-inline-block save-csv">
+                                    &ensp;Actualizar cinturones
+                                </span>
+                            </b-button>
+                        </span>
+                        <!-- Shown whe the process to update grades is actived and some grade was selected -->
+                        <transition name="slide-fade">
+                            <span
+                                class="d-inline-block ig-inline-text ml-3 my-auto"
+                                key="trans-text-info-update"
+                                v-if="rowsSelected.length > 0">
+                                Vas a actualizar {{ rowsSelected.length }} socio/s
+                            </span>
+                        </transition>
+                    <b-button
+                        class="ml-auto"
+                        size="sm"
+                        title="Finaliza el proceso, los cambios no guardados se perderán"
+                        variant="outline-danger"
+                        v-b-tooltip.hover.noninteractive
+                        @click="endProcedures()">
+                        Finalizar
+                    </b-button>
+                </b-row>
+                <b-alert
+                    class="mb-2"
+                    show
+                    variant="success">
+                    1 - Selecciona una fecha, será la fecha en la que se otorgó el nuevo grado.
+                    <br>
+                    2 - Busca y selecciona en la tabla los socios que quieres actualizar.
+                    <br>
+                    3 - Para acabar, confirma los cambios.
+                    <br>
+                    <b-form-text>Nota: si un socio es cinturón negro no podrás seleccionarlo</b-form-text>
+                </b-alert>
+            </b-collapse>
+            <!-- Manual download grades -->
+            <b-collapse
+                id="collapse-download"
+                :visible="downloadGrades">
+                <h5 class="subtitle subtitle-sub" md="4">
+                    Impresión manual de archivo para diplomas
+                </h5>
+                <b-row class="mb-2" no-gutters>
+                    <b-col cols="auto">
+                        <span
+                            class="d-inline-block"
+                            data-v-step="wzd-cinturones-download-2"
+                            tabindex="0"
+                            v-b-tooltip.hover.noninteractive.top
+                            :title="deleteInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
+                            <!-- Disabled when no grades are selected or if a row has an edit open or if the process to download the grades has been started -->
+                            <b-button
+                                class="cols-4"
+                                size="sm"
+                                :disabled="rowsSelected.length == 0 || deleteInCourse || downloadCsvManual"
+                                :variant="rowsSelected.length == 0 || deleteInCourse  ? 'outline-success' : 'success'"
+                                @click="$tableToCsv([ 'name', 'grade', 'date' ], rowsSelected, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')">
+                                <!-- Shown during the download of the file -->
+                                <b-spinner
+                                    small
+                                    type="grow"
+                                    v-if="downloadCsvManual == true"></b-spinner>
+                                <!-- If no download is being processed, shown this -->
+                                <fa-icon
+                                    icon="file-download"
+                                    v-else></fa-icon>
+                                <span class="d-inline-block save-csv">
+                                    &ensp;Descargar fichero de diplomas
+                                </span>
+                            </b-button>
+                        </span>
+                        <!-- Shown when some grade was selected -->
+                        <transition name="slide-fade">
+                            <span
+                                class="d-inline-block ig-inline-text ml-3"
+                                v-if="rowsSelected.length > 0">
+                                Vas a descargar un archivo con {{ rowsSelected.length }} socio/s
+                            </span>
+                        </transition>
+                    </b-col>
+                    <b-button
+                        class="ml-auto"
+                        size="sm"
+                        title="Finaliza el proceso, los cambios no guardados se perderán"
+                        variant="outline-danger"
+                        v-b-tooltip.hover.noninteractive
+                        @click="endProcedures()">
+                        Finalizar
+                    </b-button>
+                </b-row>
+                <b-alert
+                    class="mb-2"
+                    show
+                    variant="info">
+                    1 - Busca y selecciona en la tabla los socios que quieres actualizar.
+                    <br>
+                    2 - Para finalizar el proceso y descargar el fichero, pulsa sobre el botón 'Descargar'.
+                </b-alert>
+            </b-collapse>
+            <transition appear name="fade-height">
+                <!-- Shown when the confirmation process has been started and some of the selected items has been hided for the filters applied to the table -->
+                <b-alert
+                    class="mb-2"
+                    show
+                    variant="warning"
+                    v-if="selectedHided">
+                    Tienes seleccionadas filas que están ocultas debido a los filtros aplicados a la tabla. Pulsa en este botón para mostrar solo las filas seleccionadas:
+                    <span
+                        class="d-inline-block ml-1"
+                        key="trans-btn-show-all"
+                        tabindex="0">
+                        <b-button
+                            size="sm"
+                            variant="dark"
+                            @click="filterSelected()">
+                            Solo seleccionadas
+                        </b-button>
+                    </span>
+                </b-alert>
+            </transition>
+            <!-- Row with the tags -->
+            <b-row align-v="end" class="mb-2" no-gutters>
+                <b-col>
+                    <b-form-tags
+                        class="filter-form-tags tags-cinturones p-0"
+                        data-v-step="wzd-main-cinturones-2"
+                        no-outer-focus
+                        v-model="filterTags">
+                        <template>
+                            <b-form-text>Filtros activos:</b-form-text>
+                            <b-form-tag
+                                size="sm"
+                                v-for="tag in filterTags"
+                                :class="'filter-tag tag-cinturones-item mr-1 mt-1 ' + tag"
+                                :key="tag"
+                                @remove="deleteTag(tag)">
+                                x <!-- dummy content -->
+                            </b-form-tag>
+                            <!-- Shown when there are no tags added to the v-model of tags -->
+                            <b-form-tag
+                                class="filter-tag tag-ninguno mt-1"
+                                disabled
+                                variant="success"
+                                v-if="filterTags.length == 0 && beltsSearch == '' && !allSelected">
+                                Ninguno
+                            </b-form-tag>
+                            <!-- It will be shown when the flag wich indicates that we want to show all the selected rows on the table is true -->
+                            <b-form-tag
+                                class="filter-tag mr-1 mt-1"
+                                variant="primary"
+                                v-if="allSelected"
+                                @remove="addTagAllSelected()">
+                                Seleccionadas
+                            </b-form-tag>
+                            <!-- It will show the content of the input wich filters the table data -->
+                            <b-form-tag
+                                class="filter-tag tag-input mt-1"
+                                variant="danger"
+                                v-if="beltsSearch != ''"
+                                @remove="beltsSearch = ''">
+                                {{ beltsSearch }}
+                            </b-form-tag>
+                        </template>
+                    </b-form-tags>
+                </b-col>
+            </b-row>
+            <!-- Row with the filters, history and download data table -->
+            <b-row class="row-busqueda-table mb-2" data-v-step="wzd-main-cinturones-1" no-gutters>
+                <b-col class="mb-lg-0 mt-1 px-0" cols="md-4">
+                    <b-form-input
+                        id="table-cinturones-search"
+                        placeholder="Buscar en la tabla..."
+                        size="sm"
+                        type="search"
+                        v-model="beltsSearch"></b-form-input>
+                </b-col>
+                <b-col fluid="lg">
+                    <b-row align-h="end" no-gutters>
+                        <b-col class="d-flex flex-nowrap justify-content-end mt-1">
+                            <!-- Button to show only the selected items -->
+                            <span
+                                class="d-inline-block mr-1"
+                                key="trans-btn-show-all"
+                                tabindex="0"
+                                v-b-tooltip.hover.noninteractive
+                                :title="rowsSelected.length == 0 ? 'No hay ninguna fila seleccionado' : 'Mostrar solo las filas seleccionadas'">
+                                <!-- It will be disabled when no rows are selected -->
+                                <b-button
+                                    size="sm"
+                                    variant="outline-dark"
+                                    v-b-tooltip.hover.noninteractive
+                                    :disabled="rowsSelected.length == 0"
+                                    @click="addTagAllSelected()">
+                                    Seleccionadas
+                                </b-button>
+                            </span>
+                            <!-- Filter by current grade -->
+                            <b-dropdown
+                                class="ig-dropdown mr-1 px-0"
+                                size="sm"
+                                split
+                                text="Grado"
+                                variant="secondary">
+                                <b-dropdown-form>
+                                    <b-form-checkbox-group
+                                        buttons
+                                        button-variant="outline-dark"
+                                        size="sm"
+                                        stacked
+                                        v-model="getSelectedGrade">
+                                        <b-form-checkbox
+                                            v-for="grade in grades"
+                                            :class="'ig-dropdown-item dropdown-grado ' + grade"
+                                            :key="grade"
+                                            :value="grade"
+                                            @change.native="addTags(grade)">
+                                        </b-form-checkbox>
+                                    </b-form-checkbox-group>
+                                </b-dropdown-form>
+                            </b-dropdown>
+                            <!-- Reset filters button -->
+                            <b-button
+                                class="btn-fa-tiny"
+                                size="sm"
+                                title="Quitar todos los filtros"
+                                variant="outline-warning"
+                                v-b-tooltip.hover.noninteractive
+                                @click="resetFilters()">
+                                <fa-icon icon="backspace"></fa-icon>
+                            </b-button>
+                        </b-col>
+                        <b-col class="d-flex flex-nowrap ml-3 mt-1" cols="auto">
+                            <!-- Show all row details button -->
+                            <span
+                                class="mr-1"
+                                tabindex="0"
+                                v-b-tooltip.hover.noninteractive
+                                :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Mostrar detalles en cada socio'">
+                                <!-- Disabled when the table hasn't content or if all the existing rows are showing their details -->
+                                <b-button
+                                    class="btn-fa-tiny"
+                                    size="sm"
+                                    :disabled="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetails.length == beltsTableItems.length"
+                                    :variant="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetails.length == beltsTableItems.length ? 'outline-info' : 'info'"
+                                    @click="detailsExpandAll()">
+                                    <fa-icon icon="plus"></fa-icon>
+                                </b-button>
+                            </span>
+                            <!-- Hide all row details button -->
+                            <span
+                                class="mr-3"
+                                tabindex="0"
+                                v-b-tooltip.hover.noninteractive
+                                :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Ocultar detalles en cada socio'">
+                                <!-- Disabled when the table hasn't content or if all the existing rows aren't showing their details -->
+                                <b-button
+                                    class="btn-fa-tiny"
+                                    size="sm"
+                                    :disabled="showingDetails.length == 0 || ($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0)"
+                                    :variant="showingDetails.length == 0 ? 'outline-secondary' : 'secondary'"
+                                    @click="detailsCollapseAll()">
+                                    <fa-icon icon="minus"></fa-icon>
+                                </b-button>
+                            </span>
+                            <!-- Download table data button -->
+                            <span
+                                class="mr-1"
+                                tabindex="0"
+                                v-b-tooltip.hover.noninteractive.topleft
+                                :title="($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0) ? 'No hay datos en la tabla para descargar' : downloadCsvTable ? 'Descargando...' : 'Descargar los datos de la tabla'">
+                                <!-- Disabled when no table content or if the download of the table data was started -->
+                                <b-button
+                                    class="btn-fa-tiny"
+                                    data-v-step="wzd-main-cinturones-5"
+                                    size="sm"
+                                    variant="outline-success"
+                                    :disabled="($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0) || beltsTableItems.length == 0 || downloadCsvTable == true"
+                                    @click="$tableToCsv([ '_id', 'customerNumber', 'name', 'belts' ], $refs.beltsTable.filteredItems, $moment().format('YYYY-MM-DD_HH.mm.ss') + '-grados.csv', 'downloadCsvTable')">
+                                    <!-- Shown during the download of the file -->
+                                    <b-spinner
+                                        small
+                                        type="grow"
+                                        v-if="downloadCsvTable == true && ($refs.beltsTable && $refs.beltsTable.filteredItems.length != 0)"></b-spinner>
+                                    <!-- By default, show a icon -->
+                                    <fa-icon
+                                        icon="download"
+                                        v-else></fa-icon>
+                                </b-button>
+                            </span>
+                        </b-col>
+                    </b-row>
+                </b-col>
+            </b-row>
+            <div
+                :data-v-step="updating ? 'wzd-cinturones-update-1' : downloadGrades ? 'wzd-cinturones-download-1' : 'wzd-main-cinturones-0'">
+                <b-table
+                    bordered
+                    ref="beltsTable"
+                    responsive="lg"
+                    show-empty
+                    small
+                    sticky-header="10000px"
+                    striped
+                    :fields="beltsTableFields"
+                    :filter="beltsSearch"
+                    :filter-function="filterTable"
+                    :items="beltsTableItems">
+                    <template
+                        #head(selected)>
+                        <b-button
+                            id="head-selectall"
+                            :class="'ig-table-checkbox' + (selectedAll ? ' ig-checked' : '')"
+                            @click="rowSelectAll(!selectedAll)">
+                            <fa-icon
+                                icon="check"
+                                v-if="selectedAll"></fa-icon>
+                            <fa-icon
+                                icon="circle"
+                                v-else-if="selectedSome"></fa-icon>
+                        </b-button>
+                    </template>
+                    <template
+                        #cell(active)="row">
+                        <b-form-checkbox
+                            disabled
+                            switch
+                            v-model="row.value"></b-form-checkbox>
+                    </template>
+                    <template
+                        #cell(selected)="row">
+                        <span
+                            v-b-tooltip.hover.noninteractive
+                            :title="updating && row.item.belts.some(el => el.date == null) && row.item.nextGrade == '' ? 'No tiene marcado ningún Siguiente grado, revisa si tiene cinturones para otorgar y selecciona alguno' : ''">
+                            <b-button
+                                :class="'ig-table-checkbox' + (isSelected(row.item) ? ' ig-checked' : '')"
+                                :disabled="updating && (row.item.belts.some(el => el.date != null) && row.item.nextGrade == '')"
+                                @click="rowSelect(row.item, !isSelected(row.item))">
+                                <fa-icon
+                                    icon="check"
+                                    v-if="isSelected(row.item)"></fa-icon>
+                            </b-button>
+                        </span>
+                    </template>
+                    <template
+                        #cell(customerNumber)="row">
+                        <b-link
+                            data-v-step="wzd-main-cinturones-3"
+                            positioning="top"
+                            target="_blank"
+                            title="Abre la ficha del socio"
+                            v-b-tooltip.hover.noninteractive
+                            v-html="row.value"
+                            :to="{ name: 'customers.profile', params: { id: row.item._id } }"></b-link>
+                    </template>
+                    <template
+                        #cell(name)="row">
+                        <b-link
+                            data-v-step="wzd-main-cinturones-4"
+                            class="unformated-link"
+                            positioning="top"
+                            title="Muestra/Oculta los cinturones del socio"
+                            v-b-tooltip.hover.noninteractive
+                            v-html="row.item.name"
+                            @click="detailsSet(row.item, !row.item._showDetails)"></b-link>
+                    </template>
+                    <template
+                        #cell(grade)="row">
+                        <b-button
+                            class="mx-0"
+                            title="Muestra/Oculta los cinturones del socio"
+                            v-b-tooltip.hover.noninteractive
+                            :class="'btn-cinturon-table-static btn-cinturon-table btn-cinturon ' + row.value"
+                            @click="detailsSet(row.item, !row.item._showDetails)">
+                            {{ row.value == 'blbl' ? '' : row.item.belts.find(belt => belt.grade == row.value).date }}
+                        </b-button>
+                    </template>
+                    <template
+                        #cell(nextGrade)="row">
+                        <b-button
+                            v-if="row.value != ''"
+                            :class="'btn-cinturon-table-static btn-cinturon-table btn-cinturon ' + row.value"
+                            @click="detailsSet(row.item, !row.item._showDetails)"></b-button>
+                    </template>
+                    <template
+                        #row-details="row">
+                        <b-row class="mx-0">
+                            <b-col class="px-0">
+                                <span
+                                    v-b-tooltip.hover.noninteractive
+                                    v-for="belt in row.item.belts"
+                                    :key="belt.grade"
+                                    :title="!isDeleting(row.item) ? row.item.nextGrade != belt.grade ? 'Marcar como siguiente grado' : 'Desmarcar como siguiente grado' : isBeltSelectedToDelete(belt, row.item) ? 'Deseleccionar' : 'Seleccionar'">
+                                    <b-button
+                                        size="sm"
+                                        :class="'mb-1 btn-cinturon-table btn-cinturon ' + belt.grade + (isBeltSelectedToDelete(belt, row.item) ? ' borrando-cinturones' : '')"
+                                        :disabled="(!isDeleting(row.item) && belt.date != null) || (isDeleting(row.item) && belt.date == null)"
+                                        @click="manageDelBelts({ grade: belt.grade, date: belt.date }, row.item)">
+                                            {{ belt.date ? belt.date : '' }}
+                                    </b-button>
+                                </span>
+                            </b-col>
+                            <b-col cols="1">
+                                <b-row align-h="end">
+                                    <span
+                                        class="d-inline-block mb-1"
+                                        tabindex="0"
+                                        v-b-tooltip.hover.noninteractive
+                                        :title="row.item.belts.filter(belt => belt.date != null).length == 0 ? 'No hay grados que editar' : updating ? 'Finaliza la actualización de grados' : downloadGrades ? 'Finaliza la descarga de diplomas' : !isDeleting(row.item) ? 'Editar grados otorgados' : 'Cancelar'">
+                                        <b-button
+                                            class="btn-edit-cinturones"
+                                            size="sm"
+                                            :disabled="updating || downloadGrades || row.item.belts.filter(belt => belt.date != null).length == 0"
+                                            :variant="!isDeleting(row.item) ? 'outline-info' : 'warning'"
+                                            @click="activateDeleting(row.item)">
+                                            <fa-icon
+                                                icon="edit"
+                                                v-if="!isDeleting(row.item)"></fa-icon>
+                                            <fa-icon
+                                                icon="times"
+                                                v-else></fa-icon>
+                                        </b-button>
+                                    </span>
+                                    <span
+                                        class="d-inline-block"
+                                        tabindex="0"
+                                        v-b-tooltip.hover.noninteractive
+                                        :title="beltsSelectedDel.length > 0 ? 'Borrar' : 'Primero selecciona grados para borrar'">
+                                        <b-button
+                                            class="btn-select-cinturones"
+                                            size="sm"
+                                            :disabled="deletingRow || beltsSelectedDel.length == 0 || !isDeleting(row.item)"
+                                            :variant="beltsSelectedDel.length == 0 || !isDeleting(row.item) ? 'outline-danger' : 'danger'"
+                                            @click="beltsDelete(row.item)">
+                                            <fa-icon icon="trash"></fa-icon>
+                                        </b-button>
+                                    </span>
+                                </b-row>
+                            </b-col>
+                        </b-row>
+                    </template>
+                    <template
+                        #table-caption>
+                        <p>La tabla solo muestra los socios activos. Mostrar los inactivos
+                            <b-form-checkbox
+                                class="d-inline"
+                                size="sm"
+                                switch
+                                v-model="inactives"
+                                :disabled="allSelected"></b-form-checkbox>
+                        </p>
+                        Filas seleccionadas:
+                        <animated-num
+                            :numFounded="rowsSelected.length"></animated-num>
+                        <span
+                            v-if="selectedHided"> (algunas están ocultas por los filtros en la tabla)</span>
+                        <br>
+                        Filas totales:
+                        <animated-num
+                            :numFounded="totalRows"></animated-num>
+                    </template>
+                    <template
+                        #table-colgroup="scope">
+                        <col
+                            v-for="field in scope.fields"
+                            :key="field.key"
+                            :style="{ width: field.key == 'grade' || field.key == 'nextGrade' ? '120px' : field.key == 'selected' || field.key == 'active' ? '30px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                    </template>
+                    <template
+                        #table-busy>
+                        <div class="text-center my-2">
+                            <b-spinner class="align-middle" type="grow" variant="secondary"></b-spinner>
+                        </div>
+                    </template>
+                    <!-- It will be shown when the table hasn't rows because the filters have emptied it -->
+                    <template
+                        #empty
+                        v-if="beltsTableItems.length == 0">
+                        <b-form-text>
+                            No existen cinturones con los filtros aplicados
+                        </b-form-text>
+                    </template>
+                    <template
+                        #emptyfiltered>
+                        <b-form-text>
+                            Ningún registro coincide con tu búsqueda
+                        </b-form-text>
+                    </template>
+                </b-table>
+            </div>
+        </b-card>
+    </div>
+</template>
+<script>
+    import { http } from '../utils/http';
+    import { mapActions, mapGetters, mapMutations } from 'vuex';
+    const QS = require('qs'); /* Needed at axios.post function to pass array as params to the controller */
+    const SPECIAL_CHARACTERS = { 'Ã': 'A', 'À': 'A', 'Á': 'A', 'Ä': 'A', 'Â': 'A', 'È': 'E', 'É': 'E', 'Ë': 'E', 'Ê': 'E', 'Ì': 'I', 'Í': 'I', 'Ï': 'I', 'Î': 'I', 'Ò': 'O', 'Ó': 'O', 'Ö': 'O', 'Ô': 'O', 'Ù': 'U', 'Ú': 'U', 'Ü': 'U', 'Û': 'U', 'ã': 'a', 'à': 'a', 'á': 'a', 'ä': 'a', 'â': 'a', 'è': 'e', 'é': 'e', 'ë': 'e', 'ê': 'e', 'ì': 'i', 'í': 'i', 'ï': 'i', 'î': 'i', 'ò': 'o', 'ó': 'o', 'ö': 'o', 'ô': 'o', 'ù': 'u', 'ú': 'u', 'ü': 'u', 'û': 'u', 'Ñ': 'N', 'ñ': 'n', 'Ç': 'c', 'ç': 'c' };
+    export default {
+        data() {
+            return {
+                allSelected: false, /* Flag to obtain only the selected elements on the table */
+                beltsNewDate: '', /* v-model for the date that will be used for store new grados */
+                beltsSearch: '', /* v-model to the input search on table beltsTable */
+                beltsSelectedDel: [], /* Selected grades on a row when a delete action is actived */
+                beltsTableFields: [
+                    { key: 'selected', label: '', },
+                    { key: 'active', label: 'Activo', sortable: true, class: 'text-center', },
+                    // { key: 'id', label: 'ID', sortable: true, },
+                    { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', },
+                    { key: 'name', label: 'Socio', sortable: true, },
+                    { key: 'grade', label: 'Grado actual', sortable: true, class: 'text-center', },
+                    { key: 'nextGrade', label: 'Siguiente grado', sortable: true, class: 'text-center', },
+                ], /* Fields of the table beltsTable, some conditional showed fields are not included by default and it will be included in some function */
+                beltsUpdated: [], /* Array with the updated rows of the table during a update of grade */
+                deletingRow: false, /* Flag to activate/deactivate the delete grades button */
+                downloadCsvTable: false, /* Flag to conditional render an spinner or icon on a print button */
+                downloadCsvManual: false, /* Flag to conditional render an spinner or icon on a print button */
+                filterTags: [], /* v-model that contains the filters applied on the table */
+                getSelectedGrade: [], /* v-model with the grade filter applied to the table */
+                grades: [ /* 'blbl',  */'blam', 'amam', 'amna', 'nana', 'nave', 'veve', 'veaz', 'azaz', 'azma', 'mama', 'nene', ], /* Code of grades */
+                inactives: false,
+                onDeleteRow: {},  /* Store the on delete row wich will be useful to manage the states of the elements allowed and disallowed at the delete of a row */
+                rowsSelected: [], /* Selected rows from beltsTable, its elements will be pushed on events at every row */
+                showingDetailsItems: [], /* Stores the elements wich are showing their details */
+                updateCsv: false, /* Flag to determine if a download csv was requested to apply visual modifications */
+                wcuSteps: [
+                    {
+                        target: '[data-v-step="wzd-cinturones-update-0"]',
+                        content: `<h4>Actualización de grados</h4>La actualización de grados es el proceso con el que podrás actualizar masivamente los grados de los socios que elijas.<br><br><h5>Contexto</h5>En la tabla verás todos los socios que estén activos y que tengan una tarifa que incluya karate. Todos los socios empezarán con grado blanco otorgado en la fecha de alta del socio.<br><br><h5>Objetivo</h5>Una vez realizados los exámenes de grado podrás actualizar los socios al siguiente grado que le corresponda. Solamente deberás seleccionar los socios a actualizar y el sistema añadirá a su histórico el nuevo grado que le corresponde automáticamente.`,
+                        params: {
+                           placement: 'bottom-end'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-cinturones-update-1"]',
+                        content: 'Busca y selecciona en la tabla los socios a los que quieres otorgarles un nuevo grado. Recuerda, solo podrás escoger los socios que no sean cinturón negro.',
+                        params: {
+                           placement: 'top'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-cinturones-update-2"]',
+                        content: 'Selecciona la fecha en la que se otorgó el grado al socio.',
+                        params: {
+                           placement: 'right'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-cinturones-update-3"]',
+                        content: 'Guarda los cambios y finaliza el proceso pulsando en este botón. Se descargará un archivo en formato csv que deberás usar para generar los diplomas.',
+                        params: {
+                           placement: 'right'
+                        }
+                    },
+
+                ], /* Wizard cinturones update steps */
+                wcdSteps: [
+                    {
+                        target: '[data-v-step="wzd-cinturones-download-0"]',
+                        content: `<h4>Descarga manual de archivo de grados</h4>Con este proceso podrás descargar manualmente los grados que necesites exportar a fichero para generar diplomas.<br><br><h5>Contexto</h5>Si necesitas volver a descargar o recuperar algún fichero de grados, con este proceso podrás volver a descargar los datos necesarios para usarlos en la creación de diplomas.<br><br><h5>Objetivo</h5>Para poder generar los diplomas necesitamos exportar los datos que se generan al actualizar los grados. Si por algún motivo no descargaste los datos desde el proceso de actualización desde aquí podrás descargarlos cuando quieras y tantas veces como quieras.`,
+                        params: {
+                           placement: 'bottom-start'
+                        },
+                    },
+                    {
+                        target: '[data-v-step="wzd-cinturones-download-1"]',
+                        content: 'Busca y selecciona en la tabla los socios de los que quieres descargar el archivo para generar los diplomas.',
+                        params: {
+                           placement: 'top'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-cinturones-download-2"]',
+                        content: 'Pulsa en este botón para descargar el fichero necesario para generar los diplomas de grado.',
+                        params: {
+                           placement: 'left'
+                        }
+                    }
+                ], /* Wizard cinturones download steps */
+                wmcSteps: [
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-0"]',
+                        content: `En esta tabla verás los socios que tienen una tarifa que incluye karate actualmente. Desde aquí podrás consultar, modificar o seleccionar los socios y sus grados, usar los seleccionados para descargar archivos de grado para generar diplomas u otorgar nuevos grados a los socios que los hayan conseguido.`,
+                        params: {
+                           placement: 'top'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-1"]',
+                        content: 'Usa los filtos para buscar en la tabla más fácilmente.',
+                        params: {
+                           placement: 'top'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-2"]',
+                        content: 'Aquí verás los filtros aplicados en la tabla.',
+                        params: {
+                           placement: 'bottom'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-3"]',
+                        content: 'Puedes acceder a la ficha del socio pulsando sobre el identificador de socio.',
+                        params: {
+                           placement: 'right'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-4"]',
+                        content: 'Desde el nombre del socio o desde el grado actual podrás acceder a ver el histórico de grados. La fecha que ves hacer referencia a cuándo se otorgó ese grado y si no hay fecha es que el socio tiene pendiente conseguirlo.',
+                        params: {
+                           placement: 'right'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-5"]',
+                        content: 'Imprime los datos de la tabla usando este botón.',
+                        params: {
+                           placement: 'left'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-6"]',
+                        content: 'Puedes revisar el histórico de cambios relizados pulsando en este botón y recuperar datos que hayas borrado o modificado.',
+                        params: {
+                           placement: 'top-end'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-7"]',
+                        content: 'Para actualizar los grados de los socios deberás seguir los pasos pulsando en este botón.',
+                        params: {
+                           placement: 'bottom-end'
+                        }
+                    },
+                    {
+                        target: '[data-v-step="wzd-main-cinturones-8"]',
+                        content: 'Si necesitas volver a descargar el fichero para generar los diplomas podrás hacerlo desde este botón.',
+                        params: {
+                           placement: 'bottom-start'
+                        }
+                    },
+                ], /* Wizard main cinturones steps */
+                wizardOnModalOpen: false, /* Flag to detect if the modal of the history is opened to show its wizard */
+            }
+        },
+        /**
+         * Prevent leaving the page with editings open
+         */
+        beforeRouteLeave(to, from, next) {
+            let answer = true;
+            if (this.updating || this.downloadGrades || this.beltsTableItems.some(belt => this.isDeleting(belt))) {
+                answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
+                if (!answer) {
+                    next(false);
+                }
+            }
+            if (answer) {
+                /* End the open belts procedures at vuex */
+                this.endProcedures('belts');
+                /* Pause the validations before leave the page to prevent errors at assign the validation again to the reusable components */
+                this.$validator.pause();
+                next();
+            }
+        },
+        computed: {
+            ...mapGetters(['getBelts', 'getCustomerById', 'getLastBelts']),
+            ...mapGetters('navbar', ['getProcedureState']),
+            /**
+             * Initialize the belts data from the store. Determine the value of local variables.
+             *
+             * @return {Array} Array with the objects-rows to the table
+             */
+            beltsTableItems() {
+                let belts = this.getBelts(this.getSelectedGrade, this.inactives);
+                if (this.allSelected) {
+                    /* Get only the selected rows */
+                    belts = belts.filter(belt => this.rowsSelected.some(rs => rs._id == belt._id) == true);
+                }
+                /* Is necessary to maintain the state of the '_showDetails' attribute between table data changes */
+                if (this.showingDetails) {
+                    this.showingDetailsItems.forEach(sdi => {
+                        if (belts.some(row => row._id == sdi._id)) {
+                            this.$set(belts.find(row => row._id == sdi._id), '_showDetails', true);
+                        }
+                    });
+                }
+                return belts;
+            },
+            /**
+             * Indicates if a row is being edited to delete some belts
+             *
+             * @return {Boolean} Boolean that indicates if a row is being edited to delete some belts
+             */
+            deleteInCourse() {
+                return Object.keys(this.onDeleteRow).length !== 0;
+            },
+            /**
+             * v-model that indicates if the grades download process has been started
+             */
+            downloadGrades: {
+                get() {
+                    return this.getProcedureState('beltsPrinting');
+                },
+                set(val) {
+                    this.setProcedureState({ procedure: 'beltsPrinting', newVal: val });
+                }
+            },
+            /**
+             * Determines if all the elements are selected under visible filtered elements on the table. This function is used at the simulated checkbox of the head at the col selected of the table
+             *
+             * @return {Boolean} Boolean to determine if all the elements of the table are selected
+             */
+            selectedAll() {
+                const filteredItems = this.$refs.beltsTable && this.$refs.beltsTable.filteredItems;
+                if (this.rowsSelected.length > 0 && filteredItems.length > 0) {
+                    if (this.updating) {
+                        const rowsUpdating = filteredItems.filter(el => el.belts.some(belt => belt.date == null) || el.nextGrade != '');
+                        return rowsUpdating.every(ru => this.rowsSelected.some(rs => rs._id == ru._id) == true);
+                    }
+                    if (!this.updating) {
+                        return filteredItems.every(fi => this.rowsSelected.some(rs => rs._id == fi._id) == true);
+                    }
+                }
+            },
+            /**
+             * Determines if some selected row has been hided by the filters applied
+             *
+             * @return {Boolean} Boolean that determines if some row has been hided by the filters applied
+             */
+            selectedHided() {
+                const filteredItems = this.$refs.beltsTable && this.$refs.beltsTable.filteredItems;
+                return this.rowsSelected.length > 0 && this.rowsSelected.some(rs => filteredItems.findIndex(fi => fi._id == rs._id) == -1);
+            },
+            /**
+             * Determines if some row is selected
+             *
+             * @return {Boolean} Boolean to determine if some element has been selected
+             */
+            selectedSome() {
+                const filteredItems = this.$refs.beltsTable && this.$refs.beltsTable.filteredItems;
+                return this.rowsSelected.length > 0 && filteredItems.length > 0 && this.rowsSelected.length > 0;
+            },
+            /**
+             * Informs if some row is showing its details that means is editing
+             *
+             * @return {Boolean} Boolean that informs if some row is showing its details
+             */
+            showingDetails() {
+                return this.showingDetailsItems.length > 0;
+            },
+            /**
+             * Determines the total filtered rows
+             *
+             * @returns {Integer} The integer with the total rows in the table
+             */
+            totalRows() {
+                return this.$refs.beltsTable && this.$refs.beltsTable.isFiltered ? this.$refs.beltsTable.filteredItems.length : this.beltsTableItems.length
+            },
+            /**
+             * v-model that indicates if the updating belts process has been started (it will be setted Vuex and its changes will be tracked on a watcher)
+             */
+            updating() {
+                return this.getProcedureState('beltsUpdating');
+            }
+        },
+        created() {
+            /* Prevents leave the page when changes has been made */
+            window.addEventListener('beforeunload', this.beforeUnload);
+        },
+        destroyed() {
+            /* Destroy de listeners */
+            window.removeEventListener('beforeunload', this.beforeUnload);
+        },
+        methods: {
+            ...mapActions(['deleteBelts']),
+            ...mapActions('navbar', ['endProcedures', 'setProcedureState']),
+            ...mapMutations(['UPDATE_BELTS']),
+            /**
+             * Function that 'starts' the delete action
+             *
+             * @param {Object} row is the row from the table wich contains data and context of one socio
+             */
+            activateDeleting(row) {
+                /* Reset the previous deleting selected */
+                this.beltsSelectedDel = [];
+                /* Store the on delete */
+                this.onDeleteRow = this.onDeleteRow._id == row._id ? {} : { ...row };
+            },
+            /**
+             * Function to manage the tag for all-selected elements shown conditionally with the flag allSelected
+             */
+            addTagAllSelected() {
+                /* Show or hide the tag 'Seleccionadas' */
+                this.allSelected = !this.allSelected;
+                /* If we want to show the selected belts */
+                if (this.allSelected) {
+                    /* Check if in the selected belts there are some inactive to active the flag that indicates we are showing the inactives on the table */
+                    if (this.rowsSelected.some(belt => belt.active == false)) {
+                        this.inactives = true;
+                    }
+                    // this.beltsTableItems = this.rowsSelected;
+                }
+            },
+            /**
+             * Function that add the tags to the array v-model. Is called when a filter on the table is selected
+             *
+             * @param {String} tag: is the value of the selected filter applied to the table
+             */
+            addTags(tag) {
+                this.filterTags.includes(tag) ? this.filterTags.splice(this.filterTags.indexOf(tag), 1) : this.filterTags.push(tag);
+            },
+            /**
+             * Prevent leave the page with changes unsaved
+             *
+             * @param {Event} ev: the event fired
+             */
+            beforeUnload(ev) {
+                let answer = true;
+                /* From Chrome 60 onward, the beforeunload dialog will only appear if the frame attempting to display it has received a user gesture or user interaction (or if any embedded frame has received such a gesture). */
+                if (this.updating || this.downloadGrades || this.beltsTableItems.some(belt => this.isDeleting(belt))) {
+                    answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
+                    if (!answer) {
+                        ev.preventDefault();
+                        /* Chromium requires returnValue to stop the default propagation */
+                        ev.returnValue = '';
+                    }
+                }
+                if (answer) {
+                    /* End the open belts procedures at vuex */
+                    this.endProcedures('belts');
+                    /* Pause the validations before leave the page to prevent errors at assign the validation again to the reusable components */
+                    this.$validator.pause();
+                }
+            },
+            /**
+             * Function wich delete the grades of a socio
+             *
+             * @param {Object} row: is the row from the table wich contains data and context of one socio
+             */
+            async beltsDelete(row) {
+                /* Change the flag to disable the delete button */
+                this.deletingRow = true;
+                this.onDeleteRow = {};
+                try {
+                    const response = await this.deleteBelts({ id: row._id, selectedBelts: this.beltsSelectedDel });
+                    /* After the api action reset the involved var */
+                    this.beltsSelectedDel = [];
+                    if (row.belts != response.deletedBelts) {
+                        this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
+                        this.$set(row, 'grade', this.getLastBelts(response.deletedBelts).grade);
+                        this.$set(row, 'nextGrade', this.getLastBelts(response.deletedBelts).nextGrade);
+                    } else {
+                        this.$showToast('warning', 'No se ha actualizado ningún dato.', 'Actualización de grados')
+                    }
+                } catch (error) {
+                    this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoCi@BeDe', 'Ha ocurrido un error')
+                    console.error(error.response ? error.response.data : error);
+                }
+                /* Change the flag to enable the delete button */
+                setTimeout(() => {
+                    this.deletingRow = false;
+                }, 2000);
+            },
+            /**
+             * Function that takes the selected data by the user (rows of the table beltsTable) and store at the database its changes at his grades (cinturones).
+             */
+            beltsMassUpdate() {
+                /* Reset to fill it with the updated elements, used to print the passed belts */
+                this.beltsUpdated = [];
+                /* Will store all the updated rows to send it to vuex */
+                let newDate = this.$moment(this.beltsNewDate).format('DD-MM-YYYY');
+                http.post('/api/autoBelts', QS.stringify({ date: newDate, socios: this.rowsSelected }))
+                    .then(response => {
+                        response.data.forEach(item => {
+                            /* Get the row that has been updated */
+                            let row = this.beltsTableItems.filter(bti => bti._id == item.socio._id)[0];
+                            /* Commit on vuex the changes */
+                            this.UPDATE_BELTS({ customer: this.getCustomerById(item.socio._id), newVal: item.socio.belts });
+                            /* Trigger a modification on the localStorage to propagate the changes on other windows */
+                            localStorage.setItem('customer_updated', item.socio._id);
+                            localStorage.removeItem('customer_updated');
+                            /* Store a cookie with the saved data */
+                            /*  NOT USED FOR NOW
+                            this.guardarCookie(item, 'new'); */
+                            /* If the updated was made on the db add the current edited element to the edited arr with wich create a csv file */
+                            if (item.status == 'success') {
+                                this.beltsUpdated.push({ name: item.socio.name, grade: item.nextGrade, date: newDate });
+                            }
+                        });
+                    })
+                    .then(() => {
+                        /* Download the file with the updated data */
+                        if (this.beltsUpdated.length > 0 && (this.beltsUpdated.length == this.rowsSelected.length)) {
+                            this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
+                        }
+                        if (this.beltsUpdated.length > 0 && (this.beltsUpdated.length != this.rowsSelected.length)) {
+                            this.$showToast('warning', 'Se han guardado los cambios pero alguno de los grados seleccionados no han podido ser actualizados. Revisa el archivo descargado con los grados actualizados.', 'Grados actualizados correctamente', 7500);
+                        }
+                        if (this.beltsUpdated.length > 0) {
+                            this.$showToast('success', 'Se ha descargado el archivo para generar los diplomas.', 'Descarga de archivo de grados', 6500);
+                        }
+                        this.$tableToCsv(['name', 'grade', 'date'], this.beltsUpdated, this.$moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_diplomas_' + this.beltsNewDate + '.csv', 'updateCsv');
+                        if (this.beltsUpdated.length == 0) {
+                            this.$showToast('warning', 'No se ha guardado ningún cambio.', 'Atención', 6500);
+                        }
+                        /* Reset the involved vars */
+                        this.beltsNewDate = '';
+                        this.rowsSelected = [];
+                    })
+                    .catch(error => {
+                        this.$showToast('danger', 'No se han podido guardar los datos. Código de error: FESoCi@AuCi', 'Ha ocurrido un error')
+                        console.error(error.response ? error.response.data : error);
+                    });
+            },
+            /**
+             * Function called when a tag is removed from its interaction. It will splice the tag removed from the v-model of the tags element
+             *
+             * @param {String} tag: name of the tag clicked to be removed
+             */
+            deleteTag(tag) {
+                /* Delete the specific tag */
+                this.filterTags.splice(this.filterTags.indexOf(tag), 1);
+                /* Delete the deleted tag on the array of filters too */
+                if (this.getSelectedGrade.indexOf(tag) != -1) {
+                    this.getSelectedGrade.splice(this.getSelectedGrade.indexOf(tag), 1);
+                }
+            },
+             /**
+             * Function to deactivate all the row details on the table beltsTable
+             */
+            detailsCollapseAll() {
+                this.beltsTableItems.forEach(belt => {
+                    this.detailsSet(belt, false);
+                });
+            },
+            /**
+             * Function to activate all the row details on the table beltsTable
+             */
+            detailsExpandAll() {
+                this.beltsTableItems.forEach(belt => {
+                    this.detailsSet(belt, true);
+                });
+            },
+             /**
+             * Function wich show the details (b-table functionality) on the row passed from the table
+             *
+             * @param {Object} row: is the row from the table wich contains data and context of one socio
+             */
+            detailsSet(row, newValue) {
+                this.$set(row, '_showDetails', newValue);
+                /* Add the row that are showing details to the array with these items */
+                if (this.showingDetailsItems.length > 0) {
+                    const index = this.showingDetailsItems.findIndex(sdi => sdi._id == row._id);
+                    if (index != -1) {
+                        this.showingDetailsItems.splice(index, 1);
+                    } else {
+                        this.showingDetailsItems = [ ...this.showingDetailsItems, { ...row } ];
+                    }
+                } else {
+                    this.showingDetailsItems = [ ...this.showingDetailsItems, { ...row } ];
+                }
+                /* If the row is deleting, reset it */
+                if (this.isDeleting(row)) {
+                    this.beltsSelectedDel = [];
+                    this.onDeleteRow = {};
+                }
+            },
+            /**
+             * Evaluate if the selected rows on the table can remain selected during the procedure started. In the case of 'updating' procedure, the rows with no next grade can not be updated and.
+             */
+            evaluateRowSelectedState() {
+                this.rowsSelected.forEach((row, idx) => {
+                    /* If the row has a nextGrade empty or don't have grades pending too (without date) it can't be updated */
+                    if (row.nextGrade == '') {
+                        this.rowSelect(row, false)
+                        /* Recursive call to iterate over all the items of the array */
+                        this.evaluateRowSelectedState();
+                    }
+                });
+            },
+            /**
+             * Function that empty all the actual filters and show only the selected rows
+             */
+            filterSelected() {
+                /* Reset all the filters */
+                this.resetFilters();
+                /* Add the tag 'Seleccionadas' */
+                this.allSelected = true;
+                if (this.rowsSelected.some(belt => belt.active == false)) {
+                    this.inactives = true;
+                }
+            },
+            /**
+             * Filters the table component by the input provided for it
+             *
+             * @param {Object} value: the row of the table to make the search
+             *
+             * @return {Boolean} Boolean which indicates if the row includes or not the search
+             */
+            filterTable(value) {
+                /* Stringify and clean the received object */
+                let auxValue = JSON.stringify(value).toLowerCase().replace(new RegExp(/\"/g), '');
+                let valueClean = '';
+                /* Iterate over the stringified value passed to convert every special character to a regular */
+                for (let i = 0; i < auxValue.length; i++) {
+                    valueClean += SPECIAL_CHARACTERS[auxValue.charAt(i)] || auxValue.charAt(i);
+                }
+                let auxFilter = this.beltsSearch.toLowerCase();
+                let filterClean = '';
+                /* Iterate over the input search value to convert every special character to a regular */
+                for (let i = 0; i < auxFilter.length; i++) {
+                    filterClean += SPECIAL_CHARACTERS[auxFilter.charAt(i)] || auxFilter.charAt(i);
+                }
+                return !this.beltsSearch || valueClean.includes(filterClean)
+            },
+            /**
+             * Determines if a belts is included on the selected belts to delete from a row
+             *
+             * @param {Object} belt: is the item to check if is or isn't selected
+             * @param {Object} row: the row item of the table element
+             *
+             * @return {Boolean} Boolean that confirms if the row passed has some belt selected to delete
+             */
+            isBeltSelectedToDelete(belt, row) {
+                return this.beltsSelectedDel.filter(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl._id == row._id).length > 0;
+            },
+            /**
+             * Determines if a table row passed is selected to edit its belts
+             *
+             * @param {Object} row: the row item of the table element
+             *
+             * @return {Boolean} Boolean that confirms if the row passed has initiated its belt edition or not
+             */
+            isDeleting(row) {
+                return row._id == this.onDeleteRow._id;
+            },
+            /**
+             * Determines if a specific row is selected on the table. Its used on every row simulated checkbox at the select col
+             *
+             * @param {Object} row: is the table row item
+             *
+             * @return {Boolean} Boolean to determine if the row passed is selected
+             */
+            isSelected(row) {
+                return this.rowsSelected.some(el => el._id == row._id);
+            },
+            /**
+             * Function that manage the selection of the elements who composes the grades of a customer. Here we arrives after interact with one of the grades of the customer, depending of whether the delete action is activated or not the interaction results on a selection to delete the element or to mark as next grade
+             *
+             * @param {Object} belt: contains the selected grade data
+             * @param {Object} row: is the row from the table wich contains data and context of one customer
+             */
+            manageDelBelts(belt, row) {
+                /* If the row is deleting */
+                if (this.isDeleting(row)) {
+                    /* Check if the grade (belt) passed exists on the array and delete it if its true or push it if its false */
+                    if (!this.isBeltSelectedToDelete(belt, row)) {
+                        this.beltsSelectedDel.push({ _id: row._id, ...belt });
+                    } else if (this.isBeltSelectedToDelete(belt, row)) {
+                        this.beltsSelectedDel.splice(this.beltsSelectedDel.findIndex(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl._id == row._id), 1);
+                    }
+                /* Else, if the delete action is not actived, the belt passed will be the nextGrade */
+                } else if (!this.isDeleting(row)) {
+                    let nextGrade = belt.grade == row.nextGrade ? '' : belt.grade;
+                    this.$set(row, 'nextGrade', nextGrade);
+                }
+            },
+            /**
+             * Function to reset all the filters applieds to the table
+             */
+            resetFilters() {
+                /* Empty all the filters and tags */
+                this.beltsSearch = '';
+                this.filterTags = [];
+                this.getSelectedGrade = [];
+                this.allSelected = false;
+                this.inactives = false;
+            },
+            /**
+             * Function that select a row by clicking on its checkbox or on the header checkbox. The selected element comes from the table beltsTable and is pushed on the rowsSelected array. The function checks if all the elements of its table are selected too
+             *
+             * @param {Array} row: is the data from a row of the table beltsTable
+             * @param {Event} newVal: is the checkbox event that indicates the new value for vuex
+             */
+            rowSelect(row, newVal) {
+                newVal ? this.rowsSelected.push(row) : this.rowsSelected.splice(this.rowsSelected.findIndex(el => el._id == row._id), 1);
+            },
+            /**
+             * Function activated via clicking the header checkbox on tables beltsTable and it calls to rowSelect respective function to select al the avaiable rows on the table
+             *
+             * @param {Boolean} checked: status of the checkbox of the header row
+             */
+            rowSelectAll(checked) {
+                /* v.2 can be useful */
+                // if (checked == true) {
+                //     this.$refs.beltsTable.filteredItems.forEach(el => {
+                //         if ((this.updating == true && (el.belts.some(belt => belt.date == null) || el.nexGrade != '') || this.updating == false) && !this.rowsSelected.some(row => row._id == el._id)) {
+                //             this.rowSelect(el, true);
+                //         }
+                //     });
+                // } else if (checked == false) {
+                //     this.$refs.beltsTable.filteredItems.forEach(el => {
+                //         if (this.rowsSelected.some(row => row._id == el._id)) {
+                //             this.rowSelect(el, false);
+                //         }
+                //     });
+                // }
+                let usefulItems = [];
+                this.$refs.beltsTable.filteredItems.forEach(el => {
+                    /* Algorithm that allows to select the elements wich can be selected
+                    beltsTable: if we are updating grades and one or more of the row grades are pending and the nextGrade isn't empy or out of the updating procedure */
+                    if ((this.updating == true && el.belts.some(cintu => cintu.date == null) && el.nextGrade != '') || this.updating == false) {
+                        usefulItems.push(el);
+                    }
+
+                });
+                /* Iterate the useful items to mark they selected or unselected */
+                usefulItems.forEach(el => {
+                    if (checked == true && !this.rowsSelected.some(row => row._id == el._id)) {
+                        this.rowSelect(el, true);
+                    } else if (checked == false && this.rowsSelected.some(row => row._id == el._id)) {
+                        this.rowSelect(el, false);
+                    }
+                });
+            },
+        },
+        watch: {
+            /* Watch the updating changes to evaluate the rows selected */
+            updating(newVal, oldVal) {
+                if (newVal == true) {
+                    /* Evaluate the valid selected rows */
+                    if (this.rowsSelected.length > 0) {
+                        this.evaluateRowSelectedState();
+                    }
+                }
+            }
+        },
+    }
+</script>
+<style scoped>
+    .btn-cinturon-table-static {
+        cursor: default;
+        margin-bottom: .1rem!important;
+        min-width: 100px;
+    }
+    /* Selectors are ordered from generic to specific and then alphabetical and its properties are in alphabetical order */
+    .btn-edit-cinturones,
+    .btn-select-cinturones {
+        height: 27px!important;
+        line-height: 1;
+        margin: 0 .2rem 0 0;
+        padding: 0;
+        width: 27px;
+    }
+    .btn-edit-cinturones svg,
+    .btn-select-cinturones svg {
+        margin: 0 auto;
+        padding: 0;
+    }
+    .b-table-details {
+        max-height: 40px!important;
+    }
+    .b-table-details .btn-group-toggle {
+        display: inline-block!important;
+        /* width: 60%; */
+    }
+    .card-body {
+        overflow: visible!important; /* This will show the dropdown out of the card limits and prevents scroll it */
+    }
+    .wrp-tiny-btns {
+        word-wrap: no-wrap;
+    }
+    .wrp-transition-table-alerts {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        width: 100%;
+    }
+    .wrp-transition-table-alerts > * {
+        transition: all .2s;
+        width: 100%;
+    }
+</style>
+
