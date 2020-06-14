@@ -44,7 +44,7 @@ return [
             'username' => env('MONGO_DB_USERNAME'),
             'password' => env('MONGO_DB_PASSWORD'),
             'options' => [
-                // 'database' => 'admin'
+                'database' => 'admin'
                 // 'replicaSet' => 'rs0',
                 // 'readPreference' => MongoClient::RP_SECONDARY_PREFERRED
             ]
