@@ -135,6 +135,7 @@ return [
     */
 
     'providers' => [
+        Jenssegers\Mongodb\MongodbServiceProvider::class,
 
         /*
          * Laravel Framework Service Providers...
@@ -189,6 +190,8 @@ return [
     */
 
     'aliases' => [
+        // 'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        // 'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,
