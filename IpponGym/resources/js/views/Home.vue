@@ -227,7 +227,7 @@
     }
     .home-nav-btn {
         height: 35px;
-        line-height: 1.2;
+        line-height: 1.4;
         margin-right: 10px;
         margin-top: 5px;
     }
