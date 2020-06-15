@@ -83,6 +83,7 @@
             </span>
         </b-navbar>
         <b-navbar
+            data-v-step="wzd-main-pagos-5"
             id="ig-tools-navbar"
             fixed="top"
             :toggleable="$route.name == 'payments.index' || $route.name == 'belts.index' ? 'sm' : false">
@@ -142,7 +143,7 @@
                             <span
                                 key="payments-tools"
                                 v-if="$route.name == 'payments.index'">
-                                <b-row class="nav-btn-wrp" align-h="start" no-gutters>
+                                <b-row align-h="start" class="nav-btn-wrp" no-gutters>
                                     <b-navbar-nav
                                         id="nav-payments-update"
                                         :class="'col-12 col-sm-auto ig-tools-nav onpage' + (getProcedureState('paymentsConfirming') ? ' actived' : '')">
@@ -166,7 +167,7 @@
                                         <b-nav-item
                                             class="ig-tools-item onpage"
                                             @click="setProcedureState({ procedure: 'paymentsPrinting' })">
-                                            <b-row no-gutters>
+                                            <b-row no-gutters class="px-1">
                                                 <fa-icon icon="file-invoice"></fa-icon>
                                                 <span class="nav-text text-ig-gradient-2">
                                                     Descarga archivos de remesa
@@ -396,10 +397,14 @@
         text-decoration: underline!important;
     }
     .scrolling {
-        box-shadow: -2px 1px 2px 1px rgba(180, 180, 180, 1)!important
+        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important
     }
     #ctn-ippongym {
         border: 1px solid transparent; /* Avoding the small jump on hambur open */
+    }
+    #ig-main-navbar,
+    #ig-tools-navbar {
+        width: 100vw; /* Resolving jumps on appear scrollbar */
     }
     #ig-main-navbar {
         border: 1px solid transparent; /* Avoding the small jump on hambur open */
@@ -464,7 +469,7 @@
             top: 0;
         }
         .modal-open #col-assets {
-            padding-right: 14px!important; /* Prevent jumps on modal open */
+            /* padding-right: 14px!important; Prevent jumps on modal open */
         }
     }
     @media screen and (max-width: 880px) and (min-width: 576px) {
