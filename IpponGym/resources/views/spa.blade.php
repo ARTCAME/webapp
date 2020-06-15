@@ -3,9 +3,7 @@
 <head>
     <!-- Fonts -->
     <link rel="prefetch" as="font" href="../fonts/Myriad_Pro_Bold_Condensed_Italic.ttf" type="font/ttf" crossorigin="anonymous">
-    <!-- Styles -->
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
-
+    {{-- Bootstrap --}}
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
 
     <meta charset="utf-8">
@@ -25,7 +23,6 @@
     <div id="app">
         <app></app>
     </div>
-
     <script src="{{ mix('js/app.js') }}"></script>
 </body>
 </html>
