@@ -29,53 +29,54 @@
             <b-collapse
                 id="collapse-update"
                 :visible="updating">
-                <h5 class="subtitle subtitle-sub" md="4">
+                <h5 class="subtitle subtitle-sub" data-v-step="wzd-cinturones-update-0" md="4">
                     Actualización masiva de grados
                 </h5>
                 <b-row class="mb-2" no-gutters>
-                        <b-form-input
-                            id="date-cinturones"
-                            key="trans-datepicker"
+                    <b-form-input
+                        data-v-step="wzd-cinturones-update-2"
+                        id="date-cinturones"
+                        key="trans-datepicker"
+                        size="sm"
+                        type="date"
+                        v-model="beltsNewDate"
+                        class="col-4 mr-1 px-2"></b-form-input>
+                    <span
+                        class="d-inline-block"
+                        data-v-step="wzd-cinturones-update-3"
+                        key="trans-btns-update"
+                        tabindex="0"
+                        v-b-tooltip.hover.noninteractive
+                        :title="deleteInCourse ? 'No puedes actualizar cinturones mientras editas una línea de la tabla' : rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : beltsNewDate == '' ? 'Selecciona una fecha' : updateCsv ? 'Descargando...' : 'Guardar y descargar archivo'">
+                        <!-- Disabled when no grades are selected and no date was selected or if the process to save the file and download it has been started -->
+                        <b-button
                             size="sm"
-                            type="date"
-                            v-model="beltsNewDate"
-                            class="col-4 mr-1 px-2"></b-form-input>
-                        <span
-                            class="d-inline-block"
-                            data-v-step="wzd-cinturones-update-3"
-                            key="trans-btns-update"
-                            tabindex="0"
-                            v-b-tooltip.hover.noninteractive
-                            :title="deleteInCourse ? 'No puedes actualizar cinturones mientras editas una línea de la tabla' : rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : beltsNewDate == '' ? 'Selecciona una fecha' : updateCsv ? 'Descargando...' : 'Guardar y descargar archivo'">
-                            <!-- Disabled when no grades are selected and no date was selected or if the process to save the file and download it has been started -->
-                            <b-button
-                                size="sm"
-                                :disabled="beltsNewDate == '' || rowsSelected.length == 0 || updateCsv == true"
-                                :variant="beltsNewDate == '' || rowsSelected.length == 0 || updating == false ? 'outline-success' : 'success'"
-                                @click="beltsMassUpdate()">
-                                <!-- Shown during the download of the file -->
-                                <b-spinner
-                                    small
-                                    type="grow"
-                                    v-if="updateCsv == true"></b-spinner>
-                                <!-- If no download is being processed, shown this -->
-                                <fa-icon
-                                    icon="save"
-                                    v-else></fa-icon>
-                                <span class="d-inline-block save-csv">
-                                    &ensp;Actualizar cinturones
-                                </span>
-                            </b-button>
-                        </span>
-                        <!-- Shown whe the process to update grades is actived and some grade was selected -->
-                        <transition name="slide-fade">
-                            <span
-                                class="d-inline-block ig-inline-text ml-3 my-auto"
-                                key="trans-text-info-update"
-                                v-if="rowsSelected.length > 0">
-                                Vas a actualizar {{ rowsSelected.length }} socio/s
+                            :disabled="beltsNewDate == '' || rowsSelected.length == 0 || updateCsv == true"
+                            :variant="beltsNewDate == '' || rowsSelected.length == 0 || updating == false ? 'outline-success' : 'success'"
+                            @click="beltsMassUpdate()">
+                            <!-- Shown during the download of the file -->
+                            <b-spinner
+                                small
+                                type="grow"
+                                v-if="updateCsv == true"></b-spinner>
+                            <!-- If no download is being processed, shown this -->
+                            <fa-icon
+                                icon="save"
+                                v-else></fa-icon>
+                            <span class="d-inline-block save-csv">
+                                &ensp;Actualizar cinturones
                             </span>
-                        </transition>
+                        </b-button>
+                    </span>
+                    <!-- Shown whe the process to update grades is actived and some grade was selected -->
+                    <transition name="slide-fade">
+                        <span
+                            class="d-inline-block ig-inline-text ml-3 my-auto"
+                            key="trans-text-info-update"
+                            v-if="rowsSelected.length > 0">
+                            Vas a actualizar {{ rowsSelected.length }} socio/s
+                        </span>
+                    </transition>
                     <b-button
                         class="ml-auto"
                         size="sm"
@@ -89,22 +90,23 @@
                 <b-alert
                     class="mb-2"
                     show
-                    variant="success">
-                    1 - Selecciona una fecha, será la fecha en la que se otorgó el nuevo grado.
+                    variant="info">
+                    1 - Busca y selecciona en la tabla los socios que quieres actualizar.
                     <br>
-                    2 - Busca y selecciona en la tabla los socios que quieres actualizar.
+                    2 - Selecciona una fecha, será la fecha en la que se otorgó el nuevo grado.
                     <br>
                     3 - Para acabar, confirma los cambios.
                     <br>
-                    <b-form-text>Nota: si un socio es cinturón negro no podrás seleccionarlo</b-form-text>
+                    <u>Importante:</u>
+                    - Si el grado actual es negro no podrás seleccionar a ese socio, si tiene algún grado pendiente deberás marcarlo como siguiente grado para poder actualizarlo.
                 </b-alert>
             </b-collapse>
             <!-- Manual download grades -->
             <b-collapse
                 id="collapse-download"
                 :visible="downloadGrades">
-                <h5 class="subtitle subtitle-sub" md="4">
-                    Impresión manual de archivo para diplomas
+                <h5 class="subtitle subtitle-sub" data-v-step="wzd-cinturones-download-0" md="4">
+                    Descarga manual de archivo para diplomas
                 </h5>
                 <b-row class="mb-2" no-gutters>
                     <b-col cols="auto">
@@ -559,6 +561,7 @@
 <script>
     import { http } from '../utils/http';
     import { mapActions, mapGetters, mapMutations } from 'vuex';
+    import * as WzdSteps from '../components/wzdsteps/belts';
     const QS = require('qs'); /* Needed at axios.post function to pass array as params to the controller */
     const SPECIAL_CHARACTERS = { 'Ã': 'A', 'À': 'A', 'Á': 'A', 'Ä': 'A', 'Â': 'A', 'È': 'E', 'É': 'E', 'Ë': 'E', 'Ê': 'E', 'Ì': 'I', 'Í': 'I', 'Ï': 'I', 'Î': 'I', 'Ò': 'O', 'Ó': 'O', 'Ö': 'O', 'Ô': 'O', 'Ù': 'U', 'Ú': 'U', 'Ü': 'U', 'Û': 'U', 'ã': 'a', 'à': 'a', 'á': 'a', 'ä': 'a', 'â': 'a', 'è': 'e', 'é': 'e', 'ë': 'e', 'ê': 'e', 'ì': 'i', 'í': 'i', 'ï': 'i', 'î': 'i', 'ò': 'o', 'ó': 'o', 'ö': 'o', 'ô': 'o', 'ù': 'u', 'ú': 'u', 'ü': 'u', 'û': 'u', 'Ñ': 'N', 'ñ': 'n', 'Ç': 'c', 'ç': 'c' };
     export default {
@@ -589,125 +592,9 @@
                 rowsSelected: [], /* Selected rows from beltsTable, its elements will be pushed on events at every row */
                 showingDetailsItems: [], /* Stores the elements wich are showing their details */
                 updateCsv: false, /* Flag to determine if a download csv was requested to apply visual modifications */
-                wcuSteps: [
-                    {
-                        target: '[data-v-step="wzd-cinturones-update-0"]',
-                        content: `<h4>Actualización de grados</h4>La actualización de grados es el proceso con el que podrás actualizar masivamente los grados de los socios que elijas.<br><br><h5>Contexto</h5>En la tabla verás todos los socios que estén activos y que tengan una tarifa que incluya karate. Todos los socios empezarán con grado blanco otorgado en la fecha de alta del socio.<br><br><h5>Objetivo</h5>Una vez realizados los exámenes de grado podrás actualizar los socios al siguiente grado que le corresponda. Solamente deberás seleccionar los socios a actualizar y el sistema añadirá a su histórico el nuevo grado que le corresponde automáticamente.`,
-                        params: {
-                           placement: 'bottom-end'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-cinturones-update-1"]',
-                        content: 'Busca y selecciona en la tabla los socios a los que quieres otorgarles un nuevo grado. Recuerda, solo podrás escoger los socios que no sean cinturón negro.',
-                        params: {
-                           placement: 'top'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-cinturones-update-2"]',
-                        content: 'Selecciona la fecha en la que se otorgó el grado al socio.',
-                        params: {
-                           placement: 'right'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-cinturones-update-3"]',
-                        content: 'Guarda los cambios y finaliza el proceso pulsando en este botón. Se descargará un archivo en formato csv que deberás usar para generar los diplomas.',
-                        params: {
-                           placement: 'right'
-                        }
-                    },
-
-                ], /* Wizard cinturones update steps */
-                wcdSteps: [
-                    {
-                        target: '[data-v-step="wzd-cinturones-download-0"]',
-                        content: `<h4>Descarga manual de archivo de grados</h4>Con este proceso podrás descargar manualmente los grados que necesites exportar a fichero para generar diplomas.<br><br><h5>Contexto</h5>Si necesitas volver a descargar o recuperar algún fichero de grados, con este proceso podrás volver a descargar los datos necesarios para usarlos en la creación de diplomas.<br><br><h5>Objetivo</h5>Para poder generar los diplomas necesitamos exportar los datos que se generan al actualizar los grados. Si por algún motivo no descargaste los datos desde el proceso de actualización desde aquí podrás descargarlos cuando quieras y tantas veces como quieras.`,
-                        params: {
-                           placement: 'bottom-start'
-                        },
-                    },
-                    {
-                        target: '[data-v-step="wzd-cinturones-download-1"]',
-                        content: 'Busca y selecciona en la tabla los socios de los que quieres descargar el archivo para generar los diplomas.',
-                        params: {
-                           placement: 'top'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-cinturones-download-2"]',
-                        content: 'Pulsa en este botón para descargar el fichero necesario para generar los diplomas de grado.',
-                        params: {
-                           placement: 'left'
-                        }
-                    }
-                ], /* Wizard cinturones download steps */
-                wmcSteps: [
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-0"]',
-                        content: `En esta tabla verás los socios que tienen una tarifa que incluye karate actualmente. Desde aquí podrás consultar, modificar o seleccionar los socios y sus grados, usar los seleccionados para descargar archivos de grado para generar diplomas u otorgar nuevos grados a los socios que los hayan conseguido.`,
-                        params: {
-                           placement: 'top'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-1"]',
-                        content: 'Usa los filtos para buscar en la tabla más fácilmente.',
-                        params: {
-                           placement: 'top'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-2"]',
-                        content: 'Aquí verás los filtros aplicados en la tabla.',
-                        params: {
-                           placement: 'bottom'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-3"]',
-                        content: 'Puedes acceder a la ficha del socio pulsando sobre el identificador de socio.',
-                        params: {
-                           placement: 'right'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-4"]',
-                        content: 'Desde el nombre del socio o desde el grado actual podrás acceder a ver el histórico de grados. La fecha que ves hacer referencia a cuándo se otorgó ese grado y si no hay fecha es que el socio tiene pendiente conseguirlo.',
-                        params: {
-                           placement: 'right'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-5"]',
-                        content: 'Imprime los datos de la tabla usando este botón.',
-                        params: {
-                           placement: 'left'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-6"]',
-                        content: 'Puedes revisar el histórico de cambios relizados pulsando en este botón y recuperar datos que hayas borrado o modificado.',
-                        params: {
-                           placement: 'top-end'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-7"]',
-                        content: 'Para actualizar los grados de los socios deberás seguir los pasos pulsando en este botón.',
-                        params: {
-                           placement: 'bottom-end'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-cinturones-8"]',
-                        content: 'Si necesitas volver a descargar el fichero para generar los diplomas podrás hacerlo desde este botón.',
-                        params: {
-                           placement: 'bottom-start'
-                        }
-                    },
-                ], /* Wizard main cinturones steps */
+                wcdSteps: null, /* Wizard cinturones update steps */
+                wcuSteps: null, /* Wizard cinturones update steps */
+                wmcSteps: null, /* Wizard cinturones update steps */
                 wizardOnModalOpen: false, /* Flag to detect if the modal of the history is opened to show its wizard */
             }
         },
@@ -834,6 +721,10 @@
         created() {
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
+            /* Initialize the wizard steps data */
+            this.wcdSteps = WzdSteps.wcdSteps;
+            this.wcuSteps = WzdSteps.wcuSteps;
+            this.wmcSteps = WzdSteps.wmcSteps;
         },
         destroyed() {
             /* Destroy de listeners */
