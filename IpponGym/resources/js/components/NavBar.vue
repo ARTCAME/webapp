@@ -25,11 +25,11 @@
                         </router-link>
                     </b-nav-text>
                 </b-navbar-nav>
-                <b-navbar-toggle target="nav-collapse">
-                    <template #default="{ expanded }">
-                        <fa-icon
-                            icon="bars"
-                            :class="expanded ? 'navbar-toggler-rotate' : ''"></fa-icon>
+                <b-navbar-toggle
+                    target="nav-collapse"
+                    @click="navExpand('ig-main-navbar')">
+                    <template #default>
+                        <fa-icon icon="bars"></fa-icon>
                     </template>
                 </b-navbar-toggle>
                 <b-collapse id="nav-collapse" is-nav>
@@ -90,16 +90,14 @@
             <b-row align-h="between" align-v="start" class="nav-container" no-gutters>
                 <b-col class="col-12 col-sm-8" style="box-sizing: border-box; border: 1px solid transparent;">
                     <b-navbar-toggle
+                        id="tools-toggler"
                         target="nav-tools-collapse"
-                        v-if="$route.name == 'payments.index' || $route.name == 'belts.index'">
+                        v-if="$route.name == 'payments.index' || $route.name == 'belts.index'"
+                        @click="navExpand('ig-tools-navbar')">>
                         <template
-                            #default="{ expanded }">
+                            #default>
                             <fa-icon
-                                icon="caret-up"
-                                v-if="expanded"></fa-icon>
-                            <fa-icon
-                                icon="caret-down"
-                                v-else></fa-icon>
+                                icon="caret-down"></fa-icon>
                         </template>
                     </b-navbar-toggle>
                     <b-collapse id="nav-tools-collapse" is-nav>
@@ -270,6 +268,15 @@
                     });
             },
             /**
+             * Uix improves for the expanded navs
+             *
+             * @param {String} nav: identifies the nav to manage
+             */
+            navExpand(nav) {
+                const elem = document.getElementById(nav);
+                elem.classList.toggle("nav-expanded")
+            },
+            /**
              * Called when a scroll is produced, if a scrolltop occurs show a shadow to the navbar
              */
             scroll() {
@@ -310,7 +317,7 @@
         border-radius: .25rem;
         box-sizing: border-box;
         height: 40px;
-        margin: 0;
+        margin: 0 1px;
         padding: 0;
         position: relative;
         text-align: center;
@@ -363,6 +370,9 @@
         transform: translate(50%, 20px);
         user-select: none;
         visibility: hidden;
+    }
+    .nav-expanded {
+        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important
     }
     .ig-tools-nav:hover .nav-desc-tools {
         transform: translate(50%, 3px);
@@ -458,6 +468,9 @@
         padding-right: 0!important;
     }
     @media screen and (max-width: 575.98px) {
+        .ig-tools-item svg {
+            margin: auto 0;
+        }
         .in-home .navbar-nav {
             display: flex 1 1;
             flex-direction: column;
