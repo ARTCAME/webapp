@@ -33,17 +33,22 @@ a.unformated-link:hover {
 body {
     margin-bottom: 50px;
     padding-top: 135px; /* Gap of the navbars */
+    transition: padding-top .3s;
+}
+body.nav-wzd {
+    padding-top: 0px;
 }
 /* Class to avoids jumps when no scroll bar exists and modal shown */
 body.modal-open.neutral-scroll {
     padding-right: 0!important;
+    overflow-x: hidden;
 }
 html {
     height: 100%;
     /* Resolving jumps on appear scrollbar */
     /* width: 100%; */
     width: 100vw;
-    overflow-x: hidden;
+    /* overflow-x: hidden; Provoques that appear scrollbar on modalopen, added to body */
 }
 
 /* BACKGROUND-COLOR BASICS */
