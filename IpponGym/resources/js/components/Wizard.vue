@@ -1,12 +1,16 @@
 <template>
     <span>
+        <div
+            id="wzd-full-disable-face"
+            v-if="wizardLaunched">
+                <b-button-close
+                    @click="stop()"></b-button-close>
+        </div>
         <transition name="wizard-blur-in">
             <!-- Overlay showed when the wizard has been started -->
             <div
                 id="wzd-full-face"
                 v-if="wizardLaunched">
-                <b-button-close
-                    @click="stop()"></b-button-close>
             </div>
         </transition>
         <!-- Button launcher always visible on the parent -->
@@ -26,6 +30,7 @@
         </div>
         <!-- Invoke vue tour -->
         <v-tour
+            ref="tour"
             :callbacks="wzdCallbacks"
             :name="name"
             :options="wzdOptions"
@@ -54,24 +59,31 @@
                         :stop="tour.stop"
                         :is-first="tour.isFirst"
                         :is-last="tour.isLast"
-                        :labels="tour.labels">
+                        :labels="tour.labels"
+                        :useKeyboardNavigation="true">
                         <template>
                             <div slot="actions">
                                 <!-- Navigation on the current step tooltip -->
                                 <div class="wrp-wzd-nav">
                                     <button
                                         class="wzd-nav"
-                                        @click.prevent="tour.isFirst ? (tour.skip(), stop()) : (tour.previousStep(), previousStep(tour))">
-                                        <fa-icon icon="chevron-left"></fa-icon>
+                                        v-if="!(tour.isFirst && tour.isLast)"
+                                        :title="tour.isFirst ? 'Salir' : 'Anterior'"
+                                        @click.prevent="previousStep()">
+                                        <fa-icon
+                                            :icon="tour.isFirst ? 'door-open' : 'chevron-left'"></fa-icon>
                                     </button>
                                     <button
                                         class="wzd-nav"
-                                        @click.prevent="stop(tour)">
+                                        title="Cerrar"
+                                        v-if="!(tour.isFirst && tour.isLast)"
+                                        @click.prevent="stop()">
                                         <fa-icon icon="times"></fa-icon>
                                     </button>
                                     <button
                                         class="wzd-nav"
-                                        @click.prevent="tour.isLast ? (tour.finish(), stop()) : (tour.nextStep(), nextStep(tour))">
+                                        :title="tour.isLast ? 'Finalizar' : 'Siguiente'"
+                                        @click.prevent="nextStep()">
                                         <fa-icon
                                             :icon="tour.isLast ? 'check' : 'chevron-right'"></fa-icon>
                                     </button>
@@ -95,38 +107,83 @@
                     onStart: this.start,
                 }, /* Callbacks to the vue-tour */
                 wzdOptions: {
-                    useKeyboardNavigation: false,
+                    useKeyboardNavigation: false, /* This will be managed locally */
                 }, /* Options to the vue-tour */
             }
         },
-        mounted() {
-            /* Assigning the prop to a local variable */
-            this.$nextTick().then(() => this.wizardName = this.name );
+        beforDestroy() {
+            window.removeEventListener('keyup', this.keyNav);
         },
-        props: [
-            'name', /* String with the name of the wizard started */
-            'steps', /* Array of the steps for vue-tour */
-        ],
+        computed: {
+            tour() {
+                return this.$refs.tour;
+            }
+        },
         methods: {
+            /**
+             * Manage the key events to apropiate use of navigation
+             */
+            keyNav(ev) {
+                if (this.wizardLaunched) {
+                    /* Right */
+                    if (ev.keyCode == 39) {
+                        this.nextStep();
+                    }
+                    /* Left */
+                    if (ev.keyCode == 37) {
+                        this.previousStep();
+                    }
+                    /* Esc */
+                    if (ev.keyCode == 27) {
+                        this.stop();
+                    }
+                }
+            },
+            /**
+             * Function to manage specifically the behaviour on navbars wizardeds
+             */
+            manageNav() {
+                /* If the step is on a navbar mantain the nav fixed and move the padding to top to correct the position of the v-step element */
+                if (this.currentEl.classList.contains('navbar')) {
+                    this.currentEl.style.position = 'fixed';
+                    !document.body.classList.contains('nav-wzd') && document.body.classList.add('nav-wzd');
+                } else {
+                    document.body.classList.contains('nav-wzd') && document.body.classList.remove('nav-wzd');
+                }
+            },
             /**
              * Function to acquire the next step element for the vue-tour and to manage the custom class to the next/previous wizarded element that will be change its z-index to show it above the full overlay
              *
              * @param Object tour: includes the vue-tour step variables
              */
             nextStep(tour) {
-                this.currentEl.classList.remove('wizard-focused');
-                this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (tour.currentStep + 1) + '"]');
-                this.currentEl.classList.add('wizard-focused');
+                if (this.tour.isLast) {
+                    this.tour.finish();
+                    this.stop();
+                } else {
+                    this.tour.nextStep();
+                    this.currentEl.classList.remove('wizard-focused');
+                    this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (this.tour.currentStep) + '"]');
+                    this.currentEl.classList.add('wizard-focused');
+                    this.manageNav();
+                }
             },
             /**
              * Function to acquire the previous step element for the vue-tour and to manage the custom class to the next/previous wizarded element that will be change its z-index to show it above the full overlay
              *
              * @param Object tour: includes the vue-tour step variables
              */
-            previousStep(tour) {
-                this.currentEl.classList.remove('wizard-focused');
-                this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (tour.currentStep - 1) + '"]');
-                this.currentEl.classList.add('wizard-focused');
+            previousStep() {
+                if (this.tour.isFirst) {
+                    this.tour.skip();
+                    this.stop();
+                } else {
+                    this.tour.previousStep();
+                    this.currentEl.classList.remove('wizard-focused');
+                    this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (this.tour.currentStep) + '"]');
+                    this.currentEl.classList.add('wizard-focused');
+                    this.manageNav();
+                }
             },
             /**
              * Function that launchs the wizard
@@ -135,6 +192,7 @@
                 this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + 0 + '"]');
                 this.currentEl.classList.add('wizard-focused');
                 this.wizardLaunched = true;
+                this.manageNav();
             },
             /**
              * Stops the wizard
@@ -143,9 +201,19 @@
                 /* Delaying the time of the rest of the transition to avoid unesthetic z-index change */
                 setTimeout(() => this.currentEl.classList.remove('wizard-focused'), 1000);
                 this.wizardLaunched = false;
+                document.body.classList.contains('nav-wzd') && document.body.classList.remove('nav-wzd');
                 this.$tours[this.wizardName].stop();
             },
         },
+        mounted() {
+            /* Assigning the prop to a local variable */
+            this.$nextTick().then(() => this.wizardName = this.name );
+            window.addEventListener('keyup', this.keyNav);
+        },
+        props: [
+            'name', /* String with the name of the wizard started */
+            'steps', /* Array of the steps for vue-tour */
+        ],
     }
 </script>
 <style>
@@ -160,7 +228,7 @@
     /* Class added with JS to the wizarded element */
     .wizard-focused {
         position: relative;
-        z-index: 100;
+        z-index: 1001!important;
     }
 </style>
 <style scoped>
@@ -170,6 +238,7 @@
         color: rgba(90, 90, 90, 1);
         filter: drop-shadow(0 0 3px rgba(0,0,0,.5));
         padding: 0;
+        max-width: calc(100vw - 60%);
     }
     .wrp-wzd-nav {
         display: flex;
@@ -196,9 +265,10 @@
         transform: translate(-10px,-10px);
         transition: all .3s, background-position 1s;
         width: 50px;
-        z-index: 999;
+        z-index: 1000;
     }
     .wzd-launcher:hover:not(.launched) {
+        animation: semiRotate .3s forwards;
         background-position: 100%;
         opacity: 1;
         transform: translate(-10px,-10px) scale(1.02);
@@ -248,7 +318,7 @@
         left: 0;
         position: fixed;
         width: 100%;
-        z-index: 99;
+        z-index: 1001;
     }
     #wrp-wzdnav-icon {
         color: rgba(250, 250, 250, 1);
@@ -257,22 +327,52 @@
         line-height: 40px;
         width: 40px;
     }
-    #wzd-full-face {
-        /* background: linear-gradient(to right, rgba(250, 250, 250, .4) 0, rgba(250, 250, 250, .7) 50%, rgba(250, 250, 250, .95) 100%); */
-        background: linear-gradient(180deg, rgba(250, 250, 250, .5) 0%, rgba(250, 250, 250, 1) 70%);
+    #wzd-full-disable-face {
         display: block;
         height: 100%;
         left: 0;
         position: fixed;
         top: 0;
         width: 100%;
-        z-index: 99;
+        z-index: 1002;
     }
-    #wzd-full-face button.close {
+    #wzd-full-face {
+        /* background: linear-gradient(to right, rgba(250, 250, 250, .4) 0, rgba(250, 250, 250, .7) 50%, rgba(250, 250, 250, .95) 100%); */
+        background: linear-gradient(180deg, rgba(250, 250, 250, .7) 0%, rgba(250, 250, 250, 1) 70%);
+        display: block;
+        height: 100%;
+        left: 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+    }
+    #wzd-full-disable-face button.close {
         font-size: 45px;
+        padding: 1rem 2rem;
     }
     #wzd-progress-bar {
         background: linear-gradient(to right, rgba(0, 50, 131, .95) 0, rgba(0, 131, 81, .95) 50%);
         border-radius: 0!important;
+    }
+    @keyframes semiRotate {
+        0% {
+            transform: translate(-10px,-10px) scale(1.02) rotate(0deg);
+        }
+        20% {
+            transform: translate(-10px,-10px) scale(1.02) rotate(-10deg);
+        }
+        40% {
+            transform: translate(-10px,-10px) scale(1.02) rotate(10deg);
+        }
+        60% {
+            transform: translate(-10px,-10px) scale(1.02) rotate(-8deg);
+        }
+        80% {
+            transform: translate(-10px,-10px) scale(1.02) rotate(5deg);
+        }
+        100% {
+            transform: translate(-10px,-10px) scale(1.02) rotate(0deg);
+        }
     }
 </style>

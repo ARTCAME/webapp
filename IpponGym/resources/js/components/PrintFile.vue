@@ -1,5 +1,12 @@
 <template>
     <div>
+        <!-- Invoke the wizard -->
+        <transition appear name="fade">
+            <wizard
+                name="wzd-modal-documents"
+                v-show="customer != null"
+                :steps=wmodaldocuments></wizard>
+        </transition>
         <transition mode="out-in" name="fade">
             <!-- Shown if no customer is selected -->
             <div
@@ -15,6 +22,7 @@
             </div>
             <!-- Shown when a customer has been selected -->
             <div
+                data-v-step="wzd-modal-documents-0"
                 key="pf-selected-data"
                 v-else>
                 <b-button
@@ -259,6 +267,7 @@
 </template>
 <script>
     import { mapGetters } from 'vuex';
+    import * as WzdSteps from './wzdsteps/modaldocuments';
     export default {
         data() {
             return {
@@ -280,6 +289,7 @@
                     { key: 'dni', label: 'DNI', sortable: true, class: 'text-center' },
                     { key: 'use', label: '', sortable: true, },
                 ], /* Table fields */
+                wmodaldocuments: null, /* Will be fetched with the wizard steps */
             }
         },
         computed: {
@@ -344,6 +354,10 @@
             underage() {
                 return this.getUnderage(this.customer._id);
             },
+        },
+        created() {
+            /* Initialize the wizard steps content */
+            this.wmodaldocuments = WzdSteps.wmodaldocuments;
         },
         methods: {
             /**

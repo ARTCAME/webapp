@@ -9,6 +9,7 @@
                     <b-form-input
                         autocomplete="off"
                         autofocus
+                        data-v-step="wzd-modal-search-0"
                         id="search"
                         name="search"
                         type="search"

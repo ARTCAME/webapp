@@ -1,7 +1,8 @@
 <template>
-    <div>
+    <div class="d-block" data-v-step="wzd-modal-payments-0">
         <b-form-group class="mb-2">
             <IntervalSelector
+                data-v-step="wzd-modal-payments-1"
                 ref="intervalselector"
                 v-model="interval"
                 :confirmed="true"
@@ -57,7 +58,7 @@
                 {{ paymentDataDiff ? 'Se actualizará el pago con los siguientes datos:' : existsPayment == undefined ? 'Se añadirá el pago con los siguientes datos:' : '' }}
             </b-alert>
         </transition>
-        <b-list-group id="np-main-list-group">
+        <b-list-group data-v-step="wzd-modal-payments-2" id="np-main-list-group">
             <b-list-group-item class="py-1">
                 <b-row>
                     <b-col cols="4">
