@@ -145,9 +145,10 @@
     .in-home #nav-search {
         border: 1px solid rgba(118, 131, 0, 1)!important;
     }
-
     .ig-asset-item {
+        border-radius: .25rem;
         height: 100%;
+        margin: 0 1px;
         padding: 0;
         transition: all .15s ease-in-out;
         width: 100%;
