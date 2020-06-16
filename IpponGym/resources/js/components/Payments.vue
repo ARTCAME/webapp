@@ -25,7 +25,7 @@
             <b-collapse
                 id="collapse-information-confirm"
                 :visible="confirming">
-                <h5 class="subtitle subtitle-sub" md="4">
+                <h5 data-v-step="wzd-pagos-confirming-0" class="subtitle subtitle-sub" md="4">
                     Confirmación de estado de pagos domiciliados
                 </h5>
                 <b-row align-h="start" class="mb-2" no-gutters>
@@ -108,10 +108,10 @@
                 <b-alert
                     class="mb-2"
                     show
-                    variant="success">
-                    1 - Selecciona el estado que quieres aplicar: 'Confirmado' o 'Devuelto'.
+                    variant="info">
+                    1 - Busca y selecciona los pagos que quieres cambiar de estado. En este proceso solo podrás seleccionar los que estén 'Pendientes' y tengan forma de pago 'Domiciliación'.
                     <br>
-                    2 - Busca y selecciona los pagos que quieres cambiar de estado. En este proceso solo podrás seleccionar los que estén 'Pendientes' y tengan forma de pago 'Domiciliación'.
+                    2 - Selecciona el estado que quieres aplicar: 'Confirmado' o 'Devuelto'.
                     <br>
                     3 - Para acabar, confirma los cambios.
                     <br>
@@ -122,7 +122,7 @@
                     <br>
                     - Si lo necesitas, puedes editar ciertos datos en la tabla o ir a la ficha del usuario y modificar lo que necesites.
                     <br>
-                    - Los pagos que no sean domiciliados se gestionan desde la herramienta de pagos de la barra superior.
+                    - Los pagos que no sean domiciliados se gestionan desde la herramienta para pagos de la barra de navegación.
                     <br>
                     - Si hubieras seleccionado un pago no compatible se desmarcará automáticamente (los que no sean domiciliados o los que lo sean y no estén pendientes).
                 </b-alert>
@@ -131,7 +131,7 @@
             <b-collapse
                 id="collapse-information-manual"
                 :visible="manualDownload">
-                <h5 class="subtitle subtitle-sub" md="4">
+                <h5 class="subtitle subtitle-sub" data-v-step="wzd-pagos-download-0" md="4">
                     Descarga manual de fichero de remesa para los pagos pendientes
                 </h5>
                 <b-row class="mb-2" no-gutters>
@@ -377,7 +377,7 @@
                         @input="disableEditingRow()"
                         @keyup="fetchChartData()"></b-form-input>
                 </b-col>
-                <b-col fluid="lg">
+                <b-col cols="lg-8">
                     <b-row class="ml-lg-2" no-gutters>
                         <!-- Shown only on the main payments page -->
                         <span
@@ -389,7 +389,8 @@
                             :title="rowsSelected.length == 0 ? 'No hay ninguna fila seleccionado' : 'Mostrar solo las filas seleccionadas'">
                             <!-- It will be disabled when no rows are selected -->
                             <b-button
-                                class="col-12"
+                                id="payments-seleccionadas-btn"
+                                class="col-12 px-1"
                                 size="sm"
                                 variant="outline-dark"
                                 v-b-tooltip.hover.noninteractive
@@ -498,7 +499,7 @@
                         </b-dropdown>
                         <b-col class="col-auto col-sm-auto mt-1">
                             <b-button
-                                class="btn-fa-tiny ml-1"
+                                class="btn-fa-tiny"
                                 size="sm"
                                 title="Restablecer los filtros"
                                 variant="outline-warning"
@@ -508,14 +509,14 @@
                             </b-button>
                             <span
                                 align-h="end"
-                                class="d-inline-block ml-1"
+                                data-v-step="wzd-main-pagos-4"
+                                class="d-inline-block"
                                 tabindex="0"
                                 v-b-tooltip.hover.noninteractive.topleft
                                 :title="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) ? 'No hay datos en la tabla para descargar' : csvDownloadTable ? 'Descargando...' : 'Descargar los datos de la tabla'">
                                 <!-- It will be disabled when there are no rows on the table or if the flag wich controls the download of the file is on -->
                                 <b-button
                                     class="btn-fa-tiny"
-                                    data-v-step="wzd-main-pagos-5"
                                     size="sm"
                                     variant="outline-success"
                                     :disabled="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) || csvDownloadTable"
@@ -742,6 +743,7 @@
                         v-if="isDisabled == false">
                         <!-- Shown only when the flag wich indicates there is a row on edition is false. Only can edit one row at time -->
                         <fa-icon
+                            data-v-step="wzd-main-pagos-1"
                             icon="edit"
                             v-if="!showingDetails"
                             :id="'tooltip_edit_row' + row.index"
@@ -862,7 +864,8 @@
     import { http } from '../utils/http';
     import BarChart from '../charts/BarChart.vue';
     import LineChart from '../charts/LineChart.vue';
-    import { mapActions, mapGetters } from "vuex";
+    import { mapActions, mapGetters } from 'vuex';
+    import * as WzdSteps from './wzdsteps/payments';
     const QS = require('qs'); /* Needed at axios.post function to pass arrays as params to the controller */
     const RESTORE_FIELDS = [ '_id', '_showDetails', 'amount', 'dateconfirmed', 'dategenerated', 'iban', 'interval', 'paymenttype', 'rate', 'status'];
     const SPECIAL_CHARACTERS = { 'Ã': 'A', 'À': 'A', 'Á': 'A', 'Ä': 'A', 'Â': 'A', 'È': 'E', 'É': 'E', 'Ë': 'E', 'Ê': 'E', 'Ì': 'I', 'Í': 'I', 'Ï': 'I', 'Î': 'I', 'Ò': 'O', 'Ó': 'O', 'Ö': 'O', 'Ô': 'O', 'Ù': 'U', 'Ú': 'U', 'Ü': 'U', 'Û': 'U', 'ã': 'a', 'à': 'a', 'á': 'a', 'ä': 'a', 'â': 'a', 'è': 'e', 'é': 'e', 'ë': 'e', 'ê': 'e', 'ì': 'i', 'í': 'i', 'ï': 'i', 'î': 'i', 'ò': 'o', 'ó': 'o', 'ö': 'o', 'ô': 'o', 'ù': 'u', 'ú': 'u', 'ü': 'u', 'û': 'u', 'Ñ': 'N', 'ñ': 'n', 'Ç': 'c', 'ç': 'c' };
@@ -1036,117 +1039,9 @@
                     { text: 'Devuelto', value: 'Devuelto' }
                 ], /* Options for a select element */
                 paymentsSearch: '', /* v-model for the table input search */
-                wmpSteps: [
-                    {
-                        target: '[data-v-step="wzd-main-pagos-0"]',
-                        content: 'En esta tabla verás los datos de los pagos gestionados. Recuerda que los pagos se añaden automáticamente al sistema cada día 1 con el estado "Pendiente" para que posteriomente confirmemos el estado definitivo.',
-                        params: {
-                           placement: 'top-start'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-pagos-1"]',
-                        content: 'Desde este botón podrás editar los datos relevantes del pago: "Tarifa", "Importe", "Forma de pago", "Estado" y "Fecha de pago confirmado". Si necesitas modificar algún otro dato del socio puedes acceder a su ficha directamente..',
-                        params: {
-                           placement: 'left'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-pagos-2"]',
-                        content: 'Desde aquí podrás aplicar filtros a la tabla para ver solamente la información que necesites.',
-                        params: {
-                           placement: 'top'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-pagos-3"]',
-                        content: 'Aquí verás los filtros que tengas activos, por defecto el sistema aplicará el mes y año actuales.',
-                        params: {
-                           placement: 'top-start'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-pagos-4"]',
-                        content: 'Pulsando este botón accederás a ver los gráficos que reflejarán los datos que tengas en la tabla en ese momento.',
-                        params: {
-                           placement: 'left'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-pagos-5"]',
-                        content: 'Desde este botón podrás imprimir los datos que tengas actualmente en la tabla.',
-                        params: {
-                           placement: 'left'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-pagos-6"]',
-                        content: 'Este botón te servirá para iniciar el proceso de confirmación de pagos domiciliados y descarga el fichero de remesa (cuando lo inicies podrás acceder a más información).',
-                        params: {
-                           placement: 'right'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-main-pagos-7"]',
-                        content: 'Este botón te servirá para iniciar el proceso de descarga manual de fichero de remesa (cuando lo inicies podrás acceder a más información).',
-                        params: {
-                           placement: 'left'
-                        }
-                    },
-                ], /* Steps for vue-tour */
-                wpcSteps: [
-                    {
-                        target: '[data-v-step="wzd-pagos-confirming-0"]',
-                        content: `<h4>Confirmación de pagos</h4>La confirmación de pagos es el proceso por el cual establecerás un estado definitivo a los pagos generados mediante domiciliación.<br><br><h5>Contexto</h5>Los pagos son añadidos automáticamente el día 1 de cada mes con el estado "Pendiente"; día en el que también recibirás un correo electrónico con el archivo de remesa para enviar al banco.<br><br><h5>Objetivo</h5>Confirmando los pagos conseguirás establecer el estado definitivo para un pago: "Confirmado" o "Devuelto". De esta manera podremos conocer el estado de los pagos en cada ficha de los socios de IPPONGYM.`,
-                        params: {
-                           placement: 'right-start'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-pagos-confirming-1"]',
-                        content: 'Busca y selecciona los pagos a los que quieres confirmar el estado. Solamente tendrás habilitadas las filas que sea posible confirmar, es decir, aquellas que tengan la forma de pago "Domiciliación" y estén en estado "Pendiente".',
-                        params: {
-                           placement: 'top'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-pagos-confirming-2"]',
-                        content: 'Selecciona el estado que quieres establecer.',
-                        params: {
-                           placement: 'right'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-pagos-confirming-3"]',
-                        content: 'Pulsa este botón para guardar el nuevo estado y habrás finalizado el proceso.',
-                        params: {
-                           placement: 'right'
-                        }
-                    },
-                ], /* Steps for vue-tour */
-                wpdSteps: [
-                    {
-                        target: '[data-v-step="wzd-pagos-download-0"]',
-                        content: `<h4>Descarga fichero de pagos</h4>Mediante este proceso podrás descargar manualmente el fichero de pagos domiciliados con el formato y los datos necesarios para poder enviárselo a la entidad bancaria para que generen las remesas a los socios.<br><br><h5>Contexto</h5>Los pagos son añadidos automáticamente el día 1 de cada mes con el estado "Pendiente"; día en el que también recibirás un correo electrónico con el archivo de remesa para enviar al banco.<br><br><h5>Objetivo</h5>Si por algún motivo el fichero recibido por e-mail el día 1 no está correcto o has hecho algún cambio a los datos de algún socio y necesitas enviar esos cambios a la entidad bancaria, desde este proceso puedes descargar tantas veces como quieras, y de los socios que quieras, el fichero de pagos.`,
-                        params: {
-                           placement: 'left-start'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-pagos-download-1"]',
-                        content: 'Busca y selecciona los pagos sobre los que quieres descargar sus datos. Solamente tendrás habilitadas las filas que sea posible descargar, es decir, aquellas que tengan la forma de pago "Domiciliación" y estén en estado "Pendiente".',
-                        params: {
-                           placement: 'top'
-                        }
-                    },
-                    {
-                        target: '[data-v-step="wzd-pagos-download-2"]',
-                        content: 'Cuando hayas seleccionado los pagos que necesites incluir en el fichero, pulsa este botón para descargarlo y finalizar el proceso.',
-                        params: {
-                           placement: 'left'
-                        }
-                    },
-                ], /* Steps for vue-tour */
+                wmpSteps: null, /* Steps for vue-tour, will be filled with external data */
+                wpcSteps: null, /* Steps for vue-tour, will be filled with external data */
+                wpdSteps: null, /* Steps for vue-tour, will be filled with external data */
             }
         },
         /**
@@ -1256,9 +1151,13 @@
                 return Object.keys(this.onEditItem).length !== 0;
             },
         },
-        created(){
+        created() {
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
+            /* Initialize the imported information for the wizard steps */
+            this.wmpSteps = WzdSteps.wmpSteps;
+            this.wpcSteps = WzdSteps.wpcSteps;
+            this.wpdSteps = WzdSteps.wpdSteps;
         },
         destroyed() {
             /* Destroy de listeners */
@@ -1946,6 +1845,9 @@
     #collapse-charts {
         background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .02) 100%);
         border-radius: .25rem;
+    }
+    #payments-seleccionadas-btn {
+        white-space: nowrap;
     }
     [id^=amount-row] {
         padding: 0!important;
