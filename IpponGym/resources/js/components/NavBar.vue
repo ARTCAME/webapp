@@ -83,9 +83,9 @@
             </span>
         </b-navbar>
         <b-navbar
-            data-v-step="wzd-main-pagos-5"
             id="ig-tools-navbar"
             fixed="top"
+            :data-v-step="$route.name == 'payments.index' ? 'wzd-main-pagos-5' : $route.name == 'belts.index' ? 'wzd-main-cinturones-6' : ''"
             :toggleable="$route.name == 'payments.index' || $route.name == 'belts.index' ? 'sm' : false">
             <b-row align-h="between" align-v="start" class="nav-container" no-gutters>
                 <b-col class="col-12 col-sm-8" style="box-sizing: border-box; border: 1px solid transparent;">
@@ -294,7 +294,7 @@
     }
     .ig-tools-item svg {
         height: 100%;
-        margin: auto 0;
+        margin: auto auto;
         transition: all .15s ease-in-out;
     }
     .ig-tools-item.onpage svg {
@@ -307,6 +307,7 @@
         width: 100%;
     }
     .ig-tools-nav {
+        border-radius: .25rem;
         box-sizing: border-box;
         height: 40px;
         margin: 0;
