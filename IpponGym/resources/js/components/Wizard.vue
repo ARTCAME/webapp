@@ -30,6 +30,7 @@
         </div>
         <!-- Invoke vue tour -->
         <v-tour
+            ref="tour"
             :callbacks="wzdCallbacks"
             :name="name"
             :options="wzdOptions"
@@ -68,7 +69,7 @@
                                         class="wzd-nav"
                                         v-if="!(tour.isFirst && tour.isLast)"
                                         :title="tour.isFirst ? 'Salir' : 'Anterior'"
-                                        @click.prevent="tour.isFirst ? (tour.skip(), stop()) : (tour.previousStep(), previousStep(tour))">
+                                        @click.prevent="previousStep()">
                                         <fa-icon
                                             :icon="tour.isFirst ? 'door-open' : 'chevron-left'"></fa-icon>
                                     </button>
@@ -76,13 +77,13 @@
                                         class="wzd-nav"
                                         title="Cerrar"
                                         v-if="!(tour.isFirst && tour.isLast)"
-                                        @click.prevent="stop(tour)">
+                                        @click.prevent="stop()">
                                         <fa-icon icon="times"></fa-icon>
                                     </button>
                                     <button
                                         class="wzd-nav"
                                         :title="tour.isLast ? 'Finalizar' : 'Siguiente'"
-                                        @click.prevent="tour.isLast ? (tour.finish(), stop()) : (tour.nextStep(), nextStep(tour))">
+                                        @click.prevent="nextStep()">
                                         <fa-icon
                                             :icon="tour.isLast ? 'check' : 'chevron-right'"></fa-icon>
                                     </button>
@@ -106,11 +107,38 @@
                     onStart: this.start,
                 }, /* Callbacks to the vue-tour */
                 wzdOptions: {
-                    useKeyboardNavigation: false,
+                    useKeyboardNavigation: false, /* This will be managed locally */
                 }, /* Options to the vue-tour */
             }
         },
+        beforDestroy() {
+            window.removeEventListener('keyup', this.keyNav);
+        },
+        computed: {
+            tour() {
+                return this.$refs.tour;
+            }
+        },
         methods: {
+            /**
+             * Manage the key events to apropiate use of navigation
+             */
+            keyNav(ev) {
+                if (this.wizardLaunched) {
+                    /* Right */
+                    if (ev.keyCode == 39) {
+                        this.nextStep();
+                    }
+                    /* Left */
+                    if (ev.keyCode == 37) {
+                        this.previousStep();
+                    }
+                    /* Esc */
+                    if (ev.keyCode == 27) {
+                        this.stop();
+                    }
+                }
+            },
             /**
              * Function to manage specifically the behaviour on navbars wizardeds
              */
@@ -129,21 +157,33 @@
              * @param Object tour: includes the vue-tour step variables
              */
             nextStep(tour) {
-                this.currentEl.classList.remove('wizard-focused');
-                this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (tour.currentStep + 1) + '"]');
-                this.currentEl.classList.add('wizard-focused');
-                this.manageNav();
+                if (this.tour.isLast) {
+                    this.tour.finish();
+                    this.stop();
+                } else {
+                    this.tour.nextStep();
+                    this.currentEl.classList.remove('wizard-focused');
+                    this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (this.tour.currentStep) + '"]');
+                    this.currentEl.classList.add('wizard-focused');
+                    this.manageNav();
+                }
             },
             /**
              * Function to acquire the previous step element for the vue-tour and to manage the custom class to the next/previous wizarded element that will be change its z-index to show it above the full overlay
              *
              * @param Object tour: includes the vue-tour step variables
              */
-            previousStep(tour) {
-                this.currentEl.classList.remove('wizard-focused');
-                this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (tour.currentStep - 1) + '"]');
-                this.currentEl.classList.add('wizard-focused');
-                this.manageNav();
+            previousStep() {
+                if (this.tour.isFirst) {
+                    this.tour.skip();
+                    this.stop();
+                } else {
+                    this.tour.previousStep();
+                    this.currentEl.classList.remove('wizard-focused');
+                    this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (this.tour.currentStep) + '"]');
+                    this.currentEl.classList.add('wizard-focused');
+                    this.manageNav();
+                }
             },
             /**
              * Function that launchs the wizard
@@ -168,6 +208,7 @@
         mounted() {
             /* Assigning the prop to a local variable */
             this.$nextTick().then(() => this.wizardName = this.name );
+            window.addEventListener('keyup', this.keyNav);
         },
         props: [
             'name', /* String with the name of the wizard started */
