@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="wrapper">
         <div
             v-if="$route.name == 'home' || $route.name == '404'">
             <transition appear mode="out-in" name="fade">
@@ -73,13 +73,12 @@
     }
 </script>
 <style>
-@font-face {
-    font-family: myriad;
-    src: url('../../fonts/Myriad_Pro_Bold_Condensed_Italic.ttf') format('truetype');
-}
-@import url('../../css/custom_variants.css');
-@import url('../../css/transitions.css');
-@import url('../../css/styles.css');
-/* EN  C:\wamp64\www\IpponZero\public\css\styles.css hay el archivo original que hacía reventar la carga de npm al llamar a /public/**/
-
+    @font-face {
+        font-family: myriad;
+        src: url('../../fonts/Myriad_Pro_Bold_Condensed_Italic.ttf') format('truetype');
+    }
+    @import url('../../css/custom_variants.css');
+    @import url('../../css/transitions.css');
+    @import url('../../css/styles.css');
+    /* EN  C:\wamp64\www\IpponZero\public\css\styles.css hay el archivo original que hacía reventar la carga de npm al llamar a /public/**/
 </style>
