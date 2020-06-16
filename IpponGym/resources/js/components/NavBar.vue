@@ -25,14 +25,16 @@
                         </router-link>
                     </b-nav-text>
                 </b-navbar-nav>
-                <b-navbar-toggle
-                    target="nav-collapse"
-                    @click="navExpand('ig-main-navbar')">
+                <b-navbar-toggle target="nav-collapse">
                     <template #default>
                         <fa-icon icon="bars"></fa-icon>
                     </template>
                 </b-navbar-toggle>
-                <b-collapse id="nav-collapse" is-nav>
+                <b-collapse
+                    id="nav-collapse"
+                    is-nav
+                    @hide="navExpand('ig-main-navbar')"
+                    @show="navExpand('ig-main-navbar')">
                     <b-navbar-nav class="ml-auto">
                         <b-navbar-nav
                             v-if="authenticatedRole == 'user'">
@@ -92,15 +94,18 @@
                     <b-navbar-toggle
                         id="tools-toggler"
                         target="nav-tools-collapse"
-                        v-if="$route.name == 'payments.index' || $route.name == 'belts.index'"
-                        @click="navExpand('ig-tools-navbar')">>
+                        v-if="$route.name == 'payments.index' || $route.name == 'belts.index'">
                         <template
                             #default>
                             <fa-icon
                                 icon="caret-down"></fa-icon>
                         </template>
                     </b-navbar-toggle>
-                    <b-collapse id="nav-tools-collapse" is-nav>
+                    <b-collapse
+                        id="nav-tools-collapse"
+                        is-nav
+                        @hide="navExpand('ig-tools-navbar')"
+                        @show="navExpand('ig-tools-navbar')">
                         <transition appear mode="out-in" name="slide-fade">
                             <span
                                 key="belts-tools"
@@ -118,7 +123,9 @@
                                                     Actualiza los grados
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools text-ig-gradient-2">Actualiza los grados</p>
+                                            <p class="nav-desc-tools text-ig-gradient-2">
+                                                {{ getProcedureState('beltsUpdating') ? 'Finalizar' : 'Actualiza los grados' }}
+                                            </p>
                                         </b-nav-item>
                                     </b-navbar-nav>
                                     <b-navbar-nav
@@ -133,7 +140,9 @@
                                                     Descarga el archivo de diplomas
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools text-ig-gradient-3">Descarga el archivo de diplomas</p>
+                                            <p class="nav-desc-tools text-ig-gradient-3">
+                                                {{ getProcedureState('beltsPrinting') ? 'Finalizar' : 'Descarga el archivo de diplomas' }}
+                                            </p>
                                         </b-nav-item>
                                     </b-navbar-nav>
                                 </b-row>
