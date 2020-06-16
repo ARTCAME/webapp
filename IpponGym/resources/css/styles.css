@@ -41,14 +41,13 @@ body.nav-wzd {
 /* Class to avoids jumps when no scroll bar exists and modal shown */
 body.modal-open.neutral-scroll {
     padding-right: 0!important;
-    overflow-x: hidden;
 }
 html {
     height: 100%;
     /* Resolving jumps on appear scrollbar */
     /* width: 100%; */
     width: 100vw;
-    /* overflow-x: hidden; Provoques that appear scrollbar on modalopen, added to body */
+    overflow-x: hidden; /* Provoques that appear scrollbar on modalopen, added to body */
 }
 
 /* BACKGROUND-COLOR BASICS */
@@ -299,8 +298,18 @@ html {
 .navbar-toggler {
     color: rgba(0, 131, 81, 1)!important;
 }
-.navbar-toggler-rotate {
-    transform: rotate(90deg);
+.navbar-toggler.collapsed,
+#tools-toggler.collapsed {
+    transform: rotate(0deg);
+    transition: .3s ease-in-out;
+}
+.navbar-toggler.not-collapsed {
+    transform: rotate(-90deg);
+    transition: .3s ease-in-out;
+}
+#tools-toggler.not-collapsed {
+    transform: rotate(-180deg);
+    transition: .3s ease-in-out;
 }
 /* Correcting the misalignment */
 .row-busqueda-table {
