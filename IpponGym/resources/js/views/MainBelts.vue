@@ -234,7 +234,7 @@
             </b-row>
             <!-- Row with the filters, history and download data table -->
             <b-row class="row-busqueda-table mb-2" data-v-step="wzd-main-cinturones-1" no-gutters>
-                <b-col class="mb-lg-0 mt-1 px-0" cols="md-4">
+                <b-col class="mt-1 px-0" cols="md-4">
                     <b-form-input
                         id="table-cinturones-search"
                         placeholder="Buscar en la tabla..."
@@ -242,9 +242,9 @@
                         type="search"
                         v-model="beltsSearch"></b-form-input>
                 </b-col>
-                <b-col fluid="lg">
+                <b-col cols="md-8">
                     <b-row align-h="end" no-gutters>
-                        <b-col class="d-flex flex-nowrap justify-content-end mt-1">
+                        <b-col class="col-12 col-sm d-flex flex-nowrap justify-content-end mt-1">
                             <!-- Button to show only the selected items -->
                             <span
                                 class="d-inline-block mr-1"
@@ -332,7 +332,6 @@
                             </span>
                             <!-- Download table data button -->
                             <span
-                                class="mr-1"
                                 tabindex="0"
                                 v-b-tooltip.hover.noninteractive.topleft
                                 :title="($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0) ? 'No hay datos en la tabla para descargar' : downloadCsvTable ? 'Descargando...' : 'Descargar los datos de la tabla'">
