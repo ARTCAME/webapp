@@ -888,7 +888,14 @@
              */
             detailsCollapseAll() {
                 this.beltsTableItems.forEach(belt => {
-                    this.detailsSet(belt, false);
+                    // this.detailsSet(belt, false);
+                    this.$set(belt, '_showDetails', false);
+                    if (this.showingDetailsItems.length > 0) {
+                        const index = this.showingDetailsItems.findIndex(sdi => sdi._id == belt._id);
+                        if (index != -1) {
+                            this.showingDetailsItems.splice(index, 1);
+                        }
+                    }
                 });
             },
             /**
@@ -896,7 +903,14 @@
              */
             detailsExpandAll() {
                 this.beltsTableItems.forEach(belt => {
-                    this.detailsSet(belt, true);
+                    // this.detailsSet(belt, true);
+                    this.$set(belt, '_showDetails', true);
+                    if (this.showingDetailsItems.length > 0) {
+                        const index = this.showingDetailsItems.findIndex(sdi => sdi._id == belt._id);
+                        if (index == -1) {
+                            this.showingDetailsItems = [ ...this.showingDetailsItems, { ...belt } ];
+                        }
+                    }
                 });
             },
              /**
@@ -906,9 +920,10 @@
              */
             detailsSet(row, newValue) {
                 this.$set(row, '_showDetails', newValue);
-                /* Add the row that are showing details to the array with these items */
+                /* Add the row that are showing details to the array wich contains these items */
                 if (this.showingDetailsItems.length > 0) {
                     const index = this.showingDetailsItems.findIndex(sdi => sdi._id == row._id);
+                    console.log(index);
                     if (index != -1) {
                         this.showingDetailsItems.splice(index, 1);
                     } else {
