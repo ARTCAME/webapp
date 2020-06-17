@@ -175,20 +175,28 @@
         white-space: nowrap;
         width: 40px;
     }
-    .ig-assets-nav:hover .nav-desc {
-        transform: translate(50%, -7px);
-        opacity: 1;
-        visibility: visible;
-    }
     .nav-desc {
+        border-radius: .25rem;
+        height: 20px!important;
+        line-height: 9px;
+        margin-top: 10px;
         opacity: 0;
-        padding-top: 5px;
+        /* padding-top: 5px; */
+        padding: 5px;
         position: absolute;
         right: 50%;
         transition: all .3s ease-in-out;
         transform: translate(50%, 10px);
         user-select: none;
         visibility: hidden;
+    }
+    .scrolling .nav-desc {
+        background: rgba(255,255,255.1);
+    }
+    .ig-assets-nav:hover .nav-desc {
+        transform: translate(50%, -7px);
+        opacity: 1;
+        visibility: visible;
     }
     .nav-item a {
         letter-spacing: -.04em;
