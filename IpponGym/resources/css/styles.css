@@ -38,16 +38,19 @@ body {
 body.nav-wzd {
     padding-top: 0px;
 }
+body.modal-open {
+    padding-right: 0!important;
+}
 /* Class to avoids jumps when no scroll bar exists and modal shown */
 body.modal-open.neutral-scroll {
     padding-right: 0!important;
 }
 html {
     height: 100%;
+    overflow-x: hidden; /* Provoques that appear scrollbar on modalopen, added to body */
     /* Resolving jumps on appear scrollbar */
     /* width: 100%; */
     width: 100vw;
-    overflow-x: hidden; /* Provoques that appear scrollbar on modalopen, added to body */
 }
 
 /* BACKGROUND-COLOR BASICS */
