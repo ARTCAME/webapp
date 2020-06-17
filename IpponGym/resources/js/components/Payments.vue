@@ -1257,6 +1257,8 @@
                             /* Trigger a modification on the localStorage to propagate the changes on other windows */
                             localStorage.setItem('customer_updated', item._id);
                             localStorage.removeItem('customer_updated');
+                            /* Delete the selected row from the array of selected elements */
+                            this.rowSelect(item, false);
                         });
                         /* Reset the used vars */
                         this.newStateSelected = false;
@@ -1691,6 +1693,7 @@
              * @param {Boolean} ev: the state of the checkbox
              */
             rowSelect(row, newVal) {
+                console.log(row);
                 let index = this.rowsSelected.findIndex(el => el._id == row._id && el.interval == row.interval);
                 if (newVal && index == -1) {
                     this.rowsSelected.push(row);
