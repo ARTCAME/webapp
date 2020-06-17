@@ -119,11 +119,11 @@
                                             @click="setProcedureState({ procedure: 'beltsUpdating' })">
                                             <b-row no-gutters>
                                                 <fa-icon icon="graduation-cap"></fa-icon>
-                                                <span class="nav-text text-ig-gradient-2">
+                                                <span class="nav-text">
                                                     Actualiza los grados
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools text-ig-gradient-2">
+                                            <p class="nav-desc-tools">
                                                 {{ getProcedureState('beltsUpdating') ? 'Finalizar' : 'Actualiza los grados' }}
                                             </p>
                                         </b-nav-item>
@@ -136,11 +136,11 @@
                                             @click="setProcedureState({ procedure: 'beltsPrinting' })">
                                             <b-row no-gutters>
                                                 <fa-icon icon="id-card-alt"></fa-icon>
-                                                <span class="nav-text text-ig-gradient-3">
+                                                <span class="nav-text">
                                                     Descarga el archivo de diplomas
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools text-ig-gradient-3">
+                                            <p class="nav-desc-tools">
                                                 {{ getProcedureState('beltsPrinting') ? 'Finalizar' : 'Descarga el archivo de diplomas' }}
                                             </p>
                                         </b-nav-item>
@@ -159,11 +159,11 @@
                                             @click="setProcedureState({ procedure: 'paymentsConfirming' })">
                                             <b-row no-gutters>
                                                 <fa-icon icon="landmark"></fa-icon>
-                                                <span class="nav-text text-ig-gradient-1">
+                                                <span class="nav-text">
                                                     Confirma pagos
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools text-ig-gradient-1">
+                                            <p class="nav-desc-tools">
                                                 {{ getProcedureState('paymentsConfirming') ? 'Finalizar' : 'Confirma los pagos' }}
                                             </p>
                                         </b-nav-item>
@@ -176,11 +176,11 @@
                                             @click="setProcedureState({ procedure: 'paymentsPrinting' })">
                                             <b-row no-gutters class="px-1">
                                                 <fa-icon icon="file-invoice"></fa-icon>
-                                                <span class="nav-text text-ig-gradient-2">
+                                                <span class="nav-text">
                                                     Descarga archivos de remesa
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools text-ig-gradient-2">
+                                            <p class="nav-desc-tools">
                                                 {{ getProcedureState('paymentsPrinting') ? 'Finalizar' : 'Descarga archivos de remesa' }}
                                             </p>
                                         </b-nav-item>
@@ -193,11 +193,11 @@
                                             @click="setProcedureState({ procedure: 'paymentsCharts' })">
                                             <b-row no-gutters>
                                                 <fa-icon icon="chart-bar"></fa-icon>
-                                                <span class="nav-text text-ig-gradient-3">
+                                                <span class="nav-text">
                                                     {{ getProcedureState('paymentsCharts') ? 'Oculta gráficos' : 'Mostrar gráficos' }}
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools text-ig-gradient-3">
+                                            <p class="nav-desc-tools">
                                                 {{ getProcedureState('paymentsCharts') ? 'Oculta gráficos' : 'Ver gráficos' }}
                                             </p>
                                         </b-nav-item>
@@ -308,6 +308,9 @@
         transition: all .15s ease-in-out;
         width: 100%;
     }
+    .ig-tools-item * {
+        color: rgba(0, 131, 81, 1);
+    }
     .ig-tools-item svg {
         height: 100%;
         margin: auto auto;
@@ -371,8 +374,12 @@
         width: 88%;
     }
     .nav-desc-tools {
+        border-radius: .25rem;
+        height: 20px!important;
         opacity: 0;
-        padding-top: 5px;
+        line-height: 9px;
+        margin-top: 18px;
+        padding: 5px;
         position: absolute;
         right: 50%;
         transition: all .3s ease-in-out;
@@ -380,16 +387,20 @@
         user-select: none;
         visibility: hidden;
     }
+    .scrolling .nav-desc-tools {
+        background: rgba(255,255,255.1);
+    }
     .nav-expanded {
         box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important
     }
+    .nav-desc-tools {
+        display: none;
+    }
     .ig-tools-nav:hover .nav-desc-tools {
+        text-shadow: 1px 0 10px rgba(255, 255, 255, 1);
         transform: translate(50%, 3px);
         opacity: 1;
         visibility: visible;
-    }
-    .nav-desc-tools {
-        display: none;
     }
     .nav-item a {
         letter-spacing: -.04em;
