@@ -481,6 +481,9 @@
     .modal-open #ig-main-navbar button {
         margin-right: unset!important; /* Prevent jummp on modal open */
     }
+    .modal-open #ig-main-navbar {
+        padding-right: 17px!important;
+    }
     .modal-open.neutral-scroll #ig-main-navbar {
         padding-right: 1rem!important;
     }
