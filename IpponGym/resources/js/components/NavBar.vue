@@ -68,6 +68,38 @@
                                 </router-link>
                             </b-nav-item>
                         </b-navbar-nav>
+                        <b-navbar-nav
+                            v-if="authenticatedRole == 'tester'">
+                            <b-nav-item
+                                active-class="active"
+                                class="p-2"
+                                exact
+                                v-for="(route, key) in routes.tester"
+                                :key="route.path">
+                                <router-link
+                                    :id=route.name
+                                    :key="key"
+                                    :to="{ name : route.path }">
+                                    {{ route.name }}
+                                </router-link>
+                            </b-nav-item>
+                        </b-navbar-nav>
+                        <b-navbar-nav
+                            v-if="authenticatedRole == 'root'">
+                            <b-nav-item
+                                active-class="active"
+                                class="p-2"
+                                exact
+                                v-for="(route, key) in routes.root"
+                                :key="route.path">
+                                <router-link
+                                    :id=route.name
+                                    :key="key"
+                                    :to="{ name : route.path }">
+                                    {{ route.name }}
+                                </router-link>
+                            </b-nav-item>
+                        </b-navbar-nav>
                         <b-navbar-nav>
                             <b-nav-item
                                 class="p-2 pl-md-3"
@@ -220,20 +252,13 @@
     export default {
         data() {
             return {
-                routes: {
-                    admin: [
-                        { name: 'ALTA', path: 'customers.new' },
-                        { name: 'CINTURONES', path: 'belts.index' },
-                        // { name: 'BUSCAR', path: 'customers.index' },
-                        { name: 'PAGOS', path: 'payments.index' },
-                        { name: 'REGISTRO DE USUARIO', path: 'register' },
-                    ],
-                    user: [
-                        { name: 'ALTA', path: 'customers.new' },
-                        { name: 'CINTURONES', path: 'belts.index' },
-                        { name: 'PAGOS', path: 'payments.index' },
-                    ],
-                }
+                alta: { name: 'ALTA', path: 'customers.new' },
+                cinturones: { name: 'CINTURONES', path: 'belts.index' },
+                pagos: { name: 'PAGOS', path: 'payments.index' },
+                routes: {},
+                tests: { name: 'TESTS', path: 'tests.index' },
+                testsRoot: { name: 'TESTS', path: 'testsRoot' },
+                usuario: { name: 'REGISTRO DE USUARIO', path: 'register' },
             }
         },
         computed: {
@@ -249,6 +274,11 @@
             },
         },
         created() {
+            /* Assign the routes */
+            this.routes.admin = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }];
+            this.routes.user = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }];
+            this.routes.tester = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }, { ...this.tests }];
+            this.routes.root = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }, { ...this.testsRoot }, { ...this.usuario }];
             /* Listen to the scroll event to visual effects */
             window.addEventListener('scroll', this.scroll);
         },
