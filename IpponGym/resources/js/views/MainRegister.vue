@@ -143,7 +143,9 @@
                 role: '', /* V-model */
                 roles: [
                     { value: 'user', text: 'Usuario' },
-                    { value: 'admin', text: 'Administrador' }
+                    { value: 'admin', text: 'Administrador' },
+                    { value: 'root', text: 'Root' },
+                    { value: 'tester', text: 'Tester' }
                 ], /* Select element options */
                 typingTimer: null, /* Timer for the settimeout */
                 username: '', /* V-model */
