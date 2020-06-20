@@ -93,6 +93,32 @@
                         {{ route.name }}
                     </b-button>
                 </span>
+                <!-- Visible for the role root -->
+                <span
+                    class="my-4"
+                    v-if="authenticatedRole == 'root'">
+                    <b-button
+                        class="home-nav-btn"
+                        variant="ig-outline-green"
+                        v-for="(route, key) in routes.root"
+                        :key="key"
+                        :to="{ name : route.path }">
+                        {{ route.name }}
+                    </b-button>
+                </span>
+                <!-- Visible for the role tester -->
+                <span
+                    class="my-4"
+                    v-if="authenticatedRole == 'tester'">
+                    <b-button
+                        class="home-nav-btn"
+                        variant="ig-outline-green"
+                        v-for="(route, key) in routes.tester"
+                        :key="key"
+                        :to="{ name : route.path }">
+                        {{ route.name }}
+                    </b-button>
+                </span>
                 <b-button
                     class="d-block home-nav-btn mt-5 mx-auto"
                     variant="outline-warning"
@@ -110,28 +136,31 @@
     export default {
         data() {
             return {
+                alta: { name: 'Dar de ALTA un socio', path: 'customers.new' },
+                cinturones: { name: 'Actualizar y ver los CINTURONES', path: 'belts.index' },
                 logging: false, /* Flag to apply visual modifications when logging in/out */
                 numUserFounded: '', /* Number of users coincidents at the db. Used on typing the user name to show error  */
+                pagos: { name: 'Gestionar y consultar los PAGOS existentes', path: 'payments.index' },
                 password: '', /* v-model */
-                routes: {
-                    admin: [
-                        { name: 'Dar de ALTA un socio', path: 'customers.new' },
-                        { name: 'Actualizar y ver los CINTURONES', path: 'belts.index' },
-                        // { name: 'BUSCAR', path: 'customers.index' },
-                        { name: 'Gestionar y consultar los PAGOS existentes', path: 'payments.index' },
-                        { name: 'Acceder al REGISTRO DE USUARIO nuevo', path: 'register' },
-                    ],
-                    user: [
-                        { name: 'Dar de ALTA un socio', path: 'customers.new' },
-                        { name: 'Actualizar y ver los CINTURONES', path: 'belts.index' },
-                        { name: 'Gestionar y consultar los PAGOS existentes', path: 'payments.index' },
-                    ],
-                }, /* The path and visual names for the routes avaibles for the user when its logged in */
+                routes: {},
+                tests: { name: 'Realizar TESTS sobre procesos', path: 'tests.index' },
+                testsRoot: { name: 'Realizar TESTS sobre procesos', path: 'testsRoot' },
                 username: '', /* v-model */
+                usuario: { name: 'Acceder al REGISTRO DE USUARIOS', path: 'register' },
             }
         },
         computed: {
             ...mapGetters('auth', ['authStatus', 'isLoggedIn', 'authenticatedRole', 'authenticatedUser']),
+        },
+        created() {
+            /* Assign the routes */
+            this.routes.admin = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }];
+            this.routes.user = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }];
+            this.routes.tester = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }, { ...this.tests }];
+            this.routes.root = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }, { ...this.testsRoot }, { ...this.usuario }];
+        },
+        mounted() {
+            console.log(this.routes);
         },
         methods: {
             ...mapActions('auth', ['login', 'logout']),
