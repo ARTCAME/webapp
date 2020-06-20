@@ -19,7 +19,7 @@ Route::prefix('auth')->group(function () {
     Route::middleware('jwt')->group(function () {
         Route::post('refresh', 'AuthController@refresh');
         Route::get('user', 'AuthController@user');
-        Route::post('me', 'AuthController@me');
+        Route::get('me', 'AuthController@me');
         Route::post('logout', 'AuthController@logout');
     });
 });
@@ -44,6 +44,8 @@ Route::namespace('Api')->group(function() {
         /* Users */
         Route::post('register', 'UsersController@register');
         Route::post('usersearch', 'UsersController@search');
-
+        Route::get('getAllTests', 'UsersController@getAllTests');
+        Route::get('getTests', 'UsersController@getTests');
+        Route::post('saveTests', 'UsersController@saveTests');
     });
 });
