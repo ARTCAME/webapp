@@ -201,7 +201,7 @@
                     .catch(error => {
                         console.error(error)
                     });
-s            },
+            },
         }
     }
 </script>
