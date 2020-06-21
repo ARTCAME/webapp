@@ -17,6 +17,9 @@
             <transition appear mode="out-in" name="fade">
                 <router-view></router-view>
             </transition>
+            <transition appear mode="out-in" name="fade">
+                <Doc></Doc>
+            </transition>
             <!-- <loading v-if="$root.isLoading == true"></loading> -->
         </div>
     </div>
