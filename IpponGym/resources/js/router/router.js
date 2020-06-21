@@ -121,6 +121,7 @@ const router = new Router ({
 })
 import { http } from '../utils/http';
 router.beforeEach((to, from, next) => {
+/* Showing the current user with tests purposes */
     http.get('/api/auth/me')
         .then((response) => {
             console.log(response.data)
