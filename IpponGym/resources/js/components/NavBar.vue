@@ -535,9 +535,9 @@
             right: 8%;
             top: 0;
         }
-        .modal-open #col-assets {
-            /* padding-right: 14px!important; Prevent jumps on modal open */
-        }
+        /* .modal-open #col-assets {
+            padding-right: 14px!important; Prevent jumps on modal open
+        } */
     }
     @media screen and (max-width: 880px) and (min-width: 576px) {
         .ig-tools-nav.onpage {
