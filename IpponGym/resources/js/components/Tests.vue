@@ -146,8 +146,8 @@
                     errorFile: null, /* Contains a file */
                     testResult: null, /* Stores the option selected */
                     testText: null, /* Is the text fetched by the user */
-                    testDate: this.$moment().format('YYYY-MM-DD HH:mm:ss'),
-                    testUser: null,
+                    testDate: this.$moment().format('YYYY-MM-DD HH:mm:ss'), /* Is the date of the save */
+                    testUser: null, /* Stores the user who saves the tests */
                 }
             }
         },
