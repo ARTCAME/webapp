@@ -64,6 +64,9 @@ Vue.use(html2print);
 /* Check if a value is alphanumeric */
 import isAlphaNum from './plugins/IsAlphaNum';
 Vue.use(isAlphaNum);
+/* Check if a value is alphabetical + dash */
+import isAlphaDash from './plugins/IsAlphaDash';
+Vue.use(isAlphaDash);
 /* Check if a value is numeric */
 import isNumber from './plugins/IsNumber';
 Vue.use(isNumber);
