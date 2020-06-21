@@ -187,7 +187,6 @@
                     ...test.test,
                     test.result,
                 ];
-                console.log(newTest);
                 http.post('/api/saveTests', { username: this.authenticatedUser, test: newTest })
                     .then((response) => {
                         this.loadTests();
