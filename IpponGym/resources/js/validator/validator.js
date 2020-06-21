@@ -10,6 +10,7 @@ const dictionary = {
         },
         messages: {
             alpha: () => 'Este campo solo puede contener letras',
+            alpha_dash: () => 'Este campo solo puede contener letras',
             alpha_spaces: () => 'Este campo solo puede contener letras',
             between: () => 'El importe no es correcto',
             click: () => 'Selecciona una opción',
@@ -39,6 +40,12 @@ const dictionary = {
 }
 Validator.localize(dictionary);
 
+Validator.extend('alpha_dash', {
+    validate(value) {
+        const reg = new RegExp(/[A-z-\s]/g)
+        return reg.test(value)
+    }
+})
 Validator.extend('year', {
     validate(value) {
         const year = moment(value, 'YYYY').year();
