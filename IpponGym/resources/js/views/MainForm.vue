@@ -86,8 +86,9 @@
                                         v-validate="'alpha_spaces|required'"
                                         :class="{ 'is-invalid' : errors.has('nombre') }"
                                         :disabled="isDisabled"
-                                        @change="$refs.searchNombre && $refs.searchNombre.preloadTyping($event,'alta',form._id)"
-                                        @keyup="$refs.searchNombre && $refs.searchNombre.preloadTyping($event,'alta',form._id)"></b-form-input>
+                                        @drop.prevent
+                                        @keypress="$isAlphaDash($event)"
+                                        @paste="name = $isAlphaDash($event)"></b-form-input>
                                     <transition mode="out-in" name="liveFeedbacks">
                                         <b-form-invalid-feedback
                                             v-for="error in errors.collect('nombre')"
