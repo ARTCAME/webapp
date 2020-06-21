@@ -83,7 +83,7 @@
                                         type="text"
                                         v-if="form != null"
                                         v-model="name"
-                                        v-validate="'alpha_spaces|required'"
+                                        v-validate="'required|alpha_dash'"
                                         :class="{ 'is-invalid' : errors.has('nombre') }"
                                         :disabled="isDisabled"
                                         @drop.prevent
