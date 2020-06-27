@@ -251,27 +251,32 @@
         background-position: 0;
         background-size: 100%;
         border-radius: 50%;
-        bottom: 0;
+        bottom: 45px;
         box-shadow: 0 0 3px rgba(0,0,0,.5);
-        color: rgba(250,250,250,1);
-        font-size: 30px;
-        height: 50px;
-        left: 30px;
-        line-height: 50px;
+        color: rgba(250, 250, 250, 1);
+        font-size: 20px;
+        height: 40px;
+        left: 1.7%;
+        line-height: 40px;
         opacity: .7;
         overflow: hidden;
         position: fixed;
         text-align: center;
-        transform: translate(-10px,-10px);
+        transform: scale(0.98);
+        transform: translate(-10px, -10px);
         transition: all .3s, background-position 1s;
-        width: 50px;
+        width: 40px;
         z-index: 1000;
     }
+    .wzd-launcher.launched {
+        opacity: .2!important;
+    }
     .wzd-launcher:hover:not(.launched) {
-        animation: semiRotate .3s forwards;
+        /* animation: semiRotate .3s forwards; */
         background-position: 100%;
         opacity: 1;
-        transform: translate(-10px,-10px) scale(1.02);
+        transform: translate(-10px, -10px) scale(1);
+        /* transform: translate(-10px, -10px) scale(1.02); */
     }
     .wzd-nav {
         background-size: 600%;
@@ -321,11 +326,16 @@
         z-index: 1001;
     }
     #wrp-wzdnav-icon {
-        color: rgba(250, 250, 250, 1);
-        font-size: 30px;
-        height: 40px;
-        line-height: 40px;
-        width: 40px;
+        box-sizing: border-box;
+        /* color: rgba(250, 250, 250, 1); */
+        display: block;
+        font-size: 28px;
+        /* height: 40px; */
+        /* line-height: 40px; */
+        width: 100%;
+    }
+    #wrp-wzdnav-icon svg {
+        width: 100%; /* Prevents jumps on grow its parent */
     }
     #wzd-full-disable-face {
         display: block;
@@ -357,22 +367,22 @@
     }
     @keyframes semiRotate {
         0% {
-            transform: translate(-10px,-10px) scale(1.02) rotate(0deg);
+            transform: /* translate(-10px,-10px) */ /* scale(1.02 )*/ rotate(0deg);
         }
         20% {
-            transform: translate(-10px,-10px) scale(1.02) rotate(-10deg);
+            transform: /* translate(-10px,-10px) */ /* scale(1.03 )*/ rotate(-10deg);
         }
         40% {
-            transform: translate(-10px,-10px) scale(1.02) rotate(10deg);
+            transform: /* translate(-10px,-10px) */ /* scale(1.04 )*/ rotate(10deg);
         }
         60% {
-            transform: translate(-10px,-10px) scale(1.02) rotate(-8deg);
+            transform: /* translate(-10px,-10px) */ /* scale(1.03 )*/ rotate(-8deg);
         }
         80% {
-            transform: translate(-10px,-10px) scale(1.02) rotate(5deg);
+            transform: /* translate(-10px,-10px) */ /* scale(1.01 )*/ rotate(5deg);
         }
         100% {
-            transform: translate(-10px,-10px) scale(1.02) rotate(0deg);
+            transform: /* translate(-10px,-10px) */ /* scale(1) */ rotate(0deg);
         }
     }
 </style>
