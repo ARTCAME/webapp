@@ -75,6 +75,9 @@ Vue.use(manageScrollBar);
 /* Generates random gradients for letters */
 import randomGradient from './plugins/RandomGradient';
 Vue.use(randomGradient);
+/* Smooth scroll */
+import scrollTo from './plugins/SmoothScroll';
+Vue.use(scrollTo);
 /* Shows toasts */
 import showToast from './plugins/ShowToast';
 Vue.use(showToast);
@@ -90,7 +93,6 @@ const requireComponent = require.context(
   false,
   /[A-Z]\w+\.(vue|js)$/
 )
-
 requireComponent.keys().forEach(fileName => {
   const componentConfig = requireComponent(fileName);
   const componentName = upperFirst(
@@ -103,6 +105,8 @@ requireComponent.keys().forEach(fileName => {
     componentConfig.default || componentConfig
   );
 });
+import DocImg from './components/userdocassets/DocImg';
+Vue.component('DocImg',  DocImg);
 
 // import '../css/styles.css'; // Las fuentes están en app.css en public
 import App from './views/App'; /* Contain the css main styles */
