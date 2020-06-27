@@ -13,41 +13,128 @@
                     </span>
                 </template>
                 <template>
-                        <!-- class="flex-column" -->
                     <b-navbar
                         id="doc-sidebar-navbar"
                         v-b-scrollspy:doc-ctn>
                         <b-nav pills vertical>
-                            <!-- <router-link to="#doc-sesion" @click.prevent>Inicio de sesión</router-link> -->
-                            <!-- <router-link to="#doc-alertas" @click.prevent>Avisos y alertas</router-link> -->
-                            <b-nav-item href="#doc-sesion" @click.prevent="$scrollTo('#doc-sesion')">Inicio de sesión y página de bienvenida</b-nav-item>
-                            <b-nav-item href="#doc-alertas" @click.prevent="$scrollTo('#doc-alertas')">Avisos y alertas</b-nav-item>
-                            <b-nav-item href="#doc-tutoriales" @click.prevent="$scrollTo('#doc-tutoriales')">Tutoriales</b-nav-item>
-                            <b-nav-item href="#doc-navbar" @click.prevent="$scrollTo('#doc-navbar')">Barra de navegación</b-nav-item>
-                            <b-nav-item href="#doc-utils-busqueda" @click.prevent="$scrollTo('#doc-utils-busqueda')">Búsqueda de socios y acceso a la ficha de socio</b-nav-item>
-                            <b-nav-item href="#doc-utils-documentos" @click.prevent="$scrollTo('#doc-utils-documentos')">Genera y descarga documentos de socio</b-nav-item>
-                            <b-nav-item href="#doc-utils-pagos" @click.prevent="$scrollTo('#doc-utils-pagos')">Actualiza y genera pagos</b-nav-item>
-                            <b-nav-item href="#doc-alta" @click.prevent="$scrollTo('#doc-alta')">Alta y edición de socios</b-nav-item>
+                            <b-nav-item
+                                href="#doc-sesion"
+                                @click.prevent="$scrollTo('#doc-sesion')">
+                                Inicio de sesión y página de bienvenida
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-alertas"
+                                @click.prevent="$scrollTo('#doc-alertas')">
+                                Avisos y alertas
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-tutoriales"
+                                @click.prevent="$scrollTo('#doc-tutoriales')">
+                                Tutoriales
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-navbar"
+                                @click.prevent="$scrollTo('#doc-navbar')">
+                                Barra de navegación
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-utils-busqueda"
+                                @click.prevent="$scrollTo('#doc-utils-busqueda')">
+                                Búsqueda de socios y acceso a la ficha de socio
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-utils-documentos"
+                                @click.prevent="$scrollTo('#doc-utils-documentos')">
+                                Genera y descarga documentos de socio
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-utils-pagos"
+                                @click.prevent="$scrollTo('#doc-utils-pagos')">
+                                Actualiza y genera pagos
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-alta"
+                                @click.prevent="$scrollTo('#doc-alta')">
+                                Alta y edición de socios
+                            </b-nav-item>
                             <b-nav pills vertical>
-                                <b-nav-item class="ml-3" href="#doc-alta-els" @click.prevent="$scrollTo('#doc-alta-els')">Elementos del formulario</b-nav-item>
-                                <b-nav-item class="ml-3" href="#doc-alta-editar" @click.prevent="$scrollTo('#doc-alta-editar')">Edición de un socio</b-nav-item>
-                                <b-nav-item class="ml-3" href="#doc-alta-grados" @click.prevent="$scrollTo('#doc-alta-grados')">Edición de grados/cinturones desde la ficha del socio</b-nav-item>
-                                <b-nav-item class="ml-3" href="#doc-alta-pagos" @click.prevent="$scrollTo('#doc-alta-pagos')">Edición de pagos desde la ficha del socio</b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-alta-els"
+                                    @click.prevent="$scrollTo('#doc-alta-els')">
+                                    Elementos del formulario
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-alta-editar"
+                                    @click.prevent="$scrollTo('#doc-alta-editar')">
+                                    Edición de un socio
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-alta-grados"
+                                    @click.prevent="$scrollTo('#doc-alta-grados')">
+                                    Edición de grados/cinturones desde la ficha del socio
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-alta-pagos"
+                                    @click.prevent="$scrollTo('#doc-alta-pagos')">
+                                    Edición de pagos desde la ficha del socio
+                                </b-nav-item>
                             </b-nav>
-                            <b-nav-item href="#doc-cinturones" @click.prevent="$scrollTo('#doc-cinturones')">Gestión global de grados</b-nav-item>
+                            <b-nav-item
+                                href="#doc-cinturones"
+                                @click.prevent="$scrollTo('#doc-cinturones')">
+                                Gestión global de grados
+                            </b-nav-item>
                             <b-nav pills vertical>
-                                <b-nav-item class="ml-3" href="#doc-grados-actualizar" @click.prevent="$scrollTo('#doc-grados-actualizar')">Actualización de grados</b-nav-item>
-                                <b-nav-item class="ml-3" href="#doc-grados-descargar" @click.prevent="$scrollTo('#doc-grados-descargar')">Descarga manual de archivo de diplomas</b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-grados-actualizar"
+                                    @click.prevent="$scrollTo('#doc-grados-actualizar')">
+                                    Actualización de grados
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-grados-descargar"
+                                    @click.prevent="$scrollTo('#doc-grados-descargar')">
+                                    Descarga manual de archivo de diplomas
+                                </b-nav-item>
                             </b-nav>
-                            <b-nav-item href="#doc-pagos" @click.prevent="$scrollTo('#doc-pagos')">Gestión global de pagos</b-nav-item>
+                            <b-nav-item
+                                href="#doc-pagos"
+                                @click.prevent="$scrollTo('#doc-pagos')">
+                                Gestión global de pagos
+                            </b-nav-item>
                             <b-nav pills vertical>
-                                <b-nav-item class="ml-3" href="#doc-pagos-editar" @click.prevent="$scrollTo('#doc-pagos-editar')">Edición de pagos desde la página de gestión global de pagos</b-nav-item>
-                                <b-nav-item class="ml-3" href="#doc-pagos-confirmar" @click.prevent="$scrollTo('#doc-pagos-confirmar')">Confirmación de pagos</b-nav-item>
-                                <b-nav-item class="ml-3" href="#doc-pagos-descargar" @click.prevent="$scrollTo('#doc-pagos-descargar')">Descarga manual de archivo de remesa</b-nav-item>
-                                <b-nav-item class="ml-3" href="#doc-pagos-gráficos" @click.prevent="$scrollTo('#doc-pagos-gráficos')">Gráficos</b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-pagos-editar"
+                                    @click.prevent="$scrollTo('#doc-pagos-editar')">
+                                    Edición de pagos desde la página de gestión global de pagos
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-pagos-confirmar"
+                                    @click.prevent="$scrollTo('#doc-pagos-confirmar')">
+                                    Confirmación de pagos
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-pagos-descargar"
+                                    @click.prevent="$scrollTo('#doc-pagos-descargar')">
+                                    Descarga manual de archivo de remesa
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-pagos-gráficos"
+                                    @click.prevent="$scrollTo('#doc-pagos-gráficos')">
+                                    Gráficos
+                                </b-nav-item>
                             </b-nav>
-                            <b-nav-item href="#doc-usuarios" @click.prevent="$scrollTo('#doc-usuarios')">Registro de usuarios</b-nav-item>
-                            <b-nav-item href="#doc-tests" @click.prevent="$scrollTo('#doc-tests')">Tester</b-nav-item>
+                            <b-nav-item
+                                href="#doc-usuarios"
+                                v-if="['admin', 'root'].includes(authenticatedRole)"
+                                @click.prevent="$scrollTo('#doc-usuarios')">
+                                Registro de usuarios
+                            </b-nav-item>
+                            <b-nav-item
+                                href="#doc-tests"
+                                v-if="['tester', 'root'].includes(authenticatedRole)"
+                                @click.prevent="$scrollTo('#doc-tests')">
+                                Tester
+                            </b-nav-item>
                         </b-nav>
                     </b-navbar>
                 </template>
@@ -75,33 +162,26 @@
     import { mapGetters } from 'vuex';
     export default {
         components: docs,
-            // 'DocSesion': DocSesion,
-            // 'DocAlta': DocAlta,
-            // 'DocCinturones': DocCinturones,
-            // 'DocPagos': DocPagos,
-            // 'DocNavBar': DocNavBar,
-            // 'DocAlerts': DocAlerts,
-            // 'DocWizard': DocWizard,
-            // 'DocTests': DocTests,
-            // 'DocUsuarios': DocUsuarios,
         data() {
             return {
-                adminDoc: [],
-                commonDoc: ['DocSesion', 'DocAlertas', 'DocWizard', 'DocNavbar', 'DocUtilsBusqueda', 'DocUtilsDocumentos', 'DocUtilsPagos', 'DocAlta', 'DocCinturones', 'DocPagos', 'DocUsuarios', 'DocTests' /* , 'DocNavbar', 'DocAlta', 'DocCinturones', 'DocPagos' */],
-                rootDoc: [],
-                testerDoc: [],
-                userDoc: [],
+                adminDoc: ['DocUsuarios'],
+                commonDoc: ['DocSesion', 'DocAlertas', 'DocWizard', 'DocNavbar', 'DocUtilsBusqueda', 'DocUtilsDocumentos', 'DocUtilsPagos', 'DocAlta', 'DocCinturones', 'DocPagos'],
+                rootDoc: ['DocUsuarios', 'DocTests'],
+                testerDoc: ['DocTests'],
             }
         },
         computed: {
             ...mapGetters('auth', ['authenticatedRole']),
+            /**
+             * Set the content for every role
+             */
             roleDoc() {
                 switch (this.authenticatedRole) {
                     case 'admin':
                         return [...this.commonDoc, ...this.adminDoc];
                         break;
                     case 'user':
-                        return [...this.commonDoc, ...this.userDoc];
+                        return [...this.commonDoc];
                         break;
                     case 'root':
                         return [...this.commonDoc, ...this.rootDoc];
