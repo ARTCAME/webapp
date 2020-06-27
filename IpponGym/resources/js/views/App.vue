@@ -12,20 +12,29 @@
             id="main-container"
             ref="container"
             v-if="$route.name != 'home' && $route.name != '404'">
-            <NavBar v-if="$route.name != 'home' && $route.name != '404'"></NavBar>
+            <NavBar
+                v-if="$route.name != 'home' && $route.name != '404' && $route.name != 'wiki'"></NavBar>
             <!-- <navigation-bar-component v-if="this.$route.name != 'home' && this.$route.name != '404'"></navigation-bar-component> -->
             <transition appear mode="out-in" name="fade">
                 <router-view></router-view>
+            </transition>
+            <transition appear mode="out-in" name="fade">
+                <DocLauncher
+                    v-if="$route.name != 'home' && $route.name != '404' && $route.name != 'wiki'"></DocLauncher>
             </transition>
             <!-- <loading v-if="$root.isLoading == true"></loading> -->
         </div>
     </div>
 </template>
 <script>
+    import DocLauncher from '../components/userdocassets/Launcher';
     import addBottomAlert from '../mixins/addBottomAlert.vue';
     import axios from 'axios';
     import { mapActions, mapState } from 'vuex';
     export default {
+        components: {
+            'DocLauncher': DocLauncher,
+        },
         created() {
             /* Listen to the storage changes */
             window.addEventListener('storage', this.actionReceived);

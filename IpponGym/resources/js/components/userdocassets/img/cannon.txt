@@ -1,0 +1,2 @@
+- Screenshots h 1400px
+- Img format png

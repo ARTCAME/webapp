@@ -2,6 +2,7 @@ import axios from 'axios';
 import Fof from '../views/404';
 import Home from '../views/Home';
 import MainBelts from '../views/MainBelts';
+import MainDoc from '../views/MainDoc';
 import MainForm from '../views/MainForm';
 import MainPayments from '../views/MainPayments';
 import MainRegister from '../views/MainRegister';
@@ -21,11 +22,6 @@ const router = new Router ({
             name: 'home',
             component: Home,
         },
-        // {
-        //     path: '/login',
-        //     name: 'login',
-        //     component: Home,
-        // },
         {
             path: '/alta',
             name: 'customers.new',
@@ -84,6 +80,14 @@ const router = new Router ({
             }
         },
         {
+            path: '/wiki',
+            name: 'wiki',
+            component: MainDoc,
+            meta: {
+                requiresAuth: true,
+            }
+        },
+        {
             path: '/404',
             name: '404',
             component: Fof,
@@ -117,7 +121,17 @@ const router = new Router ({
                 role: 'root',
             }
         },
-    ]
+    ],
+    scrollBehavior (to, from, savedPosition) {
+        //https://router.vuejs.org/guide/advanced/scroll-behavior.html
+        if (to.hash) {
+                return { selector: to.hash }
+            } else if (savedPosition) {
+                return savedPosition;
+            } else {
+                return { x: 0, y: 0 }
+            }
+    },
 })
 import { http } from '../utils/http';
 router.beforeEach((to, from, next) => {
@@ -127,7 +141,9 @@ router.beforeEach((to, from, next) => {
             console.log(response.data)
         });
     /* Start the route progress bar */
-    NProgress.start();
+    if (!to.hash.includes('#doc-')) {
+        NProgress.start();
+    }
     /* Check if the role and the user are valid */
     if ((to.matched.some(record => record.meta.requiresAuth) && store.getters['auth/isLoggedIn']) || (to.matched.some(record => record.meta.requiresAuth && record.meta.role) && store.getters['auth/isLoggedIn'] && store.getters['auth/authenticatedRole'] == record.meta.role)) {
         next();
