@@ -538,7 +538,9 @@ li.page-item {
     overflow: hidden;
 }
 .wrapper-dismissible-close {
-    position: absolute; top: .2rem; right: .5rem;
+    position: absolute;
+    right: .5rem;
+    top: .2rem;
 }
 #app {
     min-width: 100%;
