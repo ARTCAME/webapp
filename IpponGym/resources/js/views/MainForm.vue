@@ -97,7 +97,6 @@
                                         </b-form-invalid-feedback>
                                     </transition>
                                     <SearchBadge
-                                        class="label-badge"
                                         field="nombre"
                                         id="sb-customer-name"
                                         searchField="name"
@@ -288,7 +287,6 @@
                             </transition>
                             <!-- Shown on customer edit -->
                             <SearchBadge
-                                class="label-badge"
                                 field="dni"
                                 id="sb-customer-dni"
                                 searchField="dni"
@@ -710,6 +708,7 @@
             <b-row class="my-3" no-gutters>
                 <b-col cols="auto">
                     <b-button
+                        v-if="$route.name != 'customers.profile'"
                         @click="validateForm()">
                         <fa-icon class="d-inline-block mr-2" icon="check"></fa-icon>
                         Validar
@@ -810,6 +809,7 @@
                     { key: 'rate', label: 'Tarifa', sortable: true, },
                     { key: 'amount', label: 'Importe', sortable: true, },
                     { key: 'paymenttype', label: 'Forma de pago', sortable: true, },
+                    { key: 'iban', label: 'Iban', sortable: true, },
                     { key: 'interval', label: 'Periodo', sortable: true, },
                     { key: 'status', label: 'Estado', sortable: true, },
                     { key: 'dateconfirmed', label: 'Confirmado', sortable: true, },
@@ -1031,6 +1031,7 @@
              */
             beforeUnload(ev) {
                 let answer = true;
+                console.log(ev);
                 /* From Chrome 60 onward, the beforeunload dialog will only appear if the frame attempting to display it has received a user gesture or user interaction (or if any embedded frame has received such a gesture). */
                 if (!this.submitting && this.$route.name != 'customers.profile') {
                     answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
@@ -1379,11 +1380,6 @@
 <style scoped>
     .card-body {
         overflow: hidden;
-    }
-    .label-badge {
-        position: absolute;
-        right: 1rem;
-        top: 0;
     }
     /* Normalize the height of the inline buttons-radios */
     .radio-selector .btn.btn-sm {
