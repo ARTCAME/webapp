@@ -801,7 +801,7 @@
                         <col
                             v-for="field in scope.fields"
                             :key="field.key"
-                            :style="{ width: field.key == 'selected' || field.key == 'editRow' || field.key == 'active' ? '30px' : field.key == 'amount' || field.key == 'interval' ? '60px' : field.key == 'status' || field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' :  field.key == 'dateconfirmed' ? '140px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                            :style="{ width: field.key == 'selected' || field.key == 'editRow' || field.key == 'active' ? '30px' : field.key == 'amount' || field.key == 'interval' ? '60px' : field.key == 'status' || field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' :  field.key == 'dateconfirmed' || field.key == 'iban' ? '140px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
                     </template>
                     <template
                         #table-caption>
