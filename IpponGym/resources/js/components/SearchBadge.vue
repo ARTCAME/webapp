@@ -2,6 +2,7 @@
     <transition appear name="slide-fade">
         <!-- Shown when the search gives some result -->
         <div
+            class="label-badge"
             v-if="searchResult.length > 0">
             <b-badge
                 pill
@@ -135,6 +136,11 @@ export default {
 }
 </script>
 <style scoped>
+    .label-badge {
+        position: absolute;
+        right: 1rem;
+        top: 0;
+    }
     .badge {
         cursor: pointer;
     }
