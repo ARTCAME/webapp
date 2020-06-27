@@ -15,7 +15,8 @@
                     return input;
                 } else {
                     var charCode = (event.which) ? event.which : event.keyCode;
-                    if ((charCode != 45 /* Dash */) && (charCode != 32 /* Space */) && (charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122)) {
+                    /* This condition only allow letters, spaces, quotes and spanish language letters  */
+                    if ((charCode != 45 /* Dash */) && (charCode != 32 /* Space */) && (charCode != 219 /* quote */) && (charCode < 65 || charCode > 90 /* A-Z */) && (charCode < 97 || charCode > 122 /* a-z */) && (charCode < 192 || charCode > 214 /* À-Ö */) && (charCode < 216 || charCode > 246 /* Ø-ö */) && (charCode < 248 || charCode > 255 /* ø-ÿ */)) {
                         event.preventDefault();
                     } else {
                         return true;
