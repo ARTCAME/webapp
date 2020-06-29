@@ -335,7 +335,9 @@
                         Para aplicar cualquiera de estas acciones seleccionaremos el/los grados que queramos modificar y acto seguido usaremos los botones inferiores para ejercer la acción que queramos:
                         <br>
                         &emsp;- Para otorgar un grado: si queremos asignar una fecha a un (o varios) nuevo grado otorgado, la seleccionaremos en el selector de fecha y aplicaremos los cambios
+                        <br>
                         &emsp;- Para actualizar un grado: si queremos actualizar una fecha, seleccionaremos un grado que ya tenga una fecha asociada y usaremos el selector de fecha para seleccionar el nuevo valor para finalmente aplicar los cambios
+                        <br>
                         &emsp;- Para borrar un grado otorgado, seleccionaremos un (o varios) grado con fecha asociada y usaremos el botón Borrar para eliminar la fecha asociada
                     </p>
                     <DocImg alt="Edición de cinturones" desc="Los botones quedarán deshabilitados hasta que seleccionemos los elementos necesarios para aplicar una nueva fecha o para borrarla" img="Alta9.png" type="image/png"></DocImg>
