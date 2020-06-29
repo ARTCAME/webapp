@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller {
     /**
@@ -36,7 +37,13 @@ class AuthController extends Controller {
         $credentials = $request->only('username', 'password');
         try {
             if ($token = JWTAuth::attempt($credentials)) {
-                return $this->respondWithToken($token, JWTAuth::user());
+                /* Stores the last login data */
+                $user = JWTAuth::user();
+                $user->last_login = Carbon::now()->toDateTimeString();
+                $user->last_login_ip = $request->getClientIp();
+                $user->save();
+                /* Return the successful login */
+                return $this->respondWithToken($token, $user);
             }
         } catch (JWTException $jwte) {
             return response()->json(['error' => 'could_not_create_token'], 500);
