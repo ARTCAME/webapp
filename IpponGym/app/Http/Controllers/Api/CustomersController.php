@@ -125,7 +125,6 @@ class CustomersController extends Controller {
      * @return Socio|Null when everything was correct return the customer data, if not, returns a flag to navigate to a 404 page
      */
     public function show($id) {
-        return $id;
         $socio = Socios::find($id);
         if ($socio == null) {
             return '404';
