@@ -146,7 +146,7 @@
                 tests: { name: 'Realizar TESTS sobre procesos', path: 'tests.index' },
                 testsRoot: { name: 'Realizar TESTS sobre procesos', path: 'testsRoot' },
                 username: '', /* v-model */
-                usuario: { name: 'Acceder al REGISTRO DE USUARIOS', path: 'register' },
+                usuario: { name: 'Acceder a la GESTIÓN DE USUARIOS', path: 'register' },
             }
         },
         computed: {
@@ -171,6 +171,7 @@
                 this.logging = true;
                 this.login({ username: this.username, password: this.password })
                     .then((response) => {
+                        console.log(response);
                         this.logging = false;
                     })
                     .catch(error => {
