@@ -125,16 +125,10 @@ const router = new Router ({
 })
 import { http } from '../utils/http';
 router.beforeEach(async (to, from, next) => {
-    console.log('beforeeach')
     if (store.getters['auth/isLoggedIn']) {
         /* Update the session data of the current user */
         const id = store.getters['auth/authId'];
         http.post('/api/updateSession', { id: id });
-        /* Showing the current user with tests purposes */
-        http.get('/api/auth/me')
-            .then((response) => {
-                console.log(response.data)
-            });
     }
     /* Start the route progress bar out of the documentation page */
     if (!to.hash.includes('#doc-')) {
