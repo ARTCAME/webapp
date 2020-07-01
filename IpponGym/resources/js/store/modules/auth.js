@@ -2,19 +2,12 @@ import Vue from 'vue';
 import { http } from '../../utils/http';
 
 const actions = {
-    fetchUsers({ commit }) {
-        http.post('/api/auth/index')
-            .then(response => {
-                let users = [];
-                response.data.forEach((user) => {
-                    users.push({
-                        username: user.username,
-                        email: user.email,
-                    });
-                });
-                commit('FETCH_USERS', users);
-            })
-    },
+    /**
+     * Login the user with its user data
+     *
+     * @param {String} username
+     * @param {String} password
+     */
     login({ commit, dispatch, getters }, { username, password }) {
         return new Promise((resolve, reject) => {
             commit('AUTH_REQUEST')
@@ -23,13 +16,62 @@ const actions = {
                     const token = response.data.token;
                     const username = response.data.user.username;
                     const role = response.data.user.role;
-                    const expires = response.data.expires_in;
-                    console.log(response);
+                    const id = response.data.user._id;
+                    /* Set the token data on the localStorage */
+                    localStorage.setItem('id', id);
                     localStorage.setItem('token', token);
                     localStorage.setItem('username', username);
                     localStorage.setItem('role', role);
-                    localStorage.setItem('expires', expires);
-                    commit('AUTH_SUCCESS', { user: username, token: token, role: role, expires: expires });
+                    commit('AUTH_SUCCESS', { user: username, token: token, role: role, id: id });
+                    /* Reloads the page, on the process fetch the initial data via the route guard */
+                    location.reload();
+                })
+                .catch (error => {
+                    commit('AUTH_ERROR');
+                    /* If an error occurs delete all the localStorage possible data */
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('id');
+                    reject(error);
+                })
+                .finally(() => {
+                    return;
+                });
+        });
+    },
+    /**
+     * Logout the user
+     */
+    logout({ commit, state }) {
+        commit('LOGOUT');
+        /* Remove the localStorage data */
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        localStorage.removeItem('id');
+        // location.reload(); The reload is do it on the components
+    },
+    /**
+     * Refresh the token, not used but maybe useful in some cases
+     */
+    refresh({ commit, dispatch, getters }) {
+        return new Promise((resolve, reject) => {
+            commit('AUTH_REQUEST')
+            http.post('/api/auth/refresh')
+                .then(response => {
+                    /* Re set the localStorage data */
+                    const token = response.data.token;
+                    const username = response.data.user.username;
+                    const role = response.data.user.role;
+                    const id = response.data.user.id;
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('role', role);
+                    localStorage.setItem('id', id);
+                    /* Re set the axios header token */
+                    http.defaults.headers.common['Authorization'] = token;
+                    commit('AUTH_SUCCESS', { user: username, token: token, role: role, id: id });
                     /* Reloads the page, on the process fetch the initial data via the route guard */
                     location.reload();
                 })
@@ -38,7 +80,7 @@ const actions = {
                     localStorage.removeItem('token');
                     localStorage.removeItem('username');
                     localStorage.removeItem('role');
-                    localStorage.removeItem('expires');
+                    localStorage.removeItem('id');
                     reject(error);
                 })
                 .finally(() => {
@@ -46,84 +88,45 @@ const actions = {
                 });
         });
     },
-    logout({ commit, state }) {
-        commit('LOGOUT');
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('role');
-        localStorage.removeItem('expires');
-        // location.reload();
-        // return new Promise((resolve, reject) => {
-        //     http.post('/api/auth/logout')
-        //         .then(response => {
-        //             commit('LOGOUT');
-        //             localStorage.removeItem('token');
-        //             localStorage.removeItem('username');
-        //             localStorage.removeItem('role');
-        //             location.reload();
-        //             resolve();
-        //         })
-        //         .catch(error => {
-        //             console.log('logout con error');
-        //             commit('LOGOUT');
-        //             localStorage.removeItem('token');
-        //             localStorage.removeItem('username');
-        //             localStorage.removeItem('role');
-        //             // location.reload();
-        //             reject(error)
-        //         });
-        // });
-    },
-    refresh({ commit, dispatch, getters }) {
-        return new Promise((resolve, reject) => {
-            commit('AUTH_REQUEST')
-            console.log(http);
-            http.post('/api/auth/refresh')
-                .then(response => {
-                    console.log(response);
-                    const token = response.data.token;
-                    const username = response.data.user.username;
-                    const role = response.data.user.role;
-                    const expires = response.data.expires_in;
-                    localStorage.setItem('token', token);
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('role', role);
-                    localStorage.setItem('expires', expires);
-                    console.log(http.defaults.headers);
-                    // http.defaults.headers['Authorization'] = 'Bearer ' + token;
-                    console.log(http.defaults);
-                    http.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-                    console.log(http.defaults);
-                    console.log(http.defaults.headers);
+    /**
+     * When the token is refreshed via middleware we will receive a new token and we need to set it as the vu
 
-                    // commit('AUTH_SUCCESS', { user: username, token: token, role: role, expires: expires });
-                    /* Reloads the page, on the process fetch the initial data via the route guard */
-                    // location.reload();
-                })
-                .catch (error => {
-                    commit('AUTH_ERROR');
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('username');
-                    localStorage.removeItem('role');
-                    reject(error);
-                })
-                .finally(() => {
-                    return;
-                });
-        });
-    },
+     * @param {String} token
+     */
     setToken({ commit }, token) {
-        console.log(token);
+        /* Set the new token on the axios header */
+        http.defaults.headers['Authorization'] = token;
+        /* Set the new token on the localStorage */
+        localStorage.setItem('token', token);
         commit('SET_TOKEN', token);
     }
 }
 const getters = {
+    /**
+     * Returns the current token
+     */
     getToken: state => state.token,
+    /**
+     * Returns the current authenticated user
+     */
     authenticatedUser: state => state.user,
+    /**
+     * Returns the current authenticated role
+     */
     authenticatedRole: state => state.role,
+    /**
+     * Returns the current user id
+     */
+    authId: state => state.id,
+    /**
+     * Returns the current status
+     */
     authStatus: state => state.status,
-    countUserByUsername: state => username => state.users.filter(su => su.username == username).length,
-    countUserByEmail: state => email => state.users.filter(su => su.email == email).length,
+    // countUserByUsername: state => username => state.users.filter(su => su.username == username).length,
+    // countUserByEmail: state => email => state.users.filter(su => su.email == email).length,
+    /**
+     * Returns is the user is authenticated validating if exists a token
+     */
     isLoggedIn: state => !!state.token,
 }
 const mutations = {
@@ -133,34 +136,30 @@ const mutations = {
     AUTH_REQUEST(state) {
         state.status = 'loading';
     },
-    AUTH_SUCCESS(state, { user, token, role, expires }) {
+    AUTH_SUCCESS(state, { user, token, role, id }) {
         state.status = 'success';
         state.token = token;
         state.user = user;
         state.role = role;
-        state.expires = expires;
-    },
-    FETCH_USERS(state, users) {
-        Vue.set(state, 'users', users);
+        state.id = id;
     },
     LOGOUT(state) {
         state.status = '';
         state.token = '';
         state.user = '';
         state.role = '';
-        state.expires = '';
+        state.id = '';
     },
     SET_TOKEN(state, token) {
         state.token = token;
     }
 }
 const state = {
-    // users: [],
     status: '',
     token: localStorage.getItem('token') || '',
     user: localStorage.getItem('username') || '',
     role: localStorage.getItem('role') || '',
-    expires: localStorage.getItem('expires') || '',
+    id: localStorage.getItem('id') || '',
 }
 export default {
     namespaced: true,
