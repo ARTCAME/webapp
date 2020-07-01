@@ -30,10 +30,10 @@ class PaymentsController extends Controller {
             }
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al generar el nuevo pago. Código de error: BePC@DP',
+                'message' => 'Error al generar el nuevo pago. Código de error: BePaCo@DePa',
                 'status' => 'danger',
                 'title' => 'Registro de nuevo pago',
-                'trace' => 'Error al generar el nuevo pago. Código de error: BePC@DP. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al generar el nuevo pago. Código de error: BePaCo@DePa. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -144,10 +144,10 @@ class PaymentsController extends Controller {
             }
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al generar el nuevo pago. Código de error: BePC@NP',
+                'message' => 'Error al generar el nuevo pago. Código de error: BePaCo@NePa',
                 'status' => 'danger',
                 'title' => 'Registro de nuevo pago',
-                'trace' => 'Error al generar el nuevo pago. Código de error: BePC@NP. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al generar el nuevo pago. Código de error: BePaCo@NePa. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -213,9 +213,9 @@ class PaymentsController extends Controller {
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'danger',
-                'message' => 'Algo no ha ido bien. Vuelve a intentarlo. Código de error: BePC@UP',
+                'message' => 'Algo no ha ido bien. Vuelve a intentarlo. Código de error: BePaCo@UpPa',
                 'title' => 'Actualización de pagos',
-                'trace' => 'Error al registrar los cambios. Código de error: BePC@UP. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al registrar los cambios. Código de error: BePaCo@UpPa. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
