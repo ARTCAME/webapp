@@ -159,9 +159,6 @@
             this.routes.tester = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }, { ...this.tests }];
             this.routes.root = [{ ...this.alta }, { ...this.cinturones }, { ...this.pagos }, { ...this.testsRoot }, { ...this.usuario }];
         },
-        mounted() {
-            console.log(this.routes);
-        },
         methods: {
             ...mapActions('auth', ['login', 'logout']),
             /**
@@ -171,7 +168,6 @@
                 this.logging = true;
                 this.login({ username: this.username, password: this.password })
                     .then((response) => {
-                        console.log(response);
                         this.logging = false;
                     })
                     .catch(error => {
