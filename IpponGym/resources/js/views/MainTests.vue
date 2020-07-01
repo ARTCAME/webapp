@@ -162,6 +162,10 @@
                             /* Set the not completed tests based on the completed received */
                             this.tests = (this.completedTests && this.completedTests.length > 0) ? this.importedTests.filter(ta => this.completedTests.some(ct => ct[0].testName == ta[0].testName) == false) : this.importedTests;
                             this.auxTests = [ ...this.tests ];
+                        })
+                        .catch(error => {
+                            this.$showToast('danger', 'No se han podido obtener los tests', 'Ha ocurrido un error');
+                            console.error(error.response ? error.response.data : error);
                         });
                 } else {
                     http.get('/api/getTests', { params: this.authenticatedUser })
@@ -172,7 +176,8 @@
                             this.tests = (this.completedTests && this.completedTests.length > 0) ? this.importedTests.filter(ta => this.completedTests.some(ct => ct[0].testName == ta[0].testName) == false) : this.importedTests;
                         })
                         .catch((error) => {
-                            console.error(error);
+                            this.$showToast('danger', 'No se han podido obtener los tests', 'Ha ocurrido un error');
+                            console.error(error.response ? error.response.data : error);
                         })
                 }
             },
@@ -183,7 +188,6 @@
              */
             saveTests(test) {
                 const newTest = [
-                    // { title: title, testName: testName },
                     ...test.test,
                     test.result,
                 ];
@@ -193,7 +197,8 @@
                         this.$showToast('success', 'Test guardado', 'Completado')
                     })
                     .catch((error) => {
-                        this.$showToast('danger', 'Test NO guardado', 'Error')
+                        this.$showToast('danger', 'Test NO guardado', 'Ha ocurrido un error')
+                        console.error(error.response ? error.response.data : error);
                     })
             },
         },
