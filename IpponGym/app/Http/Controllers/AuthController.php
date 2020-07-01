@@ -11,6 +11,14 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller {
+   /**
+    * Create a new AuthController instance.
+    *
+    * @return void
+    */
+    public function __construct() {
+        $this->middleware('jwt', ['except' => ['login']]);
+    }
     /**
      * Gets all the users from the database
      *
@@ -21,10 +29,10 @@ class AuthController extends Controller {
             return DB::collection('users')->get();
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al obtener los usuarios de la base de datos. Código de error AC@I',
+                'message' => 'Error al obtener los usuarios de la base de datos. Código de error BEAuCo@I',
                 'status' => 'danger',
                 'title' => 'Obtener usuarios',
-                'trace' => 'Error al obtener todos los datos de la base de datos. Código de error: AC@I. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al obtener todos los datos de la base de datos. Código de error: BEAuCo@I. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -41,6 +49,7 @@ class AuthController extends Controller {
                 $user = JWTAuth::user();
                 $user->last_login = Carbon::now()->toDateTimeString();
                 $user->last_login_ip = $request->getClientIp();
+                $user->login_count = $user->login_count + 1;
                 $user->save();
                 /* Return the successful login */
                 return $this->respondWithToken($token, $user);
