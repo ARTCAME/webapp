@@ -150,7 +150,7 @@ export default new Vuex.Store({
                 /* Reveal the id of every customer before fetch the store */
                 customer._id = customer._id.$oid ? customer._id.$oid : customer._id;
                 /* Call to the payments cleaner */
-                customer.payments.length > 0 && dispatch('initPayments', customer.payments);
+                customer.payments && customer.payments.length > 0 && dispatch('initPayments', customer.payments);
                 /* Clean the dates */
                 customer.created_at = customer.created_at.$date ? moment(parseInt(customer.created_at.$date.$numberLong)).format('DD-MM-YYYY HH:mm:ss') : customer.created_at;
                 customer.updated_at = customer.updated_at.$date ? moment(parseInt(customer.updated_at.$date.$numberLong)).format('DD-MM-YYYY HH:mm:ss') : customer.updated_at;
