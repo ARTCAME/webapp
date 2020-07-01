@@ -299,7 +299,7 @@
                         /* Redirect to the login home page */
                         if (this.$router.currentRoute.path != '/') {
                             /* Reload the page the reset vuex */
-                            // location.reload()
+                            location.reload()
                             //     .then(() => {
                             //         this.$router.push('/');
                             //     });
