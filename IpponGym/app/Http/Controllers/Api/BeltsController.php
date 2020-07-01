@@ -43,10 +43,10 @@ class BeltsController extends Controller {
             return $result;
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al gestionar los cinturones. Código de error BeCC@AB',
+                'message' => 'Error al gestionar los cinturones. Código de error BeBeCo@AuBe',
                 'status' => 'danger',
                 'title' => 'Actualizar cinturones',
-                'trace' => 'Error al gestionar los cinturones. Código de error BeCC@AB. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al gestionar los cinturones. Código de error BeBeCo@AuBe. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -74,10 +74,10 @@ class BeltsController extends Controller {
             ];
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al registrar los cambios. Código de error BeCC@DB',
+                'message' => 'Error al registrar los cambios. Código de error BeBeCo@DeBe',
                 'status' => 'danger',
                 'title' => 'Actualizar cinturones',
-                'trace' => 'Error al registrar los cambios. Código de error BeCC@DB. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al registrar los cambios. Código de error BeBeCo@DeBe. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -100,10 +100,10 @@ class BeltsController extends Controller {
             return $result_data;
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al actualizar los datos. Código de error SC@DAC',
+                'message' => 'Error al actualizar los datos. Código de error BeBeCo@DeAuCi',
                 'status' => 'danger',
                 'title' => 'Deshaciendo cambios',
-                'trace' => 'Error al actualizar los datos. Código de error SC@DAC. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al actualizar los datos. Código de error BeBeCo@DeAuCi. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -133,10 +133,10 @@ class BeltsController extends Controller {
             ];
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al actualizar los datos. Código de error SC@UB',
+                'message' => 'Error al actualizar los datos. Código de error BeBeCo@UpBe',
                 'status' => 'danger',
                 'title' => 'Obtener grados',
-                'trace' => 'Error al actualizar los datos. Código de error SC@UB. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al actualizar los datos. Código de error BeBeCo@UpBe. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
