@@ -1,101 +1,116 @@
 <template>
-    <b-card no-body>
-        <template v-slot:header>
-            <b-nav card-header tabs>
-                <b-nav-item
-                    class="p-0"
-                    :active="current == 0"
-                    @click="current = 0; filterTests(''); filter = null;">
-                    Pendientes
-                </b-nav-item>
-                <b-nav-item
-                    class="p-0"
-                    :active="current == 1"
-                    @click="current = 1; filterTests(''); filter = null;">
-                    Completados
-                </b-nav-item>
-            </b-nav>
-        </template>
-        <span
-            class="d-inline-block m-2"
-            v-if="$route.name == 'testsRoot'">
-            <b-row no-gutters>
-                <b-col class="col-auto mr-3">
-                    <b-button
-                        variant="outline-warning"
-                        @click="filterTests(''); filter = null;">
-                        Limpiar filtros
-                    </b-button>
-                </b-col>
-                <b-input
-                    class="col px-2"
-                    placeholder="Filtra los resultados"
-                    v-model="filter"
-                    @input="filterTests($event)"></b-input>
-                <b-col
-                    class="col-auto ml-3"
+    <div>
+        <b-alert dissmisible show variant="info">
+            Información para la realización de tests:
+            <br>
+            - En esta página encontrarás diferentes tipos de tests:
+            <br>
+            &emsp;- Tests sobre procesos como un alta, imprimir un documento, editar un socio, etc.
+            <br>
+            &emsp;- Preguntas generales sobre comportamiento y contenidos
+            <br><br>
+            <u>Importante</u>: Para poder resolver las preguntas generales es recomendado que primero hagas un gran número de tests sobre procesos para así tener el máximo de conocimiento.
+
+        </b-alert>
+        <b-card no-body>
+            <template v-slot:header>
+                <b-nav card-header tabs>
+                    <b-nav-item
+                        class="p-0"
+                        :active="current == 0"
+                        @click="current = 0; filterTests(''); filter = null;">
+                        Pendientes
+                    </b-nav-item>
+                    <b-nav-item
+                        class="p-0"
+                        :active="current == 1"
+                        @click="current = 1; filterTests(''); filter = null;">
+                        Completados
+                    </b-nav-item>
+                </b-nav>
+            </template>
+            <span
+                class="d-inline-block m-2"
+                v-if="$route.name == 'testsRoot'">
+                <b-row no-gutters>
+                    <b-col class="col-auto mr-3">
+                        <b-button
+                            variant="outline-warning"
+                            @click="filterTests(''); filter = null;">
+                            Limpiar filtros
+                        </b-button>
+                    </b-col>
+                    <b-input
+                        class="col px-2"
+                        placeholder="Filtra los resultados"
+                        v-model="filter"
+                        @input="filterTests($event)"></b-input>
+                    <b-col
+                        class="col-auto ml-3"
+                        v-if="current == 1">
+                        <b-button
+                            variant="outline-success"
+                            @click="filterTests('testResult:3')">
+                            <fa-icon icon="grin-beam"></fa-icon>
+                        </b-button>
+                        <b-button
+                            class="mx-1"
+                            variant="outline-warning"
+                            @click="filterTests('testResult:2')">
+                            <fa-icon icon="meh"></fa-icon>
+                        </b-button>
+                        <b-button
+                            variant="outline-danger"
+                            @click="filterTests('testResult:1')">
+                            <fa-icon icon="sad-tear"></fa-icon>
+                        </b-button>
+                    </b-col>
+                </b-row>
+            </span>
+            <transition mode="out-in" name="fade">
+                <!-- Pending page -->
+                <b-card-group
+                    class="p-2"
+                    columns
+                    key="tests-page-0"
+                    v-if="current == 0">
+                    <span
+                        v-if="tests.length == 0">
+                        No hay tests pendientes
+                    </span>
+                    <transition-group mode="out-in" name="fade">
+                        <Tests
+                            v-for="test in tests"
+                            :key="test[0].testName"
+                            :test="test"
+                            @save="saveTests(...arguments)"></Tests>
+                    </transition-group>
+                </b-card-group>
+                <!-- Completed page -->
+                <b-card-group
+                    class="p-2"
+                    columns
+                    key="tests-page-1"
                     v-if="current == 1">
-                    <b-button
-                        variant="outline-success"
-                        @click="filterTests('testResult:3')">
-                        <fa-icon icon="grin-beam"></fa-icon>
-                    </b-button>
-                    <b-button
-                        class="mx-1"
-                        variant="outline-warning"
-                        @click="filterTests('testResult:2')">
-                        <fa-icon icon="meh"></fa-icon>
-                    </b-button>
-                    <b-button
-                        variant="outline-danger"
-                        @click="filterTests('testResult:1')">
-                        <fa-icon icon="sad-tear"></fa-icon>
-                    </b-button>
-                </b-col>
-            </b-row>
-        </span>
-        <transition mode="out-in" name="fade">
-            <!-- Pending page -->
-            <b-card-group
-                class="p-2"
-                columns
-                key="tests-page-0"
-                v-if="current == 0">
-                <span
-                    v-if="tests.length == 0">
-                    No hay tests pendientes
-                </span>
-                <transition-group mode="out-in" name="fade">
-                    <Tests
-                        v-for="test in tests"
-                        :key="test[0].testName"
-                        :test="test"
-                        @save="saveTests(...arguments)"></Tests>
-                </transition-group>
-            </b-card-group>
-            <!-- Completed page -->
-            <b-card-group
-                class="p-2"
-                columns
-                key="tests-page-1"
-                v-if="current == 1">
-                <span
-                    v-if="completedTests.length == 0">
-                    No hay tests completados
-                </span>
-                <transition-group mode="out-in" name="fade">
-                    <Tests
-                        v-for="(test, index) in completedTests"
-                        :completed="true"
-                        :key="test[0].testName + index"
-                        :test="test"></Tests>
-                </transition-group>
-            </b-card-group>
-        </transition>
-    </b-card>
+                    <span
+                        v-if="completedTests.length == 0">
+                        No hay tests completados
+                    </span>
+                    <transition-group mode="out-in" name="fade">
+                        <Tests
+                            v-for="(test, index) in completedTests"
+                            :completed="true"
+                            :key="test[0].testName + index"
+                            :test="test"></Tests>
+                    </transition-group>
+                </b-card-group>
+            </transition>
+        </b-card>
+    </div>
 </template>
 <script>
     import { ALTA } from '../tests/alta';
+    import { COMPORTAMIENTO } from '../tests/behavior';
     import { CINTURONES } from '../tests/cinturones';
     import { DOCS } from '../tests/docs';
     import { EDITAR } from '../tests/editar';
@@ -120,7 +135,7 @@
              * Merge the imported tests. Every tests can have different structures but with a
              */
             importedTests() {
-                return [ ...ALTA, ...PAGOS, ...DOCS, ...CINTURONES, ...EDITAR ];
+                return [ ...ALTA, ...PAGOS, ...DOCS, ...CINTURONES, ...EDITAR, ...COMPORTAMIENTO ];
             }
         },
         created() {
