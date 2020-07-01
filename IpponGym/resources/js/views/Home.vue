@@ -146,7 +146,7 @@
                 tests: { name: 'Realizar TESTS sobre procesos', path: 'tests.index' },
                 testsRoot: { name: 'Realizar TESTS sobre procesos', path: 'testsRoot' },
                 username: '', /* v-model */
-                usuario: { name: 'Acceder a la GESTIÓN DE USUARIOS', path: 'register' },
+                usuario: { name: 'Acceder a la GESTIÓN DE USUARIOS', path: 'users.index' },
             }
         },
         computed: {
