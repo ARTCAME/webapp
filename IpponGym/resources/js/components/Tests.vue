@@ -37,7 +37,14 @@
                 {{ field.text }}
             </span>
             <b-form-group
+                v-if="isGeneral">
+                <b-form-rating
+                    v-model="form.testRating"
+                    :disabled="completed"></b-form-rating>
+            </b-form-group>
+            <b-form-group
                 class="mb-1"
+                v-else
                 :disabled="completed">
                 <b-form-radio-group
                     buttons
@@ -70,14 +77,15 @@
                 class="mb-1"
                 placeholder="Identificador del socio"
                 required
+                v-if="!isGeneral"
                 v-model="form._id"
                 :disabled="completed"></b-input>
             <b-form-textarea
                 no-resize
                 placeholder="Explica cómo ha ido la prueba..."
-                rows="4"
                 v-model="form.testText"
-                :disabled="completed"></b-form-textarea>
+                :disabled="completed"
+                :rows="isGeneral ? 10 : 4"></b-form-textarea>
             <transition name="fade-height">
                 <span
                     class="d-block"
@@ -129,9 +137,9 @@
                 class="col-12 mt-2"
                 variant="outline-primary"
                 v-if="!completed"
-                :disabled="!form.testResult || !form._id"
+                :disabled="(!isGeneral && (!form.testResult || !form._id)) || (isGeneral && (!form.testRating || !form.testText))"
                 @click.once="$emit('save', { test: test, result: form })">
-                {{ !form.testResult ? 'Indica un estado' : !form._id ? 'Indica el id del socio' : 'Guardar' }}
+                {{ !isGeneral && !form.testResult ? 'Indica un estado' : !isGeneral && !form._id ? 'Indica el id del socio' : isGeneral && !form.testRating ? 'Indica una valoración' : isGeneral && !form.testText ? 'Resume la prueba' : 'Guardar' }}
             </b-button>
         </b-form-group>
     </b-card>
@@ -144,9 +152,10 @@
                 form: {
                     _id: null, /* Identifies the customer modified */
                     errorFile: null, /* Contains a file */
-                    testResult: null, /* Stores the option selected */
-                    testText: null, /* Is the text fetched by the user */
                     testDate: this.$moment().format('YYYY-MM-DD HH:mm:ss'), /* Is the date of the save */
+                    testResult: null, /* Stores the option selected */
+                    testRating: null, /* Is provided on the general tests, stores the rating */
+                    testText: null, /* Is the text fetched by the user */
                     testUser: null, /* Stores the user who saves the tests */
                 }
             }
@@ -170,11 +179,17 @@
             inSpecs() {
                 return this.test.filter(test => test.spec);
             },
+            /**
+             * Returns if a tests has general questions
+             */
+            isGeneral() {
+                return this.test[0].title.includes('Comportamiento general')
+            },
         },
         mounted() {
             /* If we are loading a completed test, resolve the values of the result */
             if (this.completed) {
-                const fields = ['_id', 'errorFile', 'testResult', 'testText', 'testDate', 'testUser'];
+                const fields = ['_id', 'errorFile', 'testResult', 'testText', 'testDate', 'testUser', 'testRating'];
                 fields.forEach(field => {
                     this.$set(this.form, field, this.test.slice(-1)[0][field]);
                 });
