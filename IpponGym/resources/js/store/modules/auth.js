@@ -122,8 +122,6 @@ const getters = {
      * Returns the current status
      */
     authStatus: state => state.status,
-    // countUserByUsername: state => username => state.users.filter(su => su.username == username).length,
-    // countUserByEmail: state => email => state.users.filter(su => su.email == email).length,
     /**
      * Returns is the user is authenticated validating if exists a token
      */
