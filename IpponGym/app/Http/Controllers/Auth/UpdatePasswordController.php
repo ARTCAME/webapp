@@ -29,10 +29,10 @@ class UpdatePasswordController extends Controller {
             ];
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al registrar la nueva contraseña. Código de error: UPC@UpPa',
+                'message' => 'Error al registrar la nueva contraseña. Código de error: BeUpCo@UpPa',
                 'status' => 'danger',
                 'title' => 'Error',
-                'trace' => 'Error al registrar la nueva contraseña. Código de error: UPC@UpPa. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al registrar la nueva contraseña. Código de error: BeUpCo@UpPa. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
