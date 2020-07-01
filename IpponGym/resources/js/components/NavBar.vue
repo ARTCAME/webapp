@@ -258,7 +258,7 @@
                 routes: {},
                 tests: { name: 'TESTS', path: 'tests.index' },
                 testsRoot: { name: 'TESTS', path: 'testsRoot' },
-                usuario: { name: 'GESTIÓN DE USUARIOS', path: 'register' },
+                usuario: { name: 'GESTIÓN DE USUARIOS', path: 'users.index' },
             }
         },
         computed: {
