@@ -47,7 +47,7 @@ class RefreshToken extends BaseMiddleware {
             $key = 'block_refresh_token_for_user_' . $payload['sub'];
             /* Discover if the key has been cached previously */
             $cachedBefore = (int) Cache::has($key);
-            /* If a token alredy was refreshed and sent to the client in the last JWT_BLACKLIST_GRACE_PERIOD seconds */
+            /* If a token already was refreshed and sent to the client in the last JWT_BLACKLIST_GRACE_PERIOD seconds */
             if ($cachedBefore) {
                 /* Log the user using id */
                 Auth::onceUsingId($payload['sub']);
