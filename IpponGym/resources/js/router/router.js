@@ -1,16 +1,14 @@
-import axios from 'axios';
 import Fof from '../views/404';
 import Home from '../views/Home';
 import MainBelts from '../views/MainBelts';
 import MainDoc from '../views/MainDoc';
 import MainForm from '../views/MainForm';
 import MainPayments from '../views/MainPayments';
-import MainRegister from '../views/MainRegister';
+import MainUsers from '../views/MainUsers';
 import MainTests from '../views/MainTests';
 import NProgress from 'nprogress';
 import Router from 'vue-router';
 import store from '../store/customers';
-import UsersIndex from '../views/UsersIndex';
 import Vue from 'vue';
 Vue.use(Router)
 const router = new Router ({
@@ -30,14 +28,6 @@ const router = new Router ({
                 requiresAuth: true,
             },
         },
-        // {
-        //     path: '/users',
-        //     name: 'users.index',
-        //     component: UsersIndex,
-        //     meta: {
-        //         requiresAuth: true,
-        //     },
-        // },
         {
             path: '/socio/:id',
             name: 'customers.profile',
@@ -102,9 +92,9 @@ const router = new Router ({
             redirect: '/404',
         },
         {
-            path: '/register',
-            name: 'register',
-            component: MainRegister,
+            path: '/users',
+            name: 'users.index',
+            component: MainUsers,
             meta: {
                 requiresAuth: true,
                 // role: 'admin',
@@ -134,13 +124,19 @@ const router = new Router ({
     },
 })
 import { http } from '../utils/http';
-router.beforeEach((to, from, next) => {
-/* Showing the current user with tests purposes */
-    http.get('/api/auth/me')
-        .then((response) => {
-            console.log(response.data)
-        });
-    /* Start the route progress bar */
+router.beforeEach(async (to, from, next) => {
+    console.log('beforeeach')
+    if (store.getters['auth/isLoggedIn']) {
+        /* Update the session data of the current user */
+        const id = store.getters['auth/authId'];
+        http.post('/api/updateSession', { id: id });
+        /* Showing the current user with tests purposes */
+        http.get('/api/auth/me')
+            .then((response) => {
+                console.log(response.data)
+            });
+    }
+    /* Start the route progress bar out of the documentation page */
     if (!to.hash.includes('#doc-')) {
         NProgress.start();
     }
@@ -149,14 +145,13 @@ router.beforeEach((to, from, next) => {
         next();
         return;
     } else if (((to.matched.some(record => record.meta.requiresAuth) && !store.getters['auth/isLoggedIn'])) || (to.matched.some(record => record.meta.requiresAuth && record.meta.role) && (!store.getters['auth/isLoggedIn'] || store.getters['auth/authenticatedRole'] != record.meta.role))) {
-        // next('/');
         next('/');
     } else {
         next();
     }
 })
 router.afterEach(() => {
-    /* Complete the animation of the route progress bar. */
+    /* Complete the animation of the progress bar. */
     NProgress.done();
 })
 export default router;
