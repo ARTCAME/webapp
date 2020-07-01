@@ -16,16 +16,22 @@ use Illuminate\Http\Request;
 Route::prefix('auth')->group(function () {
     Route::post('login', 'AuthController@login')->name('login');
     /* Except the login page, all the rest of auth actions are under jwt authorization */
-    Route::middleware('jwt')->group(function () {
+    Route::middleware([/* 'jwt.verify', */ 'jwt'/* , 'jwt.refresh' */])->group(function () {
         Route::post('refresh', 'AuthController@refresh');
         Route::get('user', 'AuthController@user');
         Route::get('me', 'AuthController@me');
         Route::post('logout', 'AuthController@logout');
     });
 });
+Route::namespace('Auth')->group(function() {
+    Route::group(['middleware' => [/* 'jwt.verify', */ 'jwt'/* , 'jwt.refresh' */]], function () {
+        Route::post('updatePassword', 'UpdatePasswordController@updatePassword');
+    });
+});
 Route::namespace('Api')->group(function() {
     /* All the regular actions are under token authorization */
-    Route::middleware('jwt')->group(function () {
+    // Route::middleware([/* 'jwt.verify', */ 'session'])->group(function () {
+    Route::group(['middleware' => [/* 'jwt.verify', */ 'jwt'/* , 'jwt.refresh' */]], function () {
         /* Belts */
         Route::post('autoBelts', 'BeltsController@autoBelts');
         Route::post('deleteBelts', 'BeltsController@deleteBelts');
@@ -42,10 +48,15 @@ Route::namespace('Api')->group(function() {
         Route::post('newPayment', 'PaymentsController@newPayment');
         Route::post('updatePayments', 'PaymentsController@updatePayments');
         /* Users */
-        Route::post('register', 'UsersController@register');
+        Route::post('register', 'UsersController@register')->middleware('isRoot');
         Route::post('usersearch', 'UsersController@search');
-        Route::get('getAllTests', 'UsersController@getAllTests');
-        Route::get('getTests', 'UsersController@getTests');
-        Route::post('saveTests', 'UsersController@saveTests');
+        Route::get('getUsers', 'UsersController@index')->middleware('isRoot');
+        /* Session */
+        Route::post('updateSession', 'SessionController@updateSession');
+        Route::get('getSessions', 'SessionController@getSessions')->middleware('isRoot');
+        /* Tests */
+        Route::get('getAllTests', 'TestsController@getAllTests')->middleware('isRoot');
+        Route::get('getTests', 'TestsController@getTests');
+        Route::post('saveTests', 'TestsController@saveTests');
     });
 });
