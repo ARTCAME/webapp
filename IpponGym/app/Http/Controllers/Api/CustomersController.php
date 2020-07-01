@@ -47,10 +47,10 @@ class CustomersController extends Controller {
                 }
             } catch (Exception $e) {
                 return response()->json([
-                    'message' => 'Error al guardar los datos. Código de error: BeSC@E',
+                    'message' => 'Error al guardar los datos. Código de error: BeCuCo@Ed',
                     'status' => 'danger',
                     'title' => 'Edición de socio',
-                    'trace' => 'Error al guardar los datos editados del socio. Código de error: BeSC@E. Detalle del servidor: ' . $e->getMessage(),
+                    'trace' => 'Error al guardar los datos editados del socio. Código de error: BeCuCo@Ed. Detalle del servidor: ' . $e->getMessage(),
                 ], 500);
             }
         }
@@ -66,10 +66,10 @@ class CustomersController extends Controller {
             // return Socios::all();
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al obtener los socios de la base de datos. Código de error BeSC@I',
+                'message' => 'Error al obtener los socios de la base de datos. Código de error BeCuCo@In',
                 'status' => 'danger',
                 'title' => 'Obtener socios',
-                'trace' => 'Error al obtener todos los datos de la base de datos. Código de error: BeSC@I. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al obtener los datos de la base de datos. Código de error: BeCuCo@In. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -107,10 +107,10 @@ class CustomersController extends Controller {
                 ];
             } catch (Exception $e) {
                 return response()->json([
-                    'message' => 'Error al registrar al nuevo socio. Código de error: BeSC@NS',
+                    'message' => 'Error al registrar al nuevo socio. Código de error: BeCuCo@NeCu',
                     'status' => 'danger',
                     'title' => 'Creación de socio',
-                    'trace' => 'Error al guardar los datos del nuevo socio. Código de error: BeSC@NS. Detalle del servidor: ' . $e->getMessage(),
+                    'trace' => 'Error al guardar los datos del nuevo socio. Código de error: BeCuCo@NeCu. Detalle del servidor: ' . $e->getMessage(),
                 ], 500);
             }
         } else {
@@ -186,7 +186,7 @@ class CustomersController extends Controller {
                 'message' => 'Se han producido los siguientes errores:',
                 'status' => 'danger',
                 'title' => 'Error al validar los datos',
-                'trace' => 'Error al validar los datos del nuevo socio, no se han guardado. Código de error: BeSC@VD. Detalle del servidor: ' . $v->errors(),
+                'trace' => 'Error al validar los datos del nuevo socio, no se han guardado. Código de error: BeCuCo@VaDa. Detalle del servidor: ' . $v->errors(),
                 'validationErrors' => $v->errors(),
             ], 422);
         }
