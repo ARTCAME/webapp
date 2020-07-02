@@ -149,7 +149,7 @@ function createVue() {
             }
             http.interceptors.response.use(
                 response => {
-                    console.log('use interceptor created')
+                    // console.log('use interceptor created')
                     // const newtoken = response.headers.authorization;
                     // console.log(newtoken)
                     // if (newtoken) {
@@ -161,7 +161,7 @@ function createVue() {
                     return response;
                 },
                 error => {
-                    console.log('error interceptor created')
+                    // console.log('error interceptor created')
                     // const newtoken = response.headers.authorization;
                     // if (newtoken) {
                     //     localStorage.setItem('token', newtoken)
