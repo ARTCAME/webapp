@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-alert dissmisible show variant="info">
+        <b-alert dismissible show variant="info">
             Información para la realización de tests:
             <br>
             - En esta página encontrarás diferentes tipos de tests:
