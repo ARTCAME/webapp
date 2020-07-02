@@ -29,7 +29,7 @@
 <script>
 /* IMPORTANT: The configuration and many functions, variables and functionalities are inspired or copied from the example 'demobuttons' provided by wacom */
     require('../wacom/q.js');
-    import { mapActions, mapState } from 'Vuex';
+    import { mapActions, mapState } from 'vuex';
     // Importing the wacom files:
     import w from '../wacom/wgssStuSdk';
     import Button from '../wacom/Button.js';
