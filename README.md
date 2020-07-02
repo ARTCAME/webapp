@@ -1,6 +1,6 @@
 # IpponGym
  IpponGym
-    ##Composer dependencies: 
+## Composer dependencies: 
         php
         fideloper/proxy
         laravel/framework
@@ -9,7 +9,7 @@
         phpmailer/phpmailer
         tymon/jwt-auth
 
-    ##Node dependencies
+## Node dependencies
         @babel/plugin-proposal-class-properties
         @fortawesome/fontawesome-svg-core
         @fortawesome/free-brands-svg-icons
