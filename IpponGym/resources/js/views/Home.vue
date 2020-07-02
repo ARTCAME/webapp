@@ -132,7 +132,7 @@
 </template>
 <script>
     import { http } from "../utils/http";
-    import { mapActions, mapGetters } from 'Vuex';
+    import { mapActions, mapGetters } from 'vuex';
     export default {
         data() {
             return {
