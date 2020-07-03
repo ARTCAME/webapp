@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import { http } from '../../utils/http';
+import axios from 'axios';
 
 const actions = {
     /**
@@ -11,7 +12,7 @@ const actions = {
     login({ commit, dispatch, getters }, { username, password }) {
         return new Promise((resolve, reject) => {
             commit('AUTH_REQUEST')
-            http.post('/api/auth/login', { username, password })
+            axios.post('/api/auth/login', { username, password })
                 .then(response => {
                     const token = response.data.token;
                     const username = response.data.user.username;
