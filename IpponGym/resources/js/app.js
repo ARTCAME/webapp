@@ -173,7 +173,7 @@ function createVue() {
                     //     return response
                     // },
                     // error => {
-                        if (error.response.status === 401) {
+                        if (error.response && error.response.status === 401) {
                             store.dispatch('auth/logout');
                             if (error.response.data.message == 'login_error') {
                                 this.$showToast('danger', 'Usuario o contraseña incorrectos', 'Error de sesión', 8000);
@@ -186,7 +186,7 @@ function createVue() {
                                 this.$showToast('danger', 'Se ha cerrado la sesión', 'Error de sesión', 8000);
                             }
                         }
-                        console.log(error.response);
+                        console.error(error);
                         NProgress.done();
                         return Promise.reject(error);
                     }
