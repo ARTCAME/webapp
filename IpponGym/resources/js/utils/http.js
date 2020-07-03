@@ -7,7 +7,7 @@ const URL = 'http://209.97.131.50/'
 const http = axios.create({
     baseURL: URL,
     headers: {
-        // 'Accept': 'application/json',
+        'Accept': 'application/json',
         'Authorization': `${window.localStorage.getItem('token')}`,
     }
 });
