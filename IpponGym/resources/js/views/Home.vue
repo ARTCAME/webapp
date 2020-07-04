@@ -167,7 +167,7 @@ import Axios from 'axios';
              */
             inLogin() {
                 this.logging = true;
-                Axios.get('api/users').then((re) => console.log(re));
+                Axios.get('api/getUsers').then((re) => console.log(re));
                 this.login({ username: this.username, password: this.password })
                     .then((response) => {
                         this.logging = false;
