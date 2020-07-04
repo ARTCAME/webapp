@@ -44,11 +44,6 @@ class AuthController extends Controller {
     public function login(Request $request) {
         $credentials = $request->only('username', 'password');
         try {
-            try {
-                DB::connection()->getMongoClient()->listDatabases();
-            } catch (\Exception $e) {
-                echo $e->getMessage();
-            }
             if ($token = JWTAuth::attempt($credentials)) {
                 /* Stores the last login data */
                 $user = JWTAuth::user();
