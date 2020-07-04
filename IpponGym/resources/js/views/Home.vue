@@ -13,6 +13,7 @@
                 v-if="logging == true">
                 <b-spinner id="logginout-spinner" class="ig-green" type="grow"></b-spinner>
             </span>
+
             <!-- Shown when the user is not logged in -->
             <b-form
                 id="login-form"
@@ -57,6 +58,131 @@
                     size="sm"
                     type="submit">Iniciar sesión</b-button>
             </b-form>
+            <!-- çççççççççççççççççççççççççççççççççççççççççççççççççççççççç -->
+            <b-form
+                autocomplete="off"
+                key="user-register-form"
+                method="post"
+                v-if="current == 1"
+                @submit.prevent="inRegister">
+                <b-card id="register-form">
+                    <b-form-group>
+                        <h5 md="4" class="subtitle">Nuevo usuario</h5>
+                    </b-form-group>
+                    <b-form-group label="Nombre" label-for="name">
+                        <b-form-input
+                            autocomplete="off"
+                            autofocus
+                            id="name"
+                            name="reg_nombre"
+                            required
+                            type="text"
+                            v-model="name"
+                            v-validate="'required|min:3'"
+                            :class="{ 'is-invalid' : errors.has('reg_nombre') }"></b-form-input>
+                        <transition mode="out-in" name="liveFeedbacks">
+                            <b-form-invalid-feedback
+                                v-for="error in errors.collect('reg_nombre')"
+                                :key="error">
+                                {{ error }}
+                            </b-form-invalid-feedback>
+                        </transition>
+                    </b-form-group>
+                    <b-form-group label="Nombre de usuario" label-for="username">
+                        <b-form-input
+                            autocomplete="off"
+                            autofocus
+                            id="username"
+                            name="reg-username"
+                            required
+                            type="text"
+                            v-model="username"
+                            v-validate="'required|min:3|uniqueUsername:' + numUserFounded"
+                            :class="{ 'is-invalid' : errors.has('reg-username') }"></b-form-input>
+                        <transition mode="out-in" name="liveFeedbacks">
+                            <b-form-invalid-feedback
+                                v-for="error in errors.collect('reg-username')"
+                                :key="error">
+                                {{ error }}
+                            </b-form-invalid-feedback>
+                        </transition>
+                    </b-form-group>
+                    <b-form-group label="E-mail" label-for="email">
+                        <b-form-input
+                            id="email"
+                            name="reg-email"
+                            required
+                            type="email"
+                            v-model="email"
+                            v-validate="'required|email|uniqueEmail:' + numEmailFounded"
+                            :class="{ 'is-invalid' : errors.has('reg-email') }"></b-form-input>
+                        <transition mode="out-in" name="liveFeedbacks">
+                            <b-form-invalid-feedback
+                                v-for="error in errors.collect('reg-email')"
+                                :key="error">
+                                {{ error }}
+                            </b-form-invalid-feedback>
+                        </transition>
+                    </b-form-group>
+                    <b-form-group label="Contraseña" label-for="password">
+                        <b-form-input
+                            id="password"
+                            name="reg-pass"
+                            ref="password"
+                            required
+                            type="password"
+                            v-model="password"
+                            v-validate="{ required: true, min: 3 }"
+                            :class="{ 'is-invalid' : errors.has('reg-pass') }"></b-form-input>
+                        <transition mode="out-in" name="liveFeedbacks">
+                            <b-form-invalid-feedback
+                                v-for="error in errors.collect('reg-pass')"
+                                :key="error">
+                                {{ error }}
+                            </b-form-invalid-feedback>
+                        </transition>
+                    </b-form-group>
+                    <b-form-group label="Confirma contraseña" label-for="password-confirm">
+                        <b-form-input
+                            id="password-confirm"
+                            name="reg-pass-confirm"
+                            required
+                            type="password"
+                            v-model="password_confirmation"
+                            v-validate="{ required: true, min: 3, confirmed: password }"
+                            :class="{ 'is-invalid' : errors.has('reg-pass-confirm') }"></b-form-input>
+                        <transition mode="out-in" name="liveFeedbacks">
+                            <b-form-invalid-feedback
+                                v-for="error in errors.collect('reg-pass-confirm')"
+                                :key="error">
+                                {{ error }}
+                            </b-form-invalid-feedback>
+                        </transition>
+                    </b-form-group>
+                    <b-form-group
+                        label="Selecciona rol">
+                        <b-form-select
+                            name="selectRole"
+                            required
+                            v-model="role"
+                            v-validate="'required'"
+                            :class="{ 'is-invalid' : errors.has('selectRole') }"
+                            :options="roles"></b-form-select>
+                            <transition mode="out-in" name="liveFeedbacks">
+                                <b-form-invalid-feedback
+                                    v-for="error in errors.collect('selectRole')"
+                                    :key="error">
+                                    {{ error }}
+                                </b-form-invalid-feedback>
+                            </transition>
+                    </b-form-group>
+                    <b-button
+                        type="submit">
+                        Registrar
+                    </b-button>
+                </b-card>
+            </b-form>
+            <!-- çççççççççççççççççççççççççççççççççççççççççççççççççççççççç -->
             <!-- Visible when the user is logged in -->
             <span
                 id="home-nav"
@@ -147,6 +273,39 @@
                 testsRoot: { name: 'Realizar TESTS sobre procesos', path: 'testsRoot' },
                 username: '', /* v-model */
                 usuario: { name: 'Acceder a la GESTIÓN DE USUARIOS', path: 'users.index' },
+
+
+
+                auxUsers: [], /* Stores a copy of the users to filter it on search*/
+                current: 0, /* Is the current tab */
+                email: '', /* V-model */
+                name: '', /* V-model */
+                numEmailFounded: 0, /* Stores the number of coincidences by email founded at the database */
+                numUserFounded: 0, /* Stores the number of coincidences by username founded at the database */
+                password: '', /* V-model */
+                password_confirmation: '', /* V-model */
+                role: '', /* V-model */
+                roles: [
+                    { value: 'user', text: 'Usuario' },
+                    { value: 'admin', text: 'Administrador' },
+                    { value: 'root', text: 'Root' },
+                    { value: 'tester', text: 'Tester' }
+                ], /* Select element options */
+                typingTimer: null, /* Timer for the settimeout */
+                username: '', /* V-model */
+                users: [], /* Users existing on the db */
+                userData: [
+                    { text: 'Nombre', key: 'name' },
+                    { text: 'Nombre de usuario', key: 'username' },
+                    { text: 'E-mail', key: 'email' },
+                    { text: 'Conexiones', key: 'login_count' },
+                    { text: 'Última actividad', key: 'lastActivity' },
+                    { text: 'Última ip', key: 'lastIp' },
+                    { text: 'Último inicio de sesión', key: 'last_login' },
+                    { text: 'Tests completados', key: 'tests' },
+                ], /* Data of the user to show */
+                updUsername: '', /* V-model */
+                updPassword: '', /* V-model */
             }
         },
         computed: {
@@ -189,6 +348,36 @@
                             .then(() => {
                                 this.logging = false;
                             });
+                    });
+            },
+
+            /**
+             * Launchs the register action to the db
+             */
+            inRegister() {
+                let user = {
+                    name: this.name,
+                    username: this.username,
+                    email: this.email,
+                    password: this.password,
+                    password_confirmation: this.password_confirmation,
+                    role: this.role,
+                    login_count: 0,
+                }
+                http.post('api/register', { ...user })
+                    .then(response => {
+                        this.name = '';
+                        this.username = '';
+                        this.email = '';
+                        this.password = '';
+                        this.password_confirmation = '';
+                        this.role = '';
+                        this.$validator.reset();
+                        this.$showToast(response.status, response.message, response.title);
+                    })
+                    .catch(error => {
+                        this.$showToast('danger', 'No se ha podido crear al nuevo usuario. Código de error: FEMaUs@InRe', 'Ha ocurrido un error');
+                        console.error(error.response ? error.response.data : error);
                     });
             },
         }
