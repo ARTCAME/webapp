@@ -8,14 +8,14 @@
         </span>
         <span id="side-login" class="sides-login">
             <!-- Shown when the api call to login or logout is actived -->
-            <span
+            <!-- <span
                 id="logginout-spinner-wrp"
                 v-if="logging == true">
                 <b-spinner id="logginout-spinner" class="ig-green" type="grow"></b-spinner>
-            </span>
+            </span> -->
 
             <!-- Shown when the user is not logged in -->
-            <b-form
+            <!-- <b-form
                 id="login-form"
                 v-else-if="isLoggedIn == false"
                 @submit.prevent="inLogin">
@@ -57,13 +57,12 @@
                 <b-button
                     size="sm"
                     type="submit">Iniciar sesión</b-button>
-            </b-form>
+            </b-form> -->
             <!-- çççççççççççççççççççççççççççççççççççççççççççççççççççççççç -->
             <b-form
                 autocomplete="off"
                 key="user-register-form"
                 method="post"
-                v-if="current == 1"
                 @submit.prevent="inRegister">
                 <b-card id="register-form">
                     <b-form-group>
