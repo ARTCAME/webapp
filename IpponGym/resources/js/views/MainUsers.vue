@@ -292,6 +292,39 @@
                 return Object.keys(this.veeFormFields).every(k => this.veeFormFields[k].valid);
             },
         },
+        created() {
+            /**
+             * Get all the users registered and assign it as a local variable
+             */
+            http.get('/api/getUsers')
+                .then((response) => {
+                    this.users = response.data;
+                })
+                .catch(error => {
+                    this.$showToast('danger', 'No se han podido obtener los usuarios', 'Ha ocurrido un error')
+                    console.error(error.response ? error.response.data : error);
+                });
+            /**
+             * Get all the created sessions data and assign its data to each user
+             */
+            http.get('/api/getSessions')
+                .then((response) => {
+                    this.users.forEach((user, index) => {
+                        /* Check if a session exists to assign its data to the user */
+                        const session = response.data.filter(session => session.user_id == user._id.$oid);
+                        if (session.length > 0) {
+                            this.$set(this.users[index], 'lastActivity', this.$moment(parseInt(session[0].updated_at.$date.$numberLong)).format('YYYY-MM-DD HH:mm:ss'));
+                            this.$set(this.users[index], 'lastIp', session[0].last_ip);
+                        }
+                    });
+                    /* Save the users to an aux variable to allow the filter of the users */
+                    this.auxUsers = [...this.users];
+                })
+                .catch(error => {
+                    this.$showToast('danger', 'No se han podido obtener las sesiones', 'Ha ocurrido un error')
+                    console.error(error.response ? error.response.data : error);
+                });
+        },
         methods: {
             ...mapActions('auth', ['register']),
             /**
@@ -366,39 +399,6 @@
                     });
             }
         },
-        created() {
-            /**
-             * Get all the users registered and assign it as a local variable
-             */
-            http.get('/api/getUsers')
-                .then((response) => {
-                    this.users = response.data;
-                })
-                .catch(error => {
-                    this.$showToast('danger', 'No se han podido obtener los usuarios', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
-                });
-            /**
-             * Get all the created sessions data and assign its data to each user
-             */
-            http.get('/api/getSessions')
-                .then((response) => {
-                    this.users.forEach((user, index) => {
-                        /* Check if a session exists to assign its data to the user */
-                        const session = response.data.filter(session => session.user_id == user._id.$oid);
-                        if (session.length > 0) {
-                            this.$set(this.users[index], 'lastActivity', this.$moment(parseInt(session[0].updated_at.$date.$numberLong)).format('YYYY-MM-DD HH:mm:ss'));
-                            this.$set(this.users[index], 'lastIp', session[0].last_ip);
-                        }
-                    });
-                    /* Save the users to an aux variable to allow the filter of the users */
-                    this.auxUsers = [...this.users];
-                })
-                .catch(error => {
-                    this.$showToast('danger', 'No se han podido obtener las sesiones', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
-                });
-        }
     }
 </script>
 <style scoped>
