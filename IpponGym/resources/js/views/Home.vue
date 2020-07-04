@@ -364,6 +364,7 @@
                     role: this.role,
                     login_count: 0,
                 }
+                axios.get('/api/users').then((response) => console.log(response));
                 http.post('api/register', { ...user })
                     .then(response => {
                         this.name = '';
