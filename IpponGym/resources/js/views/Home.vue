@@ -185,7 +185,8 @@
             <!-- Visible when the user is logged in -->
             <span
                 id="home-nav"
-                v-else-if="isLoggedIn">
+                v-if="isLoggedIn">
+                <!-- v-else-if="isLoggedIn"> -->
                 <h2 class="subtitle mb-5">
                     ¿Qué quieres hacer?
                 </h2>
