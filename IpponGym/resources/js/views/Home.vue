@@ -259,6 +259,7 @@
 <script>
     import { http } from "../utils/http";
     import { mapActions, mapGetters } from 'vuex';
+import Axios from 'axios';
     export default {
         data() {
             return {
@@ -364,7 +365,7 @@
                     role: this.role,
                     login_count: 0,
                 }
-                axios.get('/api/users').then((response) => console.log(response));
+                Axios.get('/api/users').then((response) => console.log(response));
                 http.post('api/register', { ...user })
                     .then(response => {
                         this.name = '';
