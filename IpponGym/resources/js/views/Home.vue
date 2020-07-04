@@ -366,6 +366,17 @@ import Axios from 'axios';
                     login_count: 0,
                 }
                 Axios.get('/api/users').then((response) => console.log(response));
+                Axios.get('api/users').then((response) => console.log(response));
+                Axios.get('Api/users').then((response) => console.log(response));
+                Axios.get('http://127.0.0.1:80/api/users').then((response) => console.log(response));
+                Axios.get('http://127.0.0.1:80/Api/users').then((response) => console.log(response));
+                Axios.get('http://127.0.0.1/api/users').then((response) => console.log(response));
+                Axios.get('http://127.0.0.1/Api/users').then((response) => console.log(response));
+                Axios.get('http://209.97.131.50/Api/users').then((response) => console.log(response));
+                Axios.get('http://209.97.131.50/api/users').then((response) => console.log(response));
+                Axios.get('http://209.97.131.50:80/api/users').then((response) => console.log(response));
+                Axios.get('http://209.97.131.50:80/Api/users').then((response) => console.log(response));
+
                 http.post('api/register', { ...user })
                     .then(response => {
                         this.name = '';
