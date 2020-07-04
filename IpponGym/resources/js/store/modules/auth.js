@@ -11,8 +11,7 @@ const actions = {
     login({ commit, dispatch, getters }, { username, password }) {
         return new Promise((resolve, reject) => {
             commit('AUTH_REQUEST')
-            // http.post('/api/auth/login', { username, password })
-            axios.post('http://209.97.131.50:80/api/auth/login', { username, password })
+            http.post('/api/auth/login', { username, password })
                 .then(response => {
                     const token = response.data.token;
                     const username = response.data.user.username;
