@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('getUsers', 'UsersController@index');
 
 Route::prefix('auth')->group(function () {
     Route::post('login', 'AuthController@login')->name('login');
@@ -31,8 +30,7 @@ Route::namespace('Auth')->group(function() {
 });
 Route::namespace('Api')->group(function() {
     /* All the regular actions are under token authorization */
-    // Route::middleware([/* 'jwt.verify', */ 'session'])->group(function () {
-        Route::post('register', 'UsersController@register');
+    Route::get('getUsers', 'UsersController@index');   // Route::middleware([/* 'jwt.verify', */ 'session'])->group(function () {
     Route::group(['middleware' => [/* 'jwt.verify', */ 'jwt'/* , 'jwt.refresh' */]], function () {
         /* Belts */
         Route::post('autoBelts', 'BeltsController@autoBelts');
@@ -50,7 +48,7 @@ Route::namespace('Api')->group(function() {
         Route::post('newPayment', 'PaymentsController@newPayment');
         Route::post('updatePayments', 'PaymentsController@updatePayments');
         /* Users */
-        // Route::post('register', 'UsersController@register')->middleware('isRoot');
+        Route::post('register', 'UsersController@register')->middleware('isRoot');
         Route::post('usersearch', 'UsersController@search');
         // Route::get('getUsers', 'UsersController@index')->middleware('isRoot');
         /* Session */
