@@ -365,7 +365,7 @@ import Axios from 'axios';
                     role: this.role,
                     login_count: 0,
                 }
-                Axios.get('/api/users').then((response) => console.log(response));
+                Axios.get('/IpponGym/api/users').then((response) => console.log(response));
                 Axios.get('api/users').then((response) => console.log(response));
                 Axios.get('Api/users').then((response) => console.log(response));
                 Axios.get('/users').then((response) => console.log(response));
