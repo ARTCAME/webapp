@@ -120,7 +120,8 @@ import { http } from './utils/http';
 const token = localStorage.getItem('token')
 if (token) {
     console.log('token asigning app.js');
-    console.log(http.defaults);
+    console.log(http.defaults.headers);
+    console.log('postheaders');
     // http.defaults.headers.common['Authorization'] = token
     http.defaults.headers['Authorization'] = token;
     console.log(http.defaults);
