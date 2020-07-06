@@ -379,6 +379,9 @@
         display: flex 1 1;
         flex-direction: column;
     }
+    .in-home .nav-link {
+        padding: .4rem!important;
+    }
     .in-home #ippon-ttl {
         font-size: calc(50px + (150 - 50) * ((100vw - 300px) / (1600 - 300))); /* minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
         padding: 0 50px 0 50px;
