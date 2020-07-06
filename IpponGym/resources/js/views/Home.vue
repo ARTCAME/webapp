@@ -38,8 +38,7 @@
                         type="text"
                         v-model="username"
                         v-validate="'required|min:3|uniqueUsername:' + numUserFounded"
-                        :class="{ 'is-invalid' : errors.has('reg-username') }"
-                        @input="find('username', username)"></b-form-input>
+                        :class="{ 'is-invalid' : errors.has('reg-username') }"></b-form-input>
                     <transition mode="out-in" name="liveFeedbacks">
                         <b-form-invalid-feedback
                             v-for="error in errors.collect('reg-username')"
@@ -56,8 +55,7 @@
                         type="email"
                         v-model="email"
                         v-validate="'required|email|uniqueEmail:' + numEmailFounded"
-                        :class="{ 'is-invalid' : errors.has('reg-email') }"
-                        @input="find('email', email)"></b-form-input>
+                        :class="{ 'is-invalid' : errors.has('reg-email') }"></b-form-input>
                     <transition mode="out-in" name="liveFeedbacks">
                         <b-form-invalid-feedback
                             v-for="error in errors.collect('reg-email')"
