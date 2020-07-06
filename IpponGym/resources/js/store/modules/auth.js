@@ -70,7 +70,8 @@ const actions = {
                     localStorage.setItem('role', role);
                     localStorage.setItem('id', id);
                     /* Re set the axios header token */
-                    http.defaults.headers.common['Authorization'] = token;
+                    // http.defaults.headers.common['Authorization'] = token;
+                    http.defaults.headers['Authorization'] = token;
                     commit('AUTH_SUCCESS', { user: username, token: token, role: role, id: id });
                     /* Reloads the page, on the process fetch the initial data via the route guard */
                     location.reload();
