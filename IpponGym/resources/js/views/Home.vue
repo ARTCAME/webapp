@@ -135,7 +135,7 @@
 <script>
     import { http } from "../utils/http";
     import { mapActions, mapGetters } from 'vuex';
-    import { MainUsers } from "../views/MainUsers";
+    import MainUsers from "../views/MainUsers";
 import Axios from 'axios';
     export default {
         components: {
