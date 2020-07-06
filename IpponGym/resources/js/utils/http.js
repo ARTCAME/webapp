@@ -8,10 +8,10 @@ const http = axios.create({
     baseURL: URL,
     headers: {
         'Accept': 'application/json',
-        'Authorization': `${ localStorage.getItem('token') }`,
+        'Authorization': `${ window.localStorage.getItem('token') }`,
         'common': {
             'Accept': 'application/json',
-            'Authorization': `${ localStorage.getItem('token') }`,
+            'Authorization': `${ window.localStorage.getItem('token') }`,
         }
     }
 });
