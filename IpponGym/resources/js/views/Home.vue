@@ -39,6 +39,7 @@
                 </b-form-group>
                 <b-form-group label="Contraseña" label-for="password">
                     <b-form-input
+                        autocomplete
                         name="login-password"
                         required
                         type="password"
