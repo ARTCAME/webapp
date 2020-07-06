@@ -21,20 +21,16 @@ http.interceptors.response.use(
         /* The RefreshTokens middleware can send a token on headers, if its present set it as the current token authorization */
         const newtoken = response.headers.authorization;
         if (newtoken) {
-            console.log('newtoken!')
             store.dispatch('auth/setToken', newtoken);
         }
         return response;
     },
     error => {
-        console.log(http.headers);
-        console.log(localStorage.getItem('token'))
         /* If a login error occurst, close the session */
         if (error.response && error.response.status === 401) {
-            // store.dispatch('auth/logout');
-            // location.reload();
+            store.dispatch('auth/logout');
+            location.reload();
         }
-        console.error(error);
         return Promise.reject(error);
 })
 
