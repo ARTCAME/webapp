@@ -9,6 +9,10 @@ const http = axios.create({
     headers: {
         'Accept': 'application/json',
         'Authorization': `${ localStorage.getItem('token') }`,
+        'common': {
+            'Accept': 'application/json',
+            'Authorization': `${ localStorage.getItem('token') }`,
+        }
     }
 });
 
@@ -27,7 +31,7 @@ http.interceptors.response.use(
         console.log(localStorage.getItem('token'))
         /* If a login error occurst, close the session */
         if (error.response && error.response.status === 401) {
-            store.dispatch('auth/logout');
+            // store.dispatch('auth/logout');
             // location.reload();
         }
         console.error(error);
