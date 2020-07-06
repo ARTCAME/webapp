@@ -131,10 +131,10 @@ if (token) {
 if (store.getters['auth/isLoggedIn']) {
     console.log('getting customers');
     console.log(http.defaults);
-    store.dispatch('getCustomers')
-        .then(() => {
+    // store.dispatch('getCustomers')
+        // .then(() => {
             createVue();
-        });
+        // });
 } else {
     createVue();
 }
