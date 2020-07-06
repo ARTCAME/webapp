@@ -120,7 +120,9 @@ import { http } from './utils/http';
 const token = localStorage.getItem('token')
 if (token) {
     console.log('token asigning app.js');
-    http.defaults.headers.common['Authorization'] = token
+    // http.defaults.headers.common['Authorization'] = token
+    http.defaults.headers['Authorization'] = token;
+    console.log(http.defaults);
 }
 
 /* Before load the app is necessary to get all the customers data and fetch it to vuex but this will happen only if a valid user ir logged in*/
