@@ -48,7 +48,7 @@ return [
             // 'password' => env('MONGO_DB_PASSWORD'),
             'password' => env('MONGO_DB_PASSWORD', '1990NN0991'),
             'options' => [
-                'database' => 'admin'
+                'database' => 'ippongym'
                 // 'replicaSet' => 'rs0',
                 // 'readPreference' => MongoClient::RP_SECONDARY_PREFERRED
             ]
