@@ -25,7 +25,7 @@ http.interceptors.response.use(
         /* If a login error occurst, close the session */
         if (error.response && error.response.status === 401) {
             store.dispatch('auth/logout');
-            location.reload();
+            // location.reload();
         }
         console.error(error);
         return Promise.reject(error);
