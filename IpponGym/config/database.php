@@ -41,8 +41,11 @@ return [
             // 'host' => env('MONGO_DB_HOST','localhost'),
             'host' => env('MONGO_DB_HOST','http://127.0.0.1'),
             'port' => env('MONGO_DB_PORT', '27017'),
+            // 'database' => env('MONGO_DB_DATABASE'),
             'database' => env('MONGO_DB_DATABASE', 'ippongym'),
+            // 'username' => env('MONGO_DB_USERNAME'),
             'username' => env('MONGO_DB_USERNAME', 'ipponadmin'),
+            // 'password' => env('MONGO_DB_PASSWORD'),
             'password' => env('MONGO_DB_PASSWORD', '1990NN0991'),
             'options' => [
                 'database' => 'admin'
