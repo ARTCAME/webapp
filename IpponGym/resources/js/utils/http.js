@@ -14,10 +14,10 @@ const http = axios.create({
 
 http.interceptors.response.use(
     response => {
-        console.log(http);
         /* The RefreshTokens middleware can send a token on headers, if its present set it as the current token authorization */
         const newtoken = response.headers.authorization;
         if (newtoken) {
+            console.log('newtoken!')
             store.dispatch('auth/setToken', newtoken);
         }
         return response;
