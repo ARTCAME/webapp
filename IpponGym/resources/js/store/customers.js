@@ -190,10 +190,8 @@ export default new Vuex.Store({
             }
         },
         async getCustomers({ dispatch }) {
-            const response = await http.get('/api/getUsers');
-            console.log(response);
-            // const response = await http.get('/api/customers');
-            // await dispatch('fetchCustomers', response.data);
+            const response = await http.get('/api/customers');
+            await dispatch('fetchCustomers', response.data);
         },
         /**
          * To simplify the components operations, convert certain payment data to strings
