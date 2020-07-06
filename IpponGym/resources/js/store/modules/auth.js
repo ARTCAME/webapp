@@ -24,7 +24,7 @@ const actions = {
                     localStorage.setItem('role', role);
                     commit('AUTH_SUCCESS', { user: username, token: token, role: role, id: id });
                     /* Reloads the page, on the process fetch the initial data via the route guard */
-                    // location.reload();
+                    location.reload();
                 })
                 .catch (error => {
                     commit('AUTH_ERROR');
