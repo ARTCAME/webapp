@@ -8,12 +8,13 @@ const http = axios.create({
     baseURL: URL,
     headers: {
         'Accept': 'application/json',
-        'Authorization': `${window.localStorage.getItem('token')}`,
+        'Authorization': `${ localStorage.getItem('token') }`,
     }
 });
 
 http.interceptors.response.use(
     response => {
+        console.log(http);
         /* The RefreshTokens middleware can send a token on headers, if its present set it as the current token authorization */
         const newtoken = response.headers.authorization;
         if (newtoken) {
@@ -22,6 +23,7 @@ http.interceptors.response.use(
         return response;
     },
     error => {
+        console.log(http);
         /* If a login error occurst, close the session */
         if (error.response && error.response.status === 401) {
             store.dispatch('auth/logout');
