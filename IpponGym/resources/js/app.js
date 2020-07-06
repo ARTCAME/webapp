@@ -109,9 +109,6 @@ requireComponent.keys().forEach(fileName => {
 });
 import DocImg from './components/userdocassets/DocImg';
 Vue.component('DocImg',  DocImg);
-import MainUsers from "./views/MainUsers";
-Vue.component('MainUsers',  MainUsers);
-
 
 // import '../css/styles.css'; // Las fuentes están en app.css en public
 import App from './views/App'; /* Contain the css main styles */
