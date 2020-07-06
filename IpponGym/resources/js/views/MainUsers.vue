@@ -378,7 +378,7 @@
                         this.password_confirmation = '';
                         this.role = '';
                         this.$validator.reset();
-                        this.$showToast(response.status, response.message, response.title);
+                        this.$showToast('success', 'Usuario creado correctamente', 'Creación de usuario');
                     })
                     .catch(error => {
                         this.$showToast('danger', 'No se ha podido crear al nuevo usuario. Código de error: FEMaUs@InRe', 'Ha ocurrido un error');
