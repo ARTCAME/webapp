@@ -30,7 +30,7 @@ Route::namespace('Auth')->group(function() {
 });
 Route::namespace('Api')->group(function() {
     /* All the regular actions are under token authorization */
-    Route::get('getUsers', 'UsersController@index');   // Route::middleware([/* 'jwt.verify', */ 'session'])->group(function () {
+    // Route::middleware([/* 'jwt.verify', */ 'session'])->group(function () {
     Route::group(['middleware' => [/* 'jwt.verify', */ 'jwt'/* , 'jwt.refresh' */]], function () {
         /* Belts */
         Route::post('autoBelts', 'BeltsController@autoBelts');
@@ -50,7 +50,7 @@ Route::namespace('Api')->group(function() {
         /* Users */
         Route::post('register', 'UsersController@register')->middleware('isRoot');
         Route::post('usersearch', 'UsersController@search');
-        // Route::get('getUsers', 'UsersController@index')->middleware('isRoot');
+        Route::get('getUsers', 'UsersController@index')->middleware('isRoot');
         /* Session */
         Route::post('updateSession', 'SessionController@updateSession');
         Route::get('getSessions', 'SessionController@getSessions')->middleware('isRoot');
