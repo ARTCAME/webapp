@@ -23,7 +23,8 @@ http.interceptors.response.use(
         return response;
     },
     error => {
-        console.log(http);
+        console.log(http.headers);
+        console.log(localStorage.getItem('token'))
         /* If a login error occurst, close the session */
         if (error.response && error.response.status === 401) {
             store.dispatch('auth/logout');
