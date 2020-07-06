@@ -139,7 +139,7 @@
 import Axios from 'axios';
     export default {
         components: {
-            MainUsers,
+            'MainUsers': MainUsers,
         },
         data() {
             return {
