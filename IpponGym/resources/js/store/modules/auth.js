@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { http } from '../../utils/http';
 
 const actions = {
