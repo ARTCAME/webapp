@@ -120,6 +120,7 @@ import { http } from './utils/http';
 const token = localStorage.getItem('token')
 if (token) {
     console.log('token asigning app.js');
+    console.log(http.defaults);
     // http.defaults.headers.common['Authorization'] = token
     http.defaults.headers['Authorization'] = token;
     console.log(http.defaults);
@@ -128,6 +129,7 @@ if (token) {
 /* Before load the app is necessary to get all the customers data and fetch it to vuex but this will happen only if a valid user ir logged in*/
 if (store.getters['auth/isLoggedIn']) {
     console.log('getting customers');
+    console.log(http.defaults);
     store.dispatch('getCustomers')
         .then(() => {
             createVue();
