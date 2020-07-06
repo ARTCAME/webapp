@@ -1,6 +1,7 @@
 <template>
     <div id="login-main-container">
         <MainUsers></MainUsers>
+        Hola xoxo
         <span class="sides-login" id="side-logo">
             <span id="login-logo">
                 <span id="login-ippon">IPPON</span>
