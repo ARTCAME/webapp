@@ -128,6 +128,7 @@ router.beforeEach(async (to, from, next) => {
     if (store.getters['auth/isLoggedIn']) {
         /* Update the session data of the current user */
         const id = store.getters['auth/authId'];
+        console.log(http.headers)
         http.post('/api/updateSession', { id: id });
     }
     /* Start the route progress bar out of the documentation page */
