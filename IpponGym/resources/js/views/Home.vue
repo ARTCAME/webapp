@@ -4,7 +4,6 @@
             autocomplete="off"
             key="user-register-form"
             method="post"
-            v-if="current == 1"
             @submit.prevent="inRegister">
             <b-card id="register-form">
                 <b-form-group>
