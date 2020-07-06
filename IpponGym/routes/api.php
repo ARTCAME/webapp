@@ -29,7 +29,6 @@ Route::namespace('Auth')->group(function() {
     });
 });
 Route::namespace('Api')->group(function() {
-    Route::post('register', 'UsersController@register')/* ->middleware('isRoot') */;
     /* All the regular actions are under token authorization */
     // Route::middleware([/* 'jwt.verify', */ 'session'])->group(function () {
     Route::group(['middleware' => [/* 'jwt.verify', */ 'jwt'/* , 'jwt.refresh' */]], function () {
@@ -49,7 +48,7 @@ Route::namespace('Api')->group(function() {
         Route::post('newPayment', 'PaymentsController@newPayment');
         Route::post('updatePayments', 'PaymentsController@updatePayments');
         /* Users */
-        // Route::post('register', 'UsersController@register')->middleware('isRoot');
+        Route::post('register', 'UsersController@register')->middleware('isRoot');
         Route::post('usersearch', 'UsersController@search');
         Route::get('getUsers', 'UsersController@index')->middleware('isRoot');
         /* Session */
