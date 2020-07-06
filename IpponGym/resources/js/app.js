@@ -119,19 +119,12 @@ import { http } from './utils/http';
 /* Add the token to the axios headers */
 const token = localStorage.getItem('token')
 if (token) {
-    console.log('token asigning app.js');
-    console.log(token);
-    console.log(http.defaults.headers);
-    console.log('postheaders');
     // http.defaults.headers.common['Authorization'] = token
     http.defaults.headers['Authorization'] = token;
-    console.log(http.defaults);
 }
 
 /* Before load the app is necessary to get all the customers data and fetch it to vuex but this will happen only if a valid user ir logged in*/
 if (store.getters['auth/isLoggedIn']) {
-    console.log('getting customers');
-    console.log(http.defaults);
     // store.dispatch('getCustomers')
         // .then(() => {
             createVue();
@@ -152,52 +145,30 @@ function createVue() {
             /* Auto login when a user exists on localStorage */
             if (localStorage.getItem('user')) {
                 /* Auto login old? */
-                console.log('Auto login old?');
                 store.commit('AUTH_SUCCESS', localStorage.getItem('user'), localStorage.getItem('token'), localStorage.getItem('role'), localStorage.getItem('expires'));
             }
             http.interceptors.response.use(
                 response => {
-                    // console.log('use interceptor created')
-                    // const newtoken = response.headers.authorization;
-                    // console.log(newtoken)
-                    // if (newtoken) {
-                    //     localStorage.setItem('token', newtoken);
-                    //     store.dispatch('auth/setToken', newtoken);
-                    //     console.log('relogin created');
-                    //     console.log(newtoken);
-                    // }
                     return response;
                 },
                 error => {
-                    // console.log('error interceptor created')
-                    // const newtoken = response.headers.authorization;
-                    // if (newtoken) {
-                    //     localStorage.setItem('token', newtoken)
-                    //     store.dispatch('auth/setToken', newtoken)
-                    //     console.log('relogin')
-                    //     console.log(newtoken);
-                    // }
-                    // if (newtoken) store.dispatch('login', newtoken)
-                    //     return response
-                    // },
-                    // error => {
-                        if (error.response && error.response.status === 401) {
-                            store.dispatch('auth/logout');
-                            if (error.response.data.message == 'login_error') {
-                                this.$showToast('danger', 'Usuario o contraseña incorrectos', 'Error de sesión', 8000);
-                            } else if (error.response.data.message.toLowerCase().includes('token')) {
-                                // location.reload()
-                                    // .then(() => {
-                                        this.$showToast('danger', 'Sesión expirada', 'Error de sesión', 8000);
-                                    // });
-                            } else {
-                                this.$showToast('danger', 'Se ha cerrado la sesión', 'Error de sesión', 8000);
-                            }
+                    if (error.response && error.response.status === 401) {
+                        store.dispatch('auth/logout');
+                        if (error.response.data.message == 'login_error') {
+                            this.$showToast('danger', 'Usuario o contraseña incorrectos', 'Error de sesión', 8000);
+                        } else if (error.response.data.message.toLowerCase().includes('token')) {
+                            // location.reload()
+                                // .then(() => {
+                                    this.$showToast('danger', 'Sesión expirada', 'Error de sesión', 8000);
+                                // });
+                        } else {
+                            this.$showToast('danger', 'Se ha cerrado la sesión', 'Error de sesión', 8000);
                         }
-                        console.error(error);
-                        NProgress.done();
-                        return Promise.reject(error);
                     }
+                    console.error(error);
+                    NProgress.done();
+                    return Promise.reject(error);
+                }
             );
         },
         router,
