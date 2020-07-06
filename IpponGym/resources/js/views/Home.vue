@@ -119,8 +119,7 @@
                         </transition>
                 </b-form-group>
                 <b-button
-                    type="submit"
-                    :disabled="this.isEveryValid == false">
+                    type="submit">
                     Registrar
                 </b-button>
             </b-card>
