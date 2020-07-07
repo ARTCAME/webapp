@@ -44,7 +44,7 @@ WacomGSS.STUConstructor = (function() {
 
   // Constructor
   function STU(port) {
-    var defPort = 80;
+    var defPort = 9000;
     var self = this;
     if(!checkExists(port))
     {
@@ -54,7 +54,8 @@ WacomGSS.STUConstructor = (function() {
     this.onDCAtimeout = null;
 
     // websocket = new WebSocket("wss://localhost:" + port.toString() + "/ws");
-    websocket = new WebSocket("wss://209.97.131.50:" + port.toString() + "/ws");
+    // websocket = new WebSocket("wss://209.97.131.50:" + port.toString() + "/ws");
+    websocket = new WebSocket("wss://localhost:" + port.toString() + "/ws");
 
     websocket.onopen = function() {
     //   console.log("connected");
