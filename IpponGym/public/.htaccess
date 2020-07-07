@@ -3,6 +3,13 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    <Proxy "balancer://nodes_ws">
+        BalancerMember "ws://app01:9000" route=app01
+        BalancerMember "ws://app02:9000" route=app02
+        BalancerMember "ws://app03:9000" route=app03
+        ProxySet stickysession=SERVERID
+    </Proxy>
+
     RewriteEngine On
 #    RewriteBase /var/www/IpponGymWebapp/IpponGym/public
     RewriteBase /
@@ -12,7 +19,7 @@
     # RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
-    RewriteRule /ws/(.*)           wss://localhost:9000/$1 [P,L]
+    #RewriteRule /ws/(.*)           wss://localhost:9000/$1 [P,L]
 
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
