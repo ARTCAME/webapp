@@ -44,7 +44,7 @@ WacomGSS.STUConstructor = (function() {
 
   // Constructor
   function STU(port) {
-    var defPort = 9000;
+    var defPort = 80;
     var self = this;
     if(!checkExists(port))
     {
