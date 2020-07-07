@@ -215,7 +215,7 @@ import Axios from 'axios';
         display: flex;
         flex-flow: row nowrap;
         height: 100%;
-        overflow-y: auto;
+        overflow-y: auto!important;
         position: fixed;
         right: 0;
         top: 0;
