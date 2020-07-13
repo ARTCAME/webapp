@@ -62,7 +62,7 @@ class CustomersController extends Controller {
      */
     public function index() {
         try {
-            return DB::collection('Personas')->get();
+            return DB::collection('customers')->get();
             // return Socios::all();
         } catch (Exception $e) {
             return response()->json([
