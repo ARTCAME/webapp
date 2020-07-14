@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h4>Lee detenidamente, por favor: </h4>
+        <h4>Lee detenidamente, por favor:</h4>
         <p>
             <u>Importante</u>: visita la sección TESTS para seguir enviando tus resultados y poder validar el funcionamiento de la aplicación, la encontrarás accesible desde la barra de navegación o desde la página de inicio en el botón 'Realizar TESTS sobre procesos'.
             <br><br>
