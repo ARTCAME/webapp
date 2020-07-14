@@ -33,6 +33,14 @@
                         placeholder="Filtra los resultados"
                         @input="filterUsers($event)"></b-input>
                 </b-row>
+                <b-row no-gutters>
+                    <b-button
+                        class="mx-2"
+                        variant="primary"
+                        @click="wantNewsTester()">
+                        Activar news en testers
+                    </b-button>
+                </b-row>
                 <b-card-group
                     class="p-2"
                     columns>
@@ -397,7 +405,14 @@
                         this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FEMaUs@InUpPa', 'Ha ocurrido un error')
                         console.error(error.response ? error.response.data : error);
                     });
-            }
+            },
+            /**
+             * Function to activate the news on the testers
+             */
+            wantNewsTester() {
+                http.post('api/wantNews')
+                    .then(response => console.log(response));
+            },
         },
     }
 </script>
