@@ -14,7 +14,7 @@
         <p>
             <h6>Cambios recientes:</h6>
             &emsp;- Se ha reconfigurado la conexión con la base de datos ya que al guardar los socios no se estaban mostrando en las búsquedas, ahora ya funciona correctamente
-            &emsp;- Se ha añadido esta página de noticias para mostrar las novedades más importantes, se desactivará automáticamente al cerrarla y volverá a aparecer cuando existan actualizaciones
+            <br>&emsp;- Se ha añadido esta página de noticias para mostrar las novedades más importantes, se desactivará automáticamente al cerrarla y volverá a aparecer cuando existan actualizaciones
         </p>
         <p>
             <h6>Errores detectados:</h6>
