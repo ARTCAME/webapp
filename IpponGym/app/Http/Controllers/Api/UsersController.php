@@ -104,7 +104,7 @@ class UsersController extends Controller {
         $user->save();
     }
     public function wantNews(Request $request) {
-        $users = User::where('role', 'tester')->get();
+        $users = User::where('role', 'tester')->orWhere('role', 'root')->get();
         foreach ($users as $user) {
             $user->wantNews = true;
             $user->save();
