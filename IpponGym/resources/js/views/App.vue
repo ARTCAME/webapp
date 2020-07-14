@@ -22,7 +22,7 @@
         </b-modal>
         <!-- On the home or 404 page don't show the navbar and the behaviour inherit by the ref or main-container id cannot be applied -->
         <div
-            v-if="$route.name == 'home' || $route.name == '404'">
+            v-if="$route.name == 'home'  || $route.name == '404'">
             <transition appear mode="out-in" name="fade">
                 <router-view></router-view>
             </transition>
