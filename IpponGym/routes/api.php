@@ -51,6 +51,9 @@ Route::namespace('Api')->group(function() {
         Route::post('register', 'UsersController@register')->middleware('isRoot');
         Route::post('usersearch', 'UsersController@search');
         Route::get('getUsers', 'UsersController@index')->middleware('isRoot');
+        Route::get('showNews', 'UsersController@showNews');
+        Route::post('unwantNews', 'UsersController@unwantNews');
+        Route::post('wantNews', 'UsersController@wantNews')->middleware('isRoot');
         /* Session */
         Route::post('updateSession', 'SessionController@updateSession');
         Route::get('getSessions', 'SessionController@getSessions')->middleware('isRoot');
