@@ -177,7 +177,7 @@
         transform: scale(1);
     }
     #welcome-home-modal___BV_modal_outer_ {
-        z-index: 1100!important; /* In front of everything, nothing overlays it */
+        z-index: 1100!important;  /* In front of everything, nothing overlays it */
     }
     #welcome-home-modal.ig-custom-modal .modal-content {
         background: linear-gradient(-25deg, rgba(250, 250, 250, .8) 0%, rgba(255, 255, 224, 1) 70%)!important;
