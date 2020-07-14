@@ -193,7 +193,7 @@ import Axios from 'axios';
                             });
                     });
             },
-        }
+        },
     }
 </script>
 <style scoped>
