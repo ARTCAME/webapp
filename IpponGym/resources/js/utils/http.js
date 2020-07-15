@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '../store/customers';
 
-// const URL = 'http://127.0.0.1:8090/'
+// const URL = 'http://127.0.0.1:8080/'
 // const URL = 'http://127.0.0.1/'
 const URL = 'http://209.97.131.50/'
 const http = axios.create({
@@ -27,9 +27,10 @@ http.interceptors.response.use(
     },
     error => {
         /* If a login error occurst, close the session */
+        console.log(error);
         if (error.response && error.response.status === 401) {
-            store.dispatch('auth/logout');
-            location.reload();
+            // store.dispatch('auth/logout');
+            // location.reload();
         }
         return Promise.reject(error);
 })
