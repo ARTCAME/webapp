@@ -191,6 +191,8 @@ export default new Vuex.Store({
         },
         async getCustomers({ dispatch }) {
             const response = await http.get('/api/customers');
+            console.log('construct')
+            console.log(response);
             await dispatch('fetchCustomers', response.data);
         },
         /**
