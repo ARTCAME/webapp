@@ -175,7 +175,7 @@
                             this.completedTests = response.data;
                             this.auxCompletedTests = [ ...this.completedTests ];
                             /* Set the not completed tests based on the completed received */
-                            this.tests = (this.completedTests && this.completedTests.length > 0) ? this.importedTests.filter(ta => this.completedTests.some(ct => ct[0].testName == ta[0].testName) == false) : this.importedTests;
+                            this.tests = (this.completedTests && this.completedTests.length > 0) ? this.importedTests.filter(it => this.completedTests.some(ct => ct[0].testName == it[0].testName) == false) : this.importedTests;
                             this.auxTests = [ ...this.tests ];
                         })
                         .catch(error => {
@@ -188,7 +188,9 @@
                             /* Set the completed tests */
                             this.completedTests = response.data;
                             /* Set the not completed tests based on the completed received */
-                            this.tests = (this.completedTests && this.completedTests.length > 0) ? this.importedTests.filter(ta => this.completedTests.some(ct => ct[0].testName == ta[0].testName) == false) : this.importedTests;
+                            this.tests = (this.completedTests && this.completedTests.length > 0) ? this.importedTests.filter(it => this.completedTests.some(ct => ct[0].testName == it[0].testName) == false) : this.importedTests;
+                            console.log(this.completedTests);
+                            console.log(this.tests);
                         })
                         .catch((error) => {
                             this.$showToast('danger', 'No se han podido obtener los tests', 'Ha ocurrido un error');
