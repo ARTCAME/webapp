@@ -18,13 +18,13 @@
                     <b-nav-item
                         class="p-0"
                         :active="current == 0"
-                        @click="current = 0; filterTests(''); filter = null;">
+                        @click="current = 0; filter = null;">
                         Pendientes
                     </b-nav-item>
                     <b-nav-item
                         class="p-0"
                         :active="current == 1"
-                        @click="current = 1; filterTests(''); filter = null;">
+                        @click="current = 1; filter = null;">
                         Completados
                     </b-nav-item>
                 </b-nav>
@@ -78,16 +78,13 @@
                         v-if="tests.length == 0">
                         No hay tests pendientes
                     </span>
-                    <span
-                        v-else>
-                        <transition-group mode="out-in" name="fade">
-                            <Tests
-                                v-for="test in tests"
-                                :key="test[0].testName"
-                                :test="test"
-                                @save="saveTests(...arguments)"></Tests>
-                        </transition-group>
-                    </span>
+                    <transition-group mode="out-in" name="fade">
+                        <Tests
+                            v-for="test in tests"
+                            :key="test[0].testName"
+                            :test="test"
+                            @save="saveTests(...arguments)"></Tests>
+                    </transition-group>
                 </b-card-group>
                 <!-- Completed page -->
                 <b-card-group
@@ -99,16 +96,13 @@
                         v-if="completedTests.length == 0">
                         No hay tests completados
                     </span>
-                    <span
-                        v-else>
-                        <transition-group mode="out-in" name="fade">
-                            <Tests
-                                v-for="(test, index) in completedTests"
-                                :completed="true"
-                                :key="test[0].testName + index"
-                                :test="test"></Tests>
-                        </transition-group>
-                    </span>
+                    <transition-group mode="out-in" name="fade">
+                        <Tests
+                            v-for="(test, index) in completedTests"
+                            :completed="true"
+                            :key="test[0].testName + index"
+                            :test="test"></Tests>
+                    </transition-group>
                 </b-card-group>
             </transition>
         </b-card>
