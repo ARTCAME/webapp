@@ -125,10 +125,10 @@ if (token) {
 
 /* Before load the app is necessary to get all the customers data and fetch it to vuex but this will happen only if a valid user ir logged in*/
 if (store.getters['auth/isLoggedIn']) {
-    // store.dispatch('getCustomers')
-        // .then(() => {
+    store.dispatch('getCustomers')
+        .then(() => {
             createVue();
-        // });
+        });
 } else {
     createVue();
 }
