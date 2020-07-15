@@ -26,7 +26,7 @@ const router = new Router ({
             component: MainForm,
             meta: {
                 requiresAuth: true,
-            },
+            }
         },
         {
             path: '/socio/:id',
