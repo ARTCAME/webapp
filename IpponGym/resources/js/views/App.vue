@@ -11,7 +11,7 @@
             ref="mdl-welcome-home"
             show
             scrollable
-            v-if="isLoggedIn && authenticatedRole == 'tester' && $route.name != '404' && $route.name != 'wiki'"
+            v-if="isLoggedIn && (authenticatedRole == 'tester' || authenticatedRole == 'root') && $route.name != '404' && $route.name != 'wiki'"
             @hidden="$manageScrollBar; unwantNews()"
             @show="$manageScrollBar">
             <template
