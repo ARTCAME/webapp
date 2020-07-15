@@ -376,7 +376,7 @@
         data() {
             return {
                 auxUsers: [], /* Stores a copy of the users to filter it on search*/
-                current: 2, /* Is the current tab */
+                current: 0, /* Is the current tab */
                 currentEdit: null, /* Is the edit action selected */
                 editUser: null, /* The user on edit */
                 email: '', /* V-model */
@@ -418,7 +418,7 @@
                 return Object.keys(this.veeFormFields).every(k => this.veeFormFields[k].valid);
             },
         },
-        created() {
+        mounted() {
             /* Get all the users registered and its sessions */
             this.getUsers();
             this.getSessions();
