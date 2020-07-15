@@ -102,22 +102,27 @@
             modal-class="ig-custom-modal"
             no-close-on-backdrop
             scrollable
-            title="Genera documentos"
             @hidden="$manageScrollBar"
             @show="$manageScrollBar">
+            <template
+                #modal-title>
+                <h1>Novedades y actualización de errores</h1>
+            </template>
             <PrintFile></PrintFile>
         </b-modal>
     </b-row>
 </template>
 <style>
+    #payments-nav-modal.ig-custom-modal .modal-header,
+    #print-nav-modal.ig-custom-modal .modal-header,
+    #search-nav-modal.ig-custom-modal .modal-header {
+        padding-left: 3rem!important;
+    }
     .navbar-light .navbar-toggler {
         border-color: transparent; /* Delete the hambur icon border */
     }
 </style>
 <style scoped>
-    .ig-custom-modal .modal-title {
-        padding-left: 2rem!important;
-    }
     .in-home {
         display: flex;
     }
