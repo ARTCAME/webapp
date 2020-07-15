@@ -42,46 +42,43 @@ class PaymentsController extends Controller {
      */
     public static function monthlyPayments() {
         /* Get the active customers */
-        $allSocios = DB::collection('Personas')->where('active',true)->get();
+        $allSocios = DB::collection('customers')->where('active', true)->get();
         $nuevoPago = [];
         $fecha = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
 
     // fclose($csv);
     // $csvoutput = fopen('_Remesa_.csv', 'w');
 
-        foreach ($allSocios as $socio) {
-            /* Only for the active customers */
-            if ($socio['active'] == true) {
-                $auxDatosPago = $socio['paymentData'];
-                /* Sort the array of payments attributes to obtain the last registered on position [0] */
-                // usort($auxDatosPago, function ($a,$b) {
-                //     return $a['fecha'] > $b['fecha'] ? -1 : $a['fecha'] == $b['fecha'] ? 0 : 1 /* $b['fecha'] <=> $a['fecha'] */;
-                // });
-                /* Check if for the customer we have a payment for the current month-year */
-                $pagoYaGenerado = false;
-                foreach ($socio['payments'] as $payment) {
-                    if ($payment['interval'] == date('m-Y')) {
-                        $pagoYaGenerado = true;
-                    }
-                }
-                /* If doesn't exists a payment registered for this month we create and save it on the customer based on the last payments attributes */
-                if (!$pagoYaGenerado) {
-                    $nuevoPago['rate'] = $auxDatosPago[0]['rate'];
-                    $nuevoPago['amount'] = $auxDatosPago[0]['amount'];
-                    $nuevoPago['paymenttype'] = $auxDatosPago[0]['paymenttype'];
-                    $nuevoPago['iban'] = $auxDatosPago[0]['iban'];
-                    $nuevoPago['interval'] = date('Y-m');
-                    $nuevoPago['status'] = 'Pendiente';
-                    $nuevoPago['dategenerated'] = $fecha;
-                    $nuevoPago['dateconfirmed'] = null;
-                    $auxSocio = Socios::find($socio['_id']);
-                    $auxSocio->push('payments', $nuevoPago);
-                    $auxSocio->save();
-                    /* Manage the csv data */
-                    // fputcsv($filename, [$socio['nombre'], $socio['dni'], $nuevoPago['iban'], $nuevoPago['amount'], $nuevoPago['interval']]);
-                }
-            }
-        }
+        // foreach ($allSocios as $socio) {
+        //     $auxDatosPago = $socio['paymentData'];
+        //     /* Sort the array of payments attributes to obtain the last registered on position [0] */
+        //     // usort($auxDatosPago, function ($a,$b) {
+        //     //     return $a['fecha'] > $b['fecha'] ? -1 : $a['fecha'] == $b['fecha'] ? 0 : 1 /* $b['fecha'] <=> $a['fecha'] */;
+        //     // });
+        //     /* Check if for the customer we have a payment for the current month-year */
+        //     $pagoYaGenerado = false;
+        //     foreach ($socio['payments'] as $payment) {
+        //         if ($payment['interval'] == date('m-Y')) {
+        //             $pagoYaGenerado = true;
+        //         }
+        //     }
+        //     /* If doesn't exists a payment registered for this month we create and save it on the customer based on the last payments attributes */
+        //     if (!$pagoYaGenerado) {
+        //         $nuevoPago['rate'] = $auxDatosPago[0]['rate'];
+        //         $nuevoPago['amount'] = $auxDatosPago[0]['amount'];
+        //         $nuevoPago['paymenttype'] = $auxDatosPago[0]['paymenttype'];
+        //         $nuevoPago['iban'] = $auxDatosPago[0]['iban'];
+        //         $nuevoPago['interval'] = date('Y-m');
+        //         $nuevoPago['status'] = 'Pendiente';
+        //         $nuevoPago['dategenerated'] = $fecha;
+        //         $nuevoPago['dateconfirmed'] = null;
+        //         $auxSocio = Socios::find($socio['_id']);
+        //         $auxSocio->push('payments', $nuevoPago);
+        //         $auxSocio->save();
+        //         /* Manage the csv data */
+        //         // fputcsv($filename, [$socio['nombre'], $socio['dni'], $nuevoPago['iban'], $nuevoPago['amount'], $nuevoPago['interval']]);
+        //     }
+        // }
         /* E-mail send with the file generated */
         $mail = new PHPMailer();
         $mail->CharSet = 'UTF-8';
