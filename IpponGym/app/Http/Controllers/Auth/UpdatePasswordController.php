@@ -18,7 +18,7 @@ class UpdatePasswordController extends Controller {
     public function updatePassword(Request $request) {
         try {
             /* Store the new password for the user requested */
-            $user = User::find($request->id);
+            $user = User::where('username', $request->username)->first();
             $user->fill([
                 'password' => Hash::make($request->newPassword)
             ])->save();
