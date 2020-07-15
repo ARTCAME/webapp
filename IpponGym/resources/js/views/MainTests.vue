@@ -78,13 +78,16 @@
                         v-if="tests.length == 0">
                         No hay tests pendientes
                     </span>
-                    <transition-group mode="out-in" name="fade">
-                        <Tests
-                            v-for="test in tests"
-                            :key="test[0].testName"
-                            :test="test"
-                            @save="saveTests(...arguments)"></Tests>
-                    </transition-group>
+                    <span
+                        v-else>
+                        <transition-group mode="out-in" name="fade">
+                            <Tests
+                                v-for="test in tests"
+                                :key="test[0].testName"
+                                :test="test"
+                                @save="saveTests(...arguments)"></Tests>
+                        </transition-group>
+                    </span>
                 </b-card-group>
                 <!-- Completed page -->
                 <b-card-group
@@ -96,13 +99,16 @@
                         v-if="completedTests.length == 0">
                         No hay tests completados
                     </span>
-                    <transition-group mode="out-in" name="fade">
-                        <Tests
-                            v-for="(test, index) in completedTests"
-                            :completed="true"
-                            :key="test[0].testName + index"
-                            :test="test"></Tests>
-                    </transition-group>
+                    <span
+                        v-else>
+                        <transition-group mode="out-in" name="fade">
+                            <Tests
+                                v-for="(test, index) in completedTests"
+                                :completed="true"
+                                :key="test[0].testName + index"
+                                :test="test"></Tests>
+                        </transition-group>
+                    </span>
                 </b-card-group>
             </transition>
         </b-card>
@@ -189,8 +195,6 @@
                             this.completedTests = response.data;
                             /* Set the not completed tests based on the completed received */
                             this.tests = (this.completedTests && this.completedTests.length > 0) ? this.importedTests.filter(it => this.completedTests.some(ct => ct[0].testName == it[0].testName) == false) : this.importedTests;
-                            console.log(this.completedTests);
-                            console.log(this.tests);
                         })
                         .catch((error) => {
                             this.$showToast('danger', 'No se han podido obtener los tests', 'Ha ocurrido un error');
