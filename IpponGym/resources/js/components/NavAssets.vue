@@ -115,6 +115,9 @@
     }
 </style>
 <style scoped>
+    .ig-custom-modal .modal-title {
+        padding-left: 2rem!important;
+    }
     .in-home {
         display: flex;
     }
