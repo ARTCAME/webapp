@@ -13,8 +13,10 @@
         </h4>
         <p>
             <h6>Cambios recientes:</h6>
-            &emsp;- Se ha reconfigurado la conexión con la base de datos ya que al guardar los socios no se estaban mostrando en las búsquedas, ahora ya funciona correctamente
+            &emsp;- Se ha revisado la conexión con la base de datos ya que al guardar los socios no se estaban mostrando en las búsquedas, ahora ya funciona correctamente
             <br>&emsp;- Se ha añadido esta página de noticias para mostrar las novedades más importantes, se desactivará automáticamente al cerrarla y volverá a aparecer cuando existan actualizaciones
+            <br>&emsp;- Se ha solucionado fallo en página de inicio que no permitía hacer scroll en la página
+            <br>&emsp;- Se ha añadido protección https a la aplicación y ahora está disponible desde el dominio app.ippongymzaragoza.es
         </p>
         <p>
             <h6>Errores detectados:</h6>
@@ -26,8 +28,9 @@
         </p>
         <p>
             <h6>Fallos conocidos que se solucionarán en próximas versiones:</h6>
-            &emsp;- La página de inicio, en su versión móvil no tiene scroll y algunos elementos quedan ocultos o tapados y no te podrás desplazar por la página
             <br>&emsp;- Al guardar un socio se descargará automáticamente documentación. Esta documentación por el momento no es correcta y puede contener fallos que no indican un error
+            <br>&emsp;- La cámara del formulario de edición/alta no funciona y puede provocar otros fallos al activarla
+            <br>&emsp;- La firma del formulario de edición/alta no funciona por el momento
         </p>
         <h3>
             Gracias por ayudar a mejorar la aplicación 💝
