@@ -26,7 +26,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('payments:monthly')->everyMinute()/* ->sendOutputTo($filePath) */;
+        // $schedule->command('payments:monthly')->everyMinute()/* ->sendOutputTo($filePath) */;
+        $schedule->command('payments:monthly')->everyMinute()->emailOutputTo('arzzz@hotmail.es');
     }
 
     /**
