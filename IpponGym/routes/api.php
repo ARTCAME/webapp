@@ -54,6 +54,7 @@ Route::namespace('Api')->group(function() {
         Route::get('showNews', 'UsersController@showNews');
         Route::post('unwantNews', 'UsersController@unwantNews');
         Route::post('wantNews', 'UsersController@wantNews')->middleware('isRoot');
+        Route::post('update', 'UsersController@update')->middleware('isRoot');
         /* Session */
         Route::post('updateSession', 'SessionController@updateSession');
         Route::get('getSessions', 'SessionController@getSessions')->middleware('isRoot');
