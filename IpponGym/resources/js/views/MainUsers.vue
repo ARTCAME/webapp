@@ -5,20 +5,20 @@
                 <b-nav-item
                     class="p-0"
                     :active="current == 0"
-                    @click="current = 0;">
+                    @click="current = 0">
                     Estado de usuarios
                 </b-nav-item>
                 <b-nav-item
                     class="p-0"
                     :active="current == 1"
-                    @click="current = 1;">
+                    @click="current = 1">
                     Registro de usuario
                 </b-nav-item>
                 <b-nav-item
                     class="p-0"
                     :active="current == 2"
-                    @click="current = 2;">
-                    Cambios de contraseña
+                    @click="current = 2">
+                    Edición de usuario
                 </b-nav-item>
             </b-nav>
         </template>
@@ -32,14 +32,6 @@
                         class="m-2"
                         placeholder="Filtra los resultados"
                         @input="filterUsers($event)"></b-input>
-                </b-row>
-                <b-row no-gutters>
-                    <b-button
-                        class="mx-2"
-                        variant="primary"
-                        @click="wantNewsTester()">
-                        Activar news en testers
-                    </b-button>
                 </b-row>
                 <b-card-group
                     class="p-2"
@@ -197,59 +189,183 @@
                     </b-button>
                 </b-card>
             </b-form>
-            <!-- Change password form -->
-            <b-form
-                autocomplete="off"
-                key="user-change-password-form"
-                method="post"
-                v-if="current == 2"
-                @submit.prevent="inUpdatePassword">
-                <b-card id="update-password-form">
-                    <b-form-group>
-                        <h5 md="4" class="subtitle">Cambio de contraseña</h5>
-                    </b-form-group>
-                    <b-form-group label="Nombre de usuario" label-for="upd-username">
-                        <b-form-input
-                            autocomplete="off"
-                            autofocus
-                            id="upd-username"
-                            name="upd-username"
-                            required
-                            type="text"
-                            v-model="updUsername"
-                            v-validate="'required|min:3|existingUsername:' + numUserFounded"
-                            :class="{ 'is-invalid' : errors.has('upd-username') }"
-                            @input="find('username', updUsername)"></b-form-input>
-                        <transition mode="out-in" name="liveFeedbacks">
-                            <b-form-invalid-feedback
-                                v-for="error in errors.collect('upd-username')"
-                                :key="error">
-                                {{ error }}
-                            </b-form-invalid-feedback>
-                        </transition>
-                    </b-form-group>
-                    <b-form-group label="Nueva contraseña" label-for="upd-password">
-                        <b-form-input
-                            id="upd-password"
-                            name="upd-password"
-                            ref="upd-password"
-                            required
-                            v-model="updPassword"
-                            v-validate="{ required: true, min: 3 }"
-                            :class="{ 'is-invalid' : errors.has('upd-password') }"></b-form-input>
-                        <transition mode="out-in" name="liveFeedbacks">
-                            <b-form-invalid-feedback
-                                v-for="error in errors.collect('upd-password')"
-                                :key="error">
-                                {{ error }}
-                            </b-form-invalid-feedback>
-                        </transition>
-                    </b-form-group>
-                    <b-button type="submit">
-                        Actualizar contraseña
+            <!-- User edits forms -->
+            <b-card
+                id="user-edits-forms"
+                key="user-edits-forms"
+                v-if="current == 2">
+                <b-row class="my-2" no-gutters>Selecciona una acción:</b-row>
+                <b-row class="mb-3" no-gutters>
+                    <b-button
+                        variant="primary"
+                        @click="currentEdit = 0">
+                        Cambiar contraseña
                     </b-button>
-                </b-card>
-            </b-form>
+                    <b-button
+                        class="mx-2" variant="primary"
+                        @click="currentEdit = 1">
+                        Editar datos de usuario
+                    </b-button>
+                    <b-button
+                        variant="outline-primary"
+                        @click="wantNewsTester()">
+                        Activar news en testers
+                    </b-button>
+                </b-row>
+                <div
+                    v-if="currentEdit !== null">
+                    <b-row class="mt-4" no-gutters>Selecciona un usuario:</b-row>
+                    <b-input
+                        class="my-2"
+                        placeholder="Filtra los usuarios"
+                        @input="filterByUsername($event)"></b-input>
+                    <div class="mb-3">
+                        <b-button
+                            class="m-1"
+                            variant="outline-secondary"
+                            v-for="user in users"
+                            :key="user._id.$oid"
+                            @click="editUser = {...user}">
+                            {{ user.username }}
+                        </b-button>
+                    </div>
+                </div>
+                <transition appear mode="out-in" name="fade">
+                    <b-form
+                        autocomplete="off"
+                        key="user-change-password-form"
+                        method="post"
+                        v-if="currentEdit == 0 && editUser"
+                        @submit.prevent="inUpdatePassword">
+                        <b-card id="update-password-form">
+                            <b-form-group>
+                                <h5 md="4" class="subtitle">Cambio de contraseña</h5>
+                            </b-form-group>
+                            <b-form-group label="Nombre de usuario" label-for="upd-username">
+                                <b-form-input
+                                    autocomplete="off"
+                                    autofocus
+                                    disabled
+                                    id="upd-username"
+                                    type="text"
+                                    v-model="editUser.username"></b-form-input>
+                            </b-form-group>
+                            <b-form-group label="Nueva contraseña" label-for="upd-password">
+                                <b-form-input
+                                    id="upd-password"
+                                    name="upd-password"
+                                    ref="upd-password"
+                                    required
+                                    v-model="updPassword"
+                                    v-validate="{ required: true, min: 3 }"
+                                    :class="{ 'is-invalid' : errors.has('upd-password') }"></b-form-input>
+                                <transition mode="out-in" name="liveFeedbacks">
+                                    <b-form-invalid-feedback
+                                        v-for="error in errors.collect('upd-password')"
+                                        :key="error">
+                                        {{ error }}
+                                    </b-form-invalid-feedback>
+                                </transition>
+                            </b-form-group>
+                            <b-button type="submit">
+                                Actualizar contraseña
+                            </b-button>
+                        </b-card>
+                    </b-form>
+                    <!-- Edit user form -->
+                    <b-form
+                        autocomplete="off"
+                        key="user-edit-form"
+                        method="post"
+                        v-if="currentEdit == 1 && editUser"
+                        @submit.prevent="inUpdate">
+                        <b-card id="edit-form">
+                            <b-form-group>
+                                <h5 md="4" class="subtitle">Editar usuario</h5>
+                            </b-form-group>
+                            <transition appear mode="out-in" name="fade">
+                                <div>
+                                    <b-form-group label="Nombre de usuario" label-for="username">
+                                        <b-form-input
+                                            autocomplete="off"
+                                            autofocus
+                                            disabled
+                                            id="edit-username"
+                                            type="text"
+                                            v-model="editUser.username"></b-form-input>
+                                    </b-form-group>
+                                    <b-form-group label="Nombre" label-for="name">
+                                        <b-form-input
+                                            autocomplete="off"
+                                            autofocus
+                                            id="edit-name"
+                                            name="edit_name"
+                                            required
+                                            type="text"
+                                            v-model="editUser.name"
+                                            v-validate="'required|min:3'"
+                                            :class="{ 'is-invalid' : errors.has('edit_name') }"></b-form-input>
+                                        <transition mode="out-in" name="liveFeedbacks">
+                                            <b-form-invalid-feedback
+                                                v-for="error in errors.collect('edit_name')"
+                                                :key="error">
+                                                {{ error }}
+                                            </b-form-invalid-feedback>
+                                        </transition>
+                                    </b-form-group>
+                                    <b-form-group label="E-mail" label-for="email">
+                                        <b-form-input
+                                            id="edit-email"
+                                            name="edit-email"
+                                            required
+                                            type="email"
+                                            v-model="editUser.email"
+                                            v-validate="'required|email|uniqueEmail:' + numEmailFounded"
+                                            :class="{ 'is-invalid' : errors.has('edit-email') }"
+                                            @input="find('email', editUser.email)"></b-form-input>
+                                        <transition mode="out-in" name="liveFeedbacks">
+                                            <b-form-invalid-feedback
+                                                v-for="error in errors.collect('edit-email')"
+                                                :key="error">
+                                                {{ error }}
+                                            </b-form-invalid-feedback>
+                                        </transition>
+                                    </b-form-group>
+                                    <b-form-group
+                                        label="Selecciona rol">
+                                        <b-form-select
+                                            name="edit-selectRole"
+                                            required
+                                            v-model="editUser.role"
+                                            v-validate="'required'"
+                                            :class="{ 'is-invalid' : errors.has('edit-selectRole') }"
+                                            :options="roles"></b-form-select>
+                                            <transition mode="out-in" name="liveFeedbacks">
+                                                <b-form-invalid-feedback
+                                                    v-for="error in errors.collect('edit-selectRole')"
+                                                    :key="error">
+                                                    {{ error }}
+                                                </b-form-invalid-feedback>
+                                            </transition>
+                                    </b-form-group>
+                                    <b-form-group
+                                        label="Mostrar noticias">
+                                        <b-form-select
+                                            name="edit-news"
+                                            :options="[{ value: true, text: 'Sí' }, { value: false, text: 'No' }]"
+                                            v-model="editUser.wantNews"></b-form-select>
+                                    </b-form-group>
+                                    <b-button
+                                        type="submit"
+                                        :disabled="this.isEveryValid == false">
+                                        Actualizar usuario
+                                    </b-button>
+                                </div>
+                            </transition>
+                        </b-card>
+                    </b-form>
+                </transition>
+            </b-card>
         </transition>
     </b-card>
 </template>
@@ -260,7 +376,9 @@
         data() {
             return {
                 auxUsers: [], /* Stores a copy of the users to filter it on search*/
-                current: 0, /* Is the current tab */
+                current: 2, /* Is the current tab */
+                currentEdit: null, /* Is the edit action selected */
+                editUser: null, /* The user on edit */
                 email: '', /* V-model */
                 name: '', /* V-model */
                 numEmailFounded: 0, /* Stores the number of coincidences by email founded at the database */
@@ -286,8 +404,8 @@
                     { text: 'Última ip', key: 'lastIp' },
                     { text: 'Último inicio de sesión', key: 'last_login' },
                     { text: 'Tests completados', key: 'tests' },
+                    { text: 'Mostrando noticias', key: 'wantNews' },
                 ], /* Data of the user to show */
-                updUsername: '', /* V-model */
                 updPassword: '', /* V-model */
             }
         },
@@ -301,40 +419,24 @@
             },
         },
         created() {
-            /**
-             * Get all the users registered and assign it as a local variable
-             */
-            http.get('/api/getUsers')
-                .then((response) => {
-                    this.users = response.data;
-                })
-                .catch(error => {
-                    this.$showToast('danger', 'No se han podido obtener los usuarios', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
-                });
-            /**
-             * Get all the created sessions data and assign its data to each user
-             */
-            http.get('/api/getSessions')
-                .then((response) => {
-                    this.users.forEach((user, index) => {
-                        /* Check if a session exists to assign its data to the user */
-                        const session = response.data.filter(session => session.user_id == user._id.$oid);
-                        if (session.length > 0) {
-                            this.$set(this.users[index], 'lastActivity', this.$moment(parseInt(session[0].updated_at.$date.$numberLong)).format('YYYY-MM-DD HH:mm:ss'));
-                            this.$set(this.users[index], 'lastIp', session[0].last_ip);
-                        }
-                    });
-                    /* Save the users to an aux variable to allow the filter of the users */
-                    this.auxUsers = [...this.users];
-                })
-                .catch(error => {
-                    this.$showToast('danger', 'No se han podido obtener las sesiones', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
-                });
+            /* Get all the users registered and its sessions */
+            this.getUsers();
+            this.getSessions();
         },
         methods: {
             ...mapActions('auth', ['register']),
+            /**
+             * On typing on input, filter by the username the users shown
+             *
+             * @param {String} ev: the value on search input
+             */
+            filterByUsername(ev) {
+                this.users = this.auxUsers.filter(user => user.username.toLowerCase().includes(ev.toLowerCase()));
+                /* When the input is clean, restart the shown users */
+                if (ev == '' || ev == null) {
+                    this.users = this.auxUsers;
+                }
+            },
             /**
              * On typing on input, filter the users shown
              *
@@ -365,6 +467,41 @@
                 f == 'email' ? this.numEmailFounded = founded : this.numUserFounded = founded;
             },
             /**
+             * Get the sessions
+             */
+            getSessions() {
+                http.get('/api/getSessions')
+                    .then((response) => {
+                        this.users.forEach((user, index) => {
+                            /* Check if a session exists to assign its data to the user */
+                            const session = response.data.filter(session => session.user_id == user._id.$oid);
+                            if (session.length > 0) {
+                                this.$set(this.users[index], 'lastActivity', this.$moment(parseInt(session[0].updated_at.$date.$numberLong)).format('YYYY-MM-DD HH:mm:ss'));
+                                this.$set(this.users[index], 'lastIp', session[0].last_ip);
+                            }
+                        });
+                        /* Save the users to an aux variable to allow the filter of the users */
+                        this.auxUsers = [...this.users];
+                    })
+                    .catch(error => {
+                        this.$showToast('danger', 'No se han podido obtener las sesiones', 'Ha ocurrido un error')
+                        console.error(error.response ? error.response.data : error);
+                    });
+            },
+            /**
+             * Get the users
+             */
+            getUsers() {
+                http.get('/api/getUsers')
+                    .then((response) => {
+                        this.users = response.data;
+                    })
+                    .catch(error => {
+                        this.$showToast('danger', 'No se han podido obtener los usuarios', 'Ha ocurrido un error')
+                        console.error(error.response ? error.response.data : error);
+                    });
+            },
+            /**
              * Launchs the register action to the db
              */
             inRegister() {
@@ -393,13 +530,36 @@
                         console.error(error.response ? error.response.data : error);
                     });
             },
+            inUpdate() {
+                http.post('api/update', { ...this.editUser })
+                    .then(response => {
+                        this.$validator.pause();
+                        this.editUser = null;
+                        this.currentEdit = null;
+                        this.$showToast('success', 'Usuario actualizado correctamente', 'Edición de usuario');
+                        /* Refetch the users and sessions */
+                        this.getUsers();
+                        this.getSessions();
+                    })
+                    .then(() =>{
+                        this.$validator.resume();
+                        this.$validator.reset();
+                    })
+                    .catch(error => {
+                        this.$showToast('danger', 'No se ha podido actualizar el usuario. Código de error: FEMaUs@InUp', 'Ha ocurrido un error');
+                        console.error(error.response ? error.response.data : error);
+                    });
+
+            },
             /**
              * Update the user requested password
              */
             inUpdatePassword() {
-                http.post('api/updatePassword', { newPassword: this.updPassword, id: this.users.filter(user => user.username == this.updUsername)[0]._id.$oid })
+                http.post('api/updatePassword', { newPassword: this.updPassword, username: this.editUser.username })
                     .then((response) => {
-                        this.$showToast(response.status, response.message, response.title);
+                        this.$showToast(response.data.status, response.data.message, response.data.title);
+                        this.editUser = null;
+                        this.currentEdit = null;
                     })
                     .catch(error => {
                         this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FEMaUs@InUpPa', 'Ha ocurrido un error')
@@ -411,7 +571,15 @@
              */
             wantNewsTester() {
                 http.post('api/wantNews')
-                    .then(response => console.log(response));
+                    .then((response) => {
+                        this.$showToast('success', 'Se han activado las noticias para todos los usuarios tester y root', 'Activación de noticias');
+                        this.editUser = null;
+                        this.currentEdit = null;
+                    })
+                    .catch(error => {
+                        this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FEMaUs@WaNeTe', 'Ha ocurrido un error')
+                        console.error(error.response ? error.response.data : error);
+                    });
             },
         },
     }
@@ -424,7 +592,8 @@
         column-count: 3;
     }
     #register-form,
-    #update-password-form {
+    #update-password-form,
+    #user-edits-forms {
         border-color: transparent!important;
     }
     @media screen and (max-width: 1000px) {
