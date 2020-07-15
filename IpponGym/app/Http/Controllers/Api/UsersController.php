@@ -94,20 +94,78 @@ class UsersController extends Controller {
             ], 500);
         }
     }
+    /**
+     * Get if the user wants to show the news page
+     *
+     * @return Boolean
+     */
     public function showNews(Request $request) {
-        $user = User::where('username', $request->username)->first();
-        return response()->json($user->wantNews);
+        try {
+            $user = User::where('username', $request->username)->first();
+            return response()->json($user->wantNews);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los datos. Código de error BeUsCo@ShNe',
+                'status' => 'danger',
+                'title' => 'Obtener news status',
+                'trace' => 'Error al obtener la búsqueda de usuario. Código de error: BeUsCo@ShNe. Detalle del servidor: ' . $e->getMessage(),
+            ], 500);
+        }
     }
+    /**
+     * Set the news wants to false, the user doesn't want to see the news page (this is automatic when the modal on the view is closed at the first time)
+     */
     public function unwantNews(Request $request) {
-        $user = User::where('username', $request->username)->first();
-        $user->wantNews = false;
-        $user->save();
-    }
-    public function wantNews(Request $request) {
-        $users = User::where('role', 'tester')->orWhere('role', 'root')->get();
-        foreach ($users as $user) {
-            $user->wantNews = true;
+        try {
+            $user = User::where('username', $request->username)->first();
+            $user->wantNews = false;
             $user->save();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar el estado. Código de error BeUsCo@UnNe',
+                'status' => 'danger',
+                'title' => 'Establecer news status',
+                'trace' => 'Error al actualizar el usuario. Código de error: BeUsCo@UnNe. Detalle del servidor: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    /**
+     * Updates the role, email and name of a user
+     */
+    public function update(Request $request) {
+        try {
+            $user = User::where('username', $request->username)->first();
+            $fields = ['name', 'email', 'role', 'wantNews'];
+            foreach ($fields as $field) {
+                $user->$field = $request->$field;
+            }
+            $user->save();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el usuario. Código de error BeUsCo@Up',
+                'status' => 'danger',
+                'title' => 'Actualizar usuario',
+                'trace' => 'Error al actualizar el usuario. Código de error: BeUsCo@Up. Detalle del servidor: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+    /**
+     * Set the news wants to true using the role as constrinct
+     */
+    public function wantNews(Request $request) {
+        try {
+            $users = User::where('role', 'tester')->orWhere('role', 'root')->get();
+            foreach ($users as $user) {
+                $user->wantNews = true;
+                $user->save();
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al guardar el estado. Código de error BeUsCo@WaNe',
+                'status' => 'danger',
+                'title' => 'Obtener news status',
+                'trace' => 'Error al actualizar el usuario. Código de error: BeUsCo@WaNe. Detalle del servidor: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }
