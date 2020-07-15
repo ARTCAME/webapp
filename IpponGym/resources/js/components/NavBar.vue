@@ -19,7 +19,7 @@
                     <b-nav-text
                         v-if="isLoggedIn">
                         <router-link
-                            title="Cambiar de usuario"
+                            :title="'Has iniciado sesión con el usuario: ' + authenticatedUser"
                             :to="{ name : 'home' }">
                             {{ authenticatedUser }}
                         </router-link>
