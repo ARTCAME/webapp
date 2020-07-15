@@ -28,7 +28,7 @@
         </p>
         <p>
             <h6>Fallos conocidos que se solucionarán en próximas versiones:</h6>
-            <br>&emsp;- Al guardar un socio se descargará automáticamente documentación. Esta documentación por el momento no es correcta y puede contener fallos que no indican un error
+            &emsp;- Al guardar un socio se descargará automáticamente documentación. Esta documentación por el momento no es correcta y puede contener fallos que no indican un error
             <br>&emsp;- La cámara del formulario de edición/alta no funciona y puede provocar otros fallos al activarla
             <br>&emsp;- La firma del formulario de edición/alta no funciona por el momento
         </p>
