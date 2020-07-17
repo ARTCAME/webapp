@@ -42,8 +42,8 @@ class PaymentsController extends Controller {
      */
     public static function monthlyPayments() {
         /* Get the active customers */
-        // $customers = DB::collection('customers')->where('active', true)->get();
-        $customers = DB::collection('Personas')->where('active', true)->get();
+        $customers = DB::collection('customers')->where('active', true)->get();
+        // $customers = DB::collection('Personas')->where('active', true)->get();
         $newPayment = [];
         $date = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
 
