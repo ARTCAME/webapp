@@ -97,7 +97,7 @@ class PaymentsController extends Controller {
         $mail->send();
         /* Close and delete the file generated */
         fclose($csvoutput);
-        unlink($filename);
+        // unlink($filename);
     }
     /**
      * Function called when a new payment is registered on SociosForm
