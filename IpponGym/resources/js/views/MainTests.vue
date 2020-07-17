@@ -19,12 +19,16 @@
                         class="p-0"
                         :active="current == 0"
                         @click="current = 0; filter = null;">
+                        <!-- filterTests is filtering the tests on the users non root page and provoques hide all -->
+                        <!-- @click="current = 0; filterTests(''); filter = null;"> -->
                         Pendientes
                     </b-nav-item>
                     <b-nav-item
                         class="p-0"
                         :active="current == 1"
                         @click="current = 1; filter = null;">
+                        <!-- filterTests is filtering the tests on the users non root page and provoques hide all -->
+                        <!-- @click="current = 1; filterTests(''); filter = null;"> -->
                         Completados
                     </b-nav-item>
                 </b-nav>
