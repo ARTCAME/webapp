@@ -71,6 +71,8 @@ class PaymentsController extends Controller {
                 $auxCustomer = Socios::find($customer['_id']);
                 $auxCustomer->push('payments', $newPayment);
                 $auxCustomer->save();
+                /* Manage utf8 characters */
+                fprintf($csvoutput, chr(0xEF).chr(0xBB).chr(0xBF));
                 /* Put the customer/payment data into the csv file */
                 fputcsv($csvoutput, [$customer['name'], $customer['dni'], $newPayment['iban'], $newPayment['amount'], $newPayment['interval']]);
             }
