@@ -42,44 +42,40 @@ class PaymentsController extends Controller {
      */
     public static function monthlyPayments() {
         /* Get the active customers */
-        $allSocios = DB::collection('customers')->where('active', true)->get();
-        $nuevoPago = [];
-        $fecha = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
+        // $customers = DB::collection('customers')->where('active', true)->get();
+        $customers = DB::collection('Personas')->where('active', true)->get();
+        $newPayment = [];
+        $date = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
 
-    // fclose($csv);
-    // $csvoutput = fopen('_Remesa_.csv', 'w');
-
-        // foreach ($allSocios as $socio) {
-        //     $auxDatosPago = $socio['paymentData'];
-        //     /* Sort the array of payments attributes to obtain the last registered on position [0] */
-        //     // usort($auxDatosPago, function ($a,$b) {
-        //     //     return $a['fecha'] > $b['fecha'] ? -1 : $a['fecha'] == $b['fecha'] ? 0 : 1 /* $b['fecha'] <=> $a['fecha'] */;
-        //     // });
-        //     /* Check if for the customer we have a payment for the current month-year */
-        //     $pagoYaGenerado = false;
-        //     foreach ($socio['payments'] as $payment) {
-        //         if ($payment['interval'] == date('m-Y')) {
-        //             $pagoYaGenerado = true;
-        //         }
-        //     }
-        //     /* If doesn't exists a payment registered for this month we create and save it on the customer based on the last payments attributes */
-        //     if (!$pagoYaGenerado) {
-        //         $nuevoPago['rate'] = $auxDatosPago[0]['rate'];
-        //         $nuevoPago['amount'] = $auxDatosPago[0]['amount'];
-        //         $nuevoPago['paymenttype'] = $auxDatosPago[0]['paymenttype'];
-        //         $nuevoPago['iban'] = $auxDatosPago[0]['iban'];
-        //         $nuevoPago['interval'] = date('Y-m');
-        //         $nuevoPago['status'] = 'Pendiente';
-        //         $nuevoPago['dategenerated'] = $fecha;
-        //         $nuevoPago['dateconfirmed'] = null;
-        //         $auxSocio = Socios::find($socio['_id']);
-        //         $auxSocio->push('payments', $nuevoPago);
-        //         $auxSocio->save();
-        //         /* Manage the csv data */
-        //         // fputcsv($filename, [$socio['nombre'], $socio['dni'], $nuevoPago['iban'], $nuevoPago['amount'], $nuevoPago['interval']]);
-        //     }
-        // }
-        /* E-mail send with the file generated */
+        $filename = date('Y_m_d_H-i-s') . '_Remesa_.csv';
+        $csvoutput = fopen($filename, 'w');
+        foreach ($customers as $customer) {
+            $auxPaymentData = $customer['paymentData'];
+            /* Check if for the looped customercustomer we have a payment for the current month-year */
+            $alreadyGenerated = false;
+            foreach ($customer['payments'] as $payment) {
+                if ($payment['interval'] == date('m-Y')) {
+                    $alreadyGenerated = true;
+                }
+            }
+            /* If doesn't exists a payment registered for this month we create and save it on the customer based on the last payments attributes */
+            if (!$alreadyGenerated) {
+                $newPayment['rate'] = $auxPaymentData['rate'];
+                $newPayment['amount'] = $auxPaymentData['amount'];
+                $newPayment['paymenttype'] = $auxPaymentData['paymenttype'];
+                $newPayment['iban'] = $auxPaymentData['iban'];
+                $newPayment['interval'] = date('Y-m');
+                $newPayment['status'] = 'Pendiente';
+                $newPayment['dategenerated'] = $date;
+                $newPayment['dateconfirmed'] = null;
+                $auxCustomer = Socios::find($customer['_id']);
+                $auxCustomer->push('payments', $newPayment);
+                $auxCustomer->save();
+                /* Put the customer/payment data into the csv file */
+                fputcsv($csvoutput, [$customer['name'], $customer['dni'], $newPayment['iban'], $newPayment['amount'], $newPayment['interval']]);
+            }
+        }
+        /* Send email with the file generated */
         $mail = new PHPMailer();
         $mail->CharSet = 'UTF-8';
         $mail->SMTPDebug = SMTP::DEBUG_SERVER;
@@ -87,19 +83,21 @@ class PaymentsController extends Controller {
         $mail->Host     = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'ippongymzaragoza@gmail.com';
-        $mail->Password   = 'k3.\AACN';
+        /* Using Google app password */
+        $mail->Password   = 'iuxkxryeenthqcju';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
         $mail->setFrom('ippongymzaragoza@gmail.com', 'IPPONGYM ZARAGOZA');
         $mail->addAddress('arzzz@hotmail.es', 'Arturo Casas');
-        // $file = fopen('C:\Users\arzzz\OneDrive\Escritorio\ipponpass.txt','r');
-        // fclose($file);
-        // $mail->addAttachment($file, 'Remesa.csv');
+        $mail->addAttachment($filename);
         $mail->isHTML(true);
         $mail->Subject = 'Remesa mensual';
         $mail->Body    = 'Aquí tienes tu remesa mensual';
         $mail->AltBody = 'Aquí tienes tu remesa mensual';
         $mail->send();
+        /* Close and delete the file generated */
+        fclose($csvoutput);
+        unlink($filename);
     }
     /**
      * Function called when a new payment is registered on SociosForm
