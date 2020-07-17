@@ -54,7 +54,7 @@ class PaymentsController extends Controller {
             /* Check if for the looped customercustomer we have a payment for the current month-year */
             $alreadyGenerated = false;
             foreach ($customer['payments'] as $payment) {
-                if ($payment['interval'] == date('m-Y')) {
+                if ($payment['interval'] == date('Y-m')) {
                     $alreadyGenerated = true;
                 }
             }
