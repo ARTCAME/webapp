@@ -54,7 +54,7 @@ class PaymentsController extends Controller {
             /* Check if for the looped customercustomer we have a payment for the current month-year */
             $alreadyGenerated = false;
             foreach ($customer['payments'] as $payment) {
-                if ($payment['interval'] == date('m-Y')) {
+                if ($payment['interval'] == date('Y-m')) {
                     $alreadyGenerated = true;
                 }
             }
@@ -94,8 +94,8 @@ class PaymentsController extends Controller {
         $mail->addAttachment($filename);
         $mail->isHTML(true);
         $mail->Subject = 'Remesa mensual';
-        $mail->Body    = 'Aquí tienes tu remesa mensual';
-        $mail->AltBody = 'Aquí tienes tu remesa mensual';
+        $mail->Body    = filesize($filename) == 0 ? 'No hay remesas para este mes' : 'Adjunto a este correo tienes los datos de los pagos domiciliados para enviar a la entidad bancaria.';
+        $mail->AltBody = filesize($filename) == 0 ? 'No hay remesas para este mes' : 'Adjunto a este correo tienes los datos de los pagos domiciliados para enviar a la entidad bancaria.';
         $mail->send();
         /* Close and delete the file generated */
         fclose($csvoutput);
