@@ -116,7 +116,7 @@
     #payments-nav-modal.ig-custom-modal .modal-header,
     #print-nav-modal.ig-custom-modal .modal-header,
     #search-nav-modal.ig-custom-modal .modal-header {
-        padding-left: 3rem!important;
+        padding-left: 4rem!important;
     }
     .navbar-light .navbar-toggler {
         border-color: transparent; /* Delete the hambur icon border */
