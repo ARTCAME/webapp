@@ -12,7 +12,7 @@
             show
             scrollable
             v-if="isLoggedIn && (authenticatedRole == 'tester' || authenticatedRole == 'root') && $route.name != '404' && $route.name != 'wiki'"
-            @hidden="$manageScrollBar; unwantNews()"
+            @hidden="unwantNews(); $manageScrollBar()"
             @show="$manageScrollBar">
             <template
                 #modal-title>
