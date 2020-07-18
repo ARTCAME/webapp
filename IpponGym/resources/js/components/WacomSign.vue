@@ -426,16 +426,20 @@
                 let m_encH2Impl;
                 w.isDCAReady()
                     .then(message => {
-                        // console.log('1')
+                        console.log('1')
+                        console.log(message);
                         if (!message) {
+                            console.log(new DCANotReady())
                             throw new DCANotReady();
                         }
                         // Set handler for Device Control App timeout
                         // w.onDCAtimeout = onDCAtimeout;
+                        console.log(w);
+                        console.log('xoxo');
                         return w.getUsbDevices();
                     })
                     .then(message => {
-                        // console.log('2')
+                        console.log('2')
                         if (message == null || message.length == 0) {
                             throw new Error("No se ha encontrado el dispositivo");
                         }
@@ -443,16 +447,16 @@
                         return w.isSupportedUsbDevice(this.m_usbDevices[0].idVendor, this.m_usbDevices[0].idProduct);
                     })
                     .then(message => {
-                        // console.log('3')
+                        console.log('3')
                         intf = new w.UsbInterface();
                         return intf.Constructor();
                     })
                     .then(message => {
-                        // console.log('4')
+                        console.log('4')
                         return intf.connect(this.m_usbDevices[0], true);
                     })
                     .then(message => {
-                        // console.log('5')
+                        console.log('5')
                         if (0 == message.value) {
                             m_encH = new w.EncryptionHandler(new w.EncryptionHandler());
                             return m_encH.Constructor();
