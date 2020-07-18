@@ -54,7 +54,7 @@ WacomGSS.STUConstructor = (function() {
     this.onDCAtimeout = null;
 
     // websocket = new WebSocket("wss://localhost:" + port.toString() + "/ws");
-    websocket = new WebSocket("wss://localhost:" + port.toString() + "/ws");
+    websocket = new WebSocket("wss://app.ippongymzaragoza.es:" + port.toString() + "/ws");
 
     websocket.onopen = function() {
     //   console.log("connected");
