@@ -5,6 +5,9 @@
 
     RewriteEngine On
 #    RewriteBase /var/www/IpponGymWebapp/IpponGym/public
+    RewriteCond %{HTTP:UPGRADE} ^WebSocket$ [NC]
+    RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+    RewriteRule .* wss://localhost:8080%{REQUEST_URI} [P]
     RewriteBase /
 
     # Handle Authorization Header
