@@ -10,12 +10,12 @@
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient:hover {
+.btn-ig-gradient:not(.disabled):hover {
     background-position-x: 100%;
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient:focus {
+.btn-ig-gradient:not(.disabled):focus {
     box-shadow: unset;
 }
 /* Gradient 1 reverse */
@@ -27,12 +27,12 @@
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient-reverse:hover {
+.btn-ig-gradient-reverse:not(.disabled):hover {
     background-position-x: 100%;
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient-reverse:focus {
+.btn-ig-gradient-reverse:not(.disabled):focus {
     box-shadow: unset;
 }
 /* Gradient 2 */
@@ -44,12 +44,12 @@
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient2:hover {
+.btn-ig-gradient2:not(.disabled):hover {
     background-position-x: 100%;
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient2:focus {
+.btn-ig-gradient2:not(.disabled):focus {
     box-shadow: unset;
 }
 /* Gradient 2 reverse */
@@ -61,12 +61,12 @@
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient2-reverse:hover {
+.btn-ig-gradient2-reverse:not(.disabled):hover {
     background-position-x: 100%;
     color: rgba(255, 255, 255, 1);
     transition: .5s ease-in-out;
 }
-.btn-ig-gradient2-reverse:focus {
+.btn-ig-gradient2-reverse:not(.disabled):focus {
     box-shadow: unset;
 }
 /* Buttons outline */
@@ -78,10 +78,10 @@
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 
-.btn-ig-outline-green:focus {
+.btn-ig-outline-green:not(.disabled):focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 131, 81, 0.25);
 }
-.btn-ig-outline-green:hover {
+.btn-ig-outline-green:not(.disabled):hover {
     background-color: rgba(0, 131, 81, 1);
     background-position: 100%;
     color: rgba(159, 209, 189, 1)!important;
@@ -94,10 +94,10 @@
     color: rgba(255, 255, 255, 1)!important;
     transition: .15s ease-in-out;
 }
-.btn-ig-solid-green:focus {
+.btn-ig-solid-green:not(.disabled):focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 131, 81, 0.25);
 }
-.btn-ig-solid-green:hover {
+.btn-ig-solid-green:not(.disabled):hover {
     background-color: rgba(0, 98, 59, 1);
     background-position: 100%;
     transition: .15s ease-in-out;
@@ -108,10 +108,10 @@
     color: rgba(255, 255, 255, 1)!important;
     transition: .15s ease-in-out;
 }
-.btn-ig-solid-blue:focus {
+.btn-ig-solid-blue:not(.disabled):focus {
     box-shadow: 0 0 0 0.2rem rgba(13, 0, 131, 0.25);
 }
-.btn-ig-solid-blue:hover {
+.btn-ig-solid-blue:not(.disabled):hover {
     background-color: rgba(10, 0, 98, 1);
     background-position: 100%;
     transition: .15s ease-in-out;
