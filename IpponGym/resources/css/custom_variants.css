@@ -77,7 +77,6 @@
     color: rgba(0, 131, 81, 1)!important;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, color 0.15s ease-in-out;
 }
-
 .btn-ig-outline-green:not(.disabled):focus {
     box-shadow: 0 0 0 0.2rem rgba(0, 131, 81, 0.25);
 }
