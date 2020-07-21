@@ -9,13 +9,13 @@
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
-            :disabled="!capturable"
+            :disabled="capturable"
             :variant="!signatureOk ? 'danger' : capturable ? 'outline-warning' : 'ig-solid-green'"
             @click="capture()">
             <fa-icon
                 class="mr-2"
                 icon="signature"
-                v-if="(underage == true && form.tutor && form.tutor.name != '' && (form.tutor.dni != '' || form.dni != '')) || (underage == false && form.name != '' && form.dni != '')"></fa-icon>
+                v-if="(underage == true && (form.tutor && form.tutor.name != '' && (form.tutor.dni != '' || form.dni != ''))) || (underage == false && form.name != '' && form.dni != '')"></fa-icon>
             <span
                 v-if="!signatureOk">
                 Ha ocurrido un error
@@ -26,7 +26,7 @@
             </span>
             <span
                 v-else-if="underage == true">
-                {{ !form.tutor ? 'Falta datos del tutor' : form.tutor.name == '' ? 'Falta nombre del tutor' : form.tutor.dni == '' || form.dni == '' ? 'Falta dni del tutor' : 'Capturar firma' }}
+                {{ !form.tutor ? 'Falta datos del tutor' : form.tutor.name == '' ? 'Falta nombre del tutor' : (form.tutor.dni == '' && form.dni == '') ? 'Falta dni del tutor' : 'Capturar firma' }}
             </span>
             <span
                 v-else-if="underage == false">
@@ -62,7 +62,7 @@ export default {
     computed: {
         /* Return true if the sign is not capturable */
         capturable() {
-            return this.underage == null || (this.underage == true && (!this.form.tutor || this.form.tutor.name == '' || (this.form.tutor.dni == '' || this.form.dni == '')) || (this.underage == false && (this.form.name == '' || this.form.dni == '')));
+            return this.underage == null || (this.underage == true && (!this.form.tutor || this.form.tutor.name == '' || (this.form.tutor.dni == '' && this.form.dni == '')) || (this.underage == false && (this.form.name == '' || this.form.dni == '')));
         },
     },
     methods: {
@@ -84,14 +84,18 @@ export default {
                     print('Error en el constructor del hash: ' + status);
                     if (wgssSignatureSDK.ResponseStatus.INVALID_SESSION == status) {
                         self.signatureOk = false;
-                        print('Error, sesión inválida. Reiniciando sesión');
+                        print('Error, sesión inválida. Reiniciando sesión.');
                         actionWhenRestarted(window.Capture);
                     }
                 }
             }
             // If the hash value has been calculated successfully next steps is to capture the signature
             function onGetInitialHash() {
-                dynCapt.Capture(sigCtl, self.form.name, "He leído y comprendo los documentos entregados por IPPONGYM", hash, null, onDynCaptCapture);
+                const name = self.underage == true && self.form.tutor ? self.form.tutor.name : self.form.name
+                dynCapt.Capture(sigCtl, name, "He leído y comprendo los documentos entregados por IPPONGYM", hash, null, onDynCaptCapture);
+                if (self.underage && !self.form.tutor) {
+                    print('Faltan los datos del tutor.');
+                }
             }
             function onDynCaptCapture(dynCaptV, SigObjV, status) {
                 if (wgssSignatureSDK.ResponseStatus.INVALID_SESSION == status) {
@@ -222,7 +226,6 @@ export default {
             function onPutType(hashV, status) {
                 if (wgssSignatureSDK.ResponseStatus.OK == status) {
                     var vFname = new wgssSignatureSDK.Variant();
-                    // vFname.Set(document.getElementById("fname").value);
                     vFname.Set(self.name);
                     hash.Add(vFname, onAddFname);
                 } else {
@@ -349,7 +352,9 @@ export default {
     },
     mounted() {
         /* Load the wacom api */
-        wizardEventController.body_onload();
+        if (this.$route.name != 'customers.profile') {
+            wizardEventController.body_onload();
+        }
     },
     props: [
         'form', /* Is the form object from the vuex store currently used */
