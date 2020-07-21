@@ -106,6 +106,9 @@
                                 </b-form-group>
 <!-- Dirección principal -->
                                 <b-form-group label="Dirección principal" label-for="direccion">
+                                    <span class="text-muted">
+                                        <small>La dirección debe tener la calle, el número, población y código postal, por ejemplo: Calle Leopoldo Romeo 9, 50002 Zaragoza</small>
+                                    </span>
                                     <b-form-input
                                         autocomplete="off"
                                         id="direccion"
@@ -519,16 +522,30 @@
                             v-if="$route.name == 'customers.new'">
                             Tanto si el socio acepta como si no los documentos legales debe firmar. <br>
                             Los documentos firmados se descargarán al guardar la ficha.
+                            <span
+                                v-if="underage">
+                                <br><br>
+                                <u>Atención: El socio es menor, debe firmar su tutor</u>
+                            </span>
+                        </b-alert>
+                        <b-alert
+                            dismissible
+                            show
+                            variant="warning"
+                            v-if="$route.name == 'customers.edit' && wasUnderage && !underage">
+                            <u>Importante: El socio se dio de alta como menor pero ya no lo es, recuerda actualizar la firma, si fuera necesario</u>
                         </b-alert>
                         <b-row>
-                            <b-col class="col-12 col-md-auto mb-4">
+                            <b-col class="col-12 col-md-6 mb-4">
                                 <WacomSign
                                     ref="wacomsign"
-                                    :isDisabled="isDisabled"></WacomSign>
+                                    :isDisabled="isDisabled"
+                                    :form="form"
+                                    :underage="underage"></WacomSign>
                             </b-col>
                             <b-col class="my-auto">
                                 <b-row>
-                                    <b-col class="text-right" cols="5">
+                                    <b-col class="text-right" cols="8">
                                         <label>
                                             Acepta la política de privacidad
                                         </label>
@@ -580,7 +597,7 @@
                                     </b-col>
                                 </b-row>
                                 <b-row>
-                                    <b-col class="text-right" cols="5">
+                                    <b-col class="text-right" cols="8">
                                         <label>
                                             Acepta la cesión de imagen
                                         </label>
@@ -634,7 +651,7 @@
                                 <!-- Shown if the customer is underage -->
                                 <b-row
                                     v-if="underage">
-                                    <b-col class="text-right" cols="5">
+                                    <b-col class="text-right" cols="8">
                                         <label>
                                             Autorización de menor
                                         </label>
@@ -1005,6 +1022,14 @@
                 }
                 return null;
             },
+            /**
+             * Determine if a customer was underage on the signup date
+             *
+             * @return {Boolean} If the customer was underage on the signup date returns true
+             */
+            wasUnderage() {
+                return this.$moment(parseInt(form.created_at.$date.$numberLong).format('YYYY-MM-DD')).diff(this.$moment(this.dateofbirth, 'YYYY-MM-DD')) < 18;
+            }
         },
         destroyed() {
             /* Destroy de listeners */
