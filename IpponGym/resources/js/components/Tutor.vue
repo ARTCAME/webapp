@@ -16,7 +16,7 @@
                     show
                     variant="warning"
                     v-if="underage != null">
-                    {{ underage == true ? 'El socio es menor de edad y es obligatorio rellenar los datos del tutor.' : 'El socio no es menor de edad y los datos del tutor son opcionales, se pueden borrar. Recuerda actualizar la firma de la ficha si está asociada al tutor.' }}
+                    {{ underage == true ? 'El socio es menor de edad y es obligatorio rellenar los datos del tutor.' : 'El socio no es menor de edad y los datos del tutor son opcionales, se pueden borrar. Deberás actualizar la firma de la ficha de socio si estuviera asociada al tutor.' }}
                 </b-alert>
                 <!-- Shown when the form is being edited -->
                 <SearchAtForm
