@@ -19,12 +19,12 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <script src="https://unpkg.com/tween.js@16.3.4"></script>
-
-    <script src="js/wcm/wgssSigCaptX.js"></script>
-    <script src="js/wcm/base64.js"></script>
-    <script src="js/wcm/SigCaptX-Utils.js"></script>
-    <script src="js/wcm/SigCaptX-SessionControl.js"></script>
-    <script src="js/wcm/SigCaptX-Globals.js"></script>
+    <!-- Wacom scripts -->
+    <script src="{{ asset('js/wcm/wgssSigCaptX.js') }}"></script>
+    <script src="{{ asset('js/wcm/base64.js') }}"></script>
+    <script src="{{ asset('js/wcm/SigCaptX-Utils.js') }}"></script>
+    <script src="{{ asset('js/wcm/SigCaptX-SessionControl.js') }}"></script>
+    <script src="{{ asset('js/wcm/SigCaptX-Globals.js') }}"></script>
 </head>
 <body>
     <div id="app">
