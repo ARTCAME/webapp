@@ -105,7 +105,7 @@
                                         :searchValue="name"></SearchBadge>
                                 </b-form-group>
 <!-- Dirección principal -->
-                                <b-form-group label="Dirección principal" label-for="direccion">
+                                <b-form-group label="Dirección principal" label-class="m-0" label-for="direccion">
                                     <span class="text-muted">
                                         <small>La dirección debe tener la calle, el número, población y código postal, por ejemplo: Calle Leopoldo Romeo 9, 50002 Zaragoza</small>
                                     </span>
@@ -279,7 +279,7 @@
                                 target="dni"
                                 trigger="hover"
                                 v-if="underage == true && !isDisabled">
-                                Al ser menor, puede que el socio no tenga dni. Si es así puedes dejar este campo vacío e incluir el del tutor en los datos del tutor o poner aquí también el del tutor
+                                Al ser menor, puede que el socio no tenga dni. Si es así puedes dejar este campo vacío e incluir solo el del tutor en los datos del tutor o poner aquí también el del tutor.
                             </b-tooltip>
                             <transition mode="out-in" name="liveFeedbacks">
                                 <b-form-invalid-feedback
@@ -520,20 +520,25 @@
                             show
                             variant="danger"
                             v-if="$route.name == 'customers.new'">
-                            Tanto si el socio acepta como si no los documentos legales debe firmar. <br>
+                            Tanto si el socio acepta como si no alguna de las condiciones legales deberá firmar para que así conste.<br>
                             Los documentos firmados se descargarán al guardar la ficha.
                             <span
                                 v-if="underage">
                                 <br><br>
-                                <u>Atención: El socio es menor, debe firmar su tutor</u>
+                                <u>Atención: El socio es menor y debe firmar su tutor, recuerda rellenar correctamente el nombre, apellidos y dni del tutor</u>
+                            </span>
+                            <span
+                                v-else>
+                                <br><br>
+                                <u>Atención: Recuerda rellenar correctamente el nombre, apellidos y dni del socio</u>
                             </span>
                         </b-alert>
                         <b-alert
                             dismissible
                             show
                             variant="warning"
-                            v-if="$route.name == 'customers.edit' && wasUnderage && !underage">
-                            <u>Importante: El socio se dio de alta como menor pero ya no lo es, recuerda actualizar la firma, si fuera necesario</u>
+                            v-if="$route.name != 'customers.new' && form.tutor && wasUnderage && !underage">
+                            <u>Importante: El socio se dio de alta como menor por lo que está vinculado a un tutor, a día de hoy ya no es menor pero existe un tutor y la firma puede estar vinculada a él. Recuerda que debes actualizar la firma si estuviera vinculada al tutor y borrar los datos del tutor si ya no fueran necesarios</u>
                         </b-alert>
                         <b-row>
                             <b-col class="col-12 col-md-6 mb-4">
@@ -545,7 +550,7 @@
                             </b-col>
                             <b-col class="my-auto">
                                 <b-row>
-                                    <b-col class="text-right" cols="8">
+                                    <b-col class="text-right" cols="7">
                                         <label>
                                             Acepta la política de privacidad
                                         </label>
@@ -557,7 +562,7 @@
                                             <b-form-radio-group
                                                 buttons
                                                 button-variant="outline-secondary"
-                                                class="radio-selector"
+                                                class="radio-selector tiny-radio-selector"
                                                 id="rightsProtect"
                                                 name="rightsProtect"
                                                 size="sm"
@@ -574,30 +579,34 @@
                                                 </b-form-invalid-feedback>
                                             </transition>
                                         </b-form-group>
-                                        <b-button
-                                            class="ml-3"
-                                            size="sm"
-                                            variant="outline-primary"
-                                            v-if="$route.name != 'customers.new'"
-                                            :disabled="printRightsProtect"
-                                            @click="print('RP')">
-                                            <b-spinner
-                                                small
-                                                type="grow"
-                                                v-if="printRightsProtect == true"></b-spinner>
-                                            <fa-icon
-                                                icon="file-download"
-                                                v-else></fa-icon>
-                                            <span
-                                                class="d-inline-block ml-2"
-                                                v-if="!printRightsProtect">
-                                                Descargar
-                                            </span>
-                                        </b-button>
+                                        <span
+                                            v-b-tooltip.hover.noninteractive
+                                            :title="printRightsProtect == true ? 'Descargando...' : 'Descargar'">
+                                            <b-button
+                                                class="btn-fa-tiny ml-3"
+                                                size="sm"
+                                                variant="outline-primary"
+                                                v-if="$route.name != 'customers.new'"
+                                                :disabled="printRightsProtect"
+                                                @click="print('RP')">
+                                                <b-spinner
+                                                    small
+                                                    type="grow"
+                                                    v-if="printRightsProtect == true"></b-spinner>
+                                                <fa-icon
+                                                    icon="file-download"
+                                                    v-else></fa-icon>
+                                                <!-- <span
+                                                    class="d-inline-block ml-2"
+                                                    v-if="!printRightsProtect">
+                                                    Descargar
+                                                </span> -->
+                                            </b-button>
+                                        </span>
                                     </b-col>
                                 </b-row>
                                 <b-row>
-                                    <b-col class="text-right" cols="8">
+                                    <b-col class="text-right" cols="7">
                                         <label>
                                             Acepta la cesión de imagen
                                         </label>
@@ -609,7 +618,7 @@
                                             <b-form-radio-group
                                                 buttons
                                                 button-variant="outline-secondary"
-                                                class="radio-selector"
+                                                class="radio-selector tiny-radio-selector"
                                                 id="rightsImage"
                                                 name="rightsImage"
                                                 size="sm"
@@ -626,32 +635,36 @@
                                                 </b-form-invalid-feedback>
                                             </transition>
                                         </b-form-group>
-                                        <b-button
-                                            class="ml-3"
-                                            size="sm"
-                                            variant="outline-primary"
-                                            v-if="$route.name != 'customers.new'"
-                                            :disabled="printRightsImage"
-                                            @click="print('RI')">
-                                            <b-spinner
-                                                small
-                                                type="grow"
-                                                v-if="printRightsImage == true"></b-spinner>
-                                            <fa-icon
-                                                icon="file-download"
-                                                v-else></fa-icon>
-                                            <span
-                                                class="d-inline-block ml-2"
-                                                v-if="!printRightsImage">
-                                                Descargar
-                                            </span>
-                                        </b-button>
+                                        <span
+                                            v-b-tooltip.hover.noninteractive
+                                            :title="printRightsImage == true ? 'Descargando...' : 'Descargar'">
+                                            <b-button
+                                                class="btn-fa-tiny ml-3"
+                                                size="sm"
+                                                variant="outline-primary"
+                                                v-if="$route.name != 'customers.new'"
+                                                :disabled="printRightsImage"
+                                                @click="print('RI')">
+                                                <b-spinner
+                                                    small
+                                                    type="grow"
+                                                    v-if="printRightsImage == true"></b-spinner>
+                                                <fa-icon
+                                                    icon="file-download"
+                                                    v-else></fa-icon>
+                                                <!-- <span
+                                                    class="d-inline-block ml-2"
+                                                    v-if="!printRightsImage">
+                                                    Descargar
+                                                </span> -->
+                                            </b-button>
+                                        </span>
                                     </b-col>
                                 </b-row>
                                 <!-- Shown if the customer is underage -->
                                 <b-row
                                     v-if="underage">
-                                    <b-col class="text-right" cols="8">
+                                    <b-col class="text-right" cols="7">
                                         <label>
                                             Autorización de menor
                                         </label>
@@ -663,7 +676,7 @@
                                             <b-form-radio-group
                                                 buttons
                                                 button-variant="outline-secondary"
-                                                class="radio-selector"
+                                                class="radio-selector tiny-radio-selector"
                                                 id="rightsUnderage"
                                                 name="rightsUnderage"
                                                 size="sm"
@@ -680,26 +693,30 @@
                                                 </b-form-invalid-feedback>
                                             </transition>
                                         </b-form-group>
-                                        <b-button
-                                            class="ml-3"
-                                            size="sm"
-                                            variant="outline-primary"
-                                            v-if="$route.name != 'customers.new'"
-                                            :disabled="printRightsUnderage"
-                                            @click="print('RU')">
-                                            <b-spinner
-                                                small
-                                                type="grow"
-                                                v-if="printRightsUnderage == true"></b-spinner>
-                                            <fa-icon
-                                                icon="file-download"
-                                                v-else></fa-icon>
-                                            <span
-                                                class="d-inline-block ml-2"
-                                                v-if="!printRightsUnderage">
-                                                Descargar
-                                            </span>
-                                        </b-button>
+                                        <span
+                                            v-b-tooltip.hover.noninteractive
+                                            :title="printRightsUnderage == true ? 'Descargando...' : 'Descargar'">
+                                            <b-button
+                                                class="btn-fa-tiny ml-3"
+                                                size="sm"
+                                                variant="outline-primary"
+                                                v-if="$route.name != 'customers.new'"
+                                                :disabled="printRightsUnderage"
+                                                @click="print('RU')">
+                                                <b-spinner
+                                                    small
+                                                    type="grow"
+                                                    v-if="printRightsUnderage == true"></b-spinner>
+                                                <fa-icon
+                                                    icon="file-download"
+                                                    v-else></fa-icon>
+                                                <!-- <span
+                                                    class="d-inline-block ml-2"
+                                                    v-if="!printRightsUnderage">
+                                                    Descargar
+                                                </span> -->
+                                            </b-button>
+                                        </span>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -913,7 +930,7 @@
         beforeRouteLeave(to, from, next) {
             /* Stops the webcam and sign components */
             this.$refs.webcamcomponent.cancel();
-            this.$refs.wacomsign.disconnect();
+            // this.$refs.wacomsign.disconnect();
             /* Confirm the left with the user */
             let answer = true;
             if (!this.submitting && from.name != 'customers.profile') {
@@ -931,7 +948,7 @@
         beforeRouteUpdate (to, from, next) {
             /* Stops the webcam and sign components */
             this.$refs.webcamcomponent.cancel();
-            this.$refs.wacomsign.disconnect();
+            // this.$refs.wacomsign.disconnect();
             /* Stops the validation to avoid false errors */
             this.$validator.pause();
             let result = true;
@@ -1028,7 +1045,8 @@
              * @return {Boolean} If the customer was underage on the signup date returns true
              */
             wasUnderage() {
-                return this.$moment(parseInt(form.created_at.$date.$numberLong).format('YYYY-MM-DD')).diff(this.$moment(this.dateofbirth, 'YYYY-MM-DD')) < 18;
+                console.log(this.form)
+                return this.$moment(this.form.created_at, 'YYYY-MM-DD').diff(this.$moment(this.dateofbirth, 'YYYY-MM-DD')) < 18;
             }
         },
         destroyed() {
@@ -1407,8 +1425,10 @@
         overflow: hidden;
     }
     /* Normalize the height of the inline buttons-radios */
-    .radio-selector .btn.btn-sm {
+    .tiny-radio-selector {
         height: 32.3px!important;
-        line-height: 1.3;
+    }
+    .tiny-radio-selector .btn.btn-sm {
+        line-height: 1;
     }
 </style>
