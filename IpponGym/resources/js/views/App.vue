@@ -170,7 +170,7 @@
         transform: scale(0.98);
         transition: all .3s;
         width: 30px;
-        z-index: 1050;
+        z-index: 1040;
     }
     #tester-news:hover {
         opacity: 1;
