@@ -9,7 +9,6 @@
 // import VueCookies from 'vue-cookies'; // https://github.com/cmp-cc/vue-cookies#readme
 // Vue.use(VueCookies)
 
-
 import store from './store/customers';
 import validations from './validator/validator';
 import Vue from 'vue';
