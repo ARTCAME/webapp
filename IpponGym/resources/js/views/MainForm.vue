@@ -597,11 +597,6 @@
                                                 <fa-icon
                                                     icon="file-download"
                                                     v-else></fa-icon>
-                                                <!-- <span
-                                                    class="d-inline-block ml-2"
-                                                    v-if="!printRightsProtect">
-                                                    Descargar
-                                                </span> -->
                                             </b-button>
                                         </span>
                                     </b-col>
@@ -654,11 +649,6 @@
                                                 <fa-icon
                                                     icon="file-download"
                                                     v-else></fa-icon>
-                                                <!-- <span
-                                                    class="d-inline-block ml-2"
-                                                    v-if="!printRightsImage">
-                                                    Descargar
-                                                </span> -->
                                             </b-button>
                                         </span>
                                     </b-col>
@@ -713,11 +703,6 @@
                                                 <fa-icon
                                                     icon="file-download"
                                                     v-else></fa-icon>
-                                                <!-- <span
-                                                    class="d-inline-block ml-2"
-                                                    v-if="!printRightsUnderage">
-                                                    Descargar
-                                                </span> -->
                                             </b-button>
                                         </span>
                                     </b-col>
@@ -725,6 +710,15 @@
                             </b-col>
                         </b-row>
                     </b-form-group>
+                    <!-- Test -->
+                    <div class="printable-wrp">
+                        <div class="pr-1 printable-ctn" ref="printableMFRP">
+                            <RightsUnderage
+                                :customer="getCustomerById($route.params.id)"></RightsUnderage>
+                            <!-- MISSING THE REST OF FILE TYPES -->
+                        </div>
+                    </div>
+                    <!-- Test -->
                     <div class="printable-wrp">
                         <div class="pr-1 printable-ctn" ref="printableMFRU">
                             <RightsUnderage
