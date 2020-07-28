@@ -332,12 +332,12 @@ html {
     text-align: right;
 }
 .doc-logo img {
-    width: 200px;
+    width: 180px;
 }
 .printable-ctn {
     position: relative;
     height: 240mm;
-    width: 165mm;
+    width: 180mm;
 }
 /* This hides the element but left there in the page to allow to print it */
 .printable-wrp {
@@ -353,7 +353,7 @@ html {
     text-align: end;
 }
 .sign-img-doc {
-    height: 180px;
+    height: 105px;
     width: auto;
 }
 
