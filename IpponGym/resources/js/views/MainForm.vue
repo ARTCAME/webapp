@@ -557,7 +557,7 @@
                                     </b-col>
                                     <b-col class="p-0">
                                         <b-form-group
-                                            class="d-inline"
+                                            class="d-inline mr-3"
                                             :disabled="isDisabled">
                                             <b-form-radio-group
                                                 buttons
@@ -580,15 +580,16 @@
                                             </transition>
                                         </b-form-group>
                                         <span
+                                            class="d-inline-block"
                                             v-b-tooltip.hover.noninteractive
                                             :title="printRightsProtect == true ? 'Descargando...' : 'Descargar'">
                                             <b-button
-                                                class="btn-fa-tiny ml-3"
+                                                class="btn-fa-tiny"
                                                 size="sm"
                                                 variant="outline-primary"
                                                 v-if="$route.name != 'customers.new'"
                                                 :disabled="printRightsProtect"
-                                                @click="print('RP')">
+                                                @click="printFile('RP')">
                                                 <b-spinner
                                                     small
                                                     type="grow"
@@ -613,7 +614,7 @@
                                     </b-col>
                                     <b-col class="p-0">
                                         <b-form-group
-                                            class="d-inline"
+                                            class="d-inline mr-3"
                                             :disabled="isDisabled">
                                             <b-form-radio-group
                                                 buttons
@@ -636,15 +637,16 @@
                                             </transition>
                                         </b-form-group>
                                         <span
+                                            class="d-inline-block"
                                             v-b-tooltip.hover.noninteractive
                                             :title="printRightsImage == true ? 'Descargando...' : 'Descargar'">
                                             <b-button
-                                                class="btn-fa-tiny ml-3"
+                                                class="btn-fa-tiny"
                                                 size="sm"
                                                 variant="outline-primary"
                                                 v-if="$route.name != 'customers.new'"
                                                 :disabled="printRightsImage"
-                                                @click="print('RI')">
+                                                @click="printFile('RI')">
                                                 <b-spinner
                                                     small
                                                     type="grow"
@@ -671,7 +673,7 @@
                                     </b-col>
                                     <b-col class="p-0">
                                         <b-form-group
-                                            class="d-inline"
+                                            class="d-inline mr-3"
                                             :disabled="isDisabled">
                                             <b-form-radio-group
                                                 buttons
@@ -694,15 +696,16 @@
                                             </transition>
                                         </b-form-group>
                                         <span
+                                            class="d-inline-block"
                                             v-b-tooltip.hover.noninteractive
                                             :title="printRightsUnderage == true ? 'Descargando...' : 'Descargar'">
                                             <b-button
-                                                class="btn-fa-tiny ml-3"
+                                                class="btn-fa-tiny"
                                                 size="sm"
                                                 variant="outline-primary"
                                                 v-if="$route.name != 'customers.new'"
                                                 :disabled="printRightsUnderage"
-                                                @click="print('RU')">
+                                                @click="printFile('RU')">
                                                 <b-spinner
                                                     small
                                                     type="grow"
@@ -1142,7 +1145,7 @@
              *
              * @return {Promise}
              */
-            print(file) {
+            printFile(file) {
                 return new Promise((resolve, reject) => {
                     const filename = this.form.name.replace(/\s/g, '') + '__' + (file == 'RI' ? 'derechosdeimagen' : file == 'RU' ? 'autorizacióndemenor' : 'proteccióndedatos') + '__' + this.$moment().format('YYYY-MM-DD_HH_mm') + '.pdf';
                     const variable = file == 'RI' ? 'printRightsImage' : file == 'RU' ? 'printRightsUnderage' : 'printRightsProtect';
@@ -1207,10 +1210,10 @@
                                         this.CLEAR_FORM('form');
                                         await this.$router.push({ name: 'customers.profile', params: { id : id } });
                                         /* Print the documentation */
-                                        await this.print('RI');
-                                        // await this.print('RP');
+                                        await this.printFile('RI');
+                                        // await this.printFile('RP');
                                         if (this.underage) {
-                                            await this.print('RU');
+                                            await this.printFile('RU');
                                         }
                                         /* Trigger a modification on the localStorage to propagate the changes on other windows */
                                         localStorage.setItem('customer_updated', id);
