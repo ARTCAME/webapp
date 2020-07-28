@@ -16,15 +16,22 @@
                         <b-row no-gutters>
                             <h5 md="4" class="subtitle">Datos principales</h5>
                             <b-col
+                                cols="12"
                                 v-if="$route.name != 'customers.new'">
                                 <b-row
                                     align-h="end"
                                     no-gutters>
+                                    <small class="customer-dates text-muted">
+                                        Fecha de alta: {{ form.created_at }}
+                                    </small>
+                                    <small class="customer-dates text-muted">
+                                        Última actualización: {{ form.updated_at }}
+                                    </small>
                                     <span
-                                        v-b-tooltip.hover.left.noninteractive
+                                        v-b-tooltip.hover.bottomLeft.noninteractive
                                         :title="active ? 'Socio activo' : 'Socio inactivo'">
                                         <b-form-checkbox
-                                            class="mt-2"
+                                            class="ml-2 mt-2"
                                             switch
                                             v-model="active"
                                             :disabled="isDisabled || $route.name == 'customers.new'"></b-form-checkbox>
@@ -1420,6 +1427,10 @@
 <style scoped>
     .card-body {
         overflow: hidden;
+    }
+    .customer-dates {
+        margin-right: 0.5rem;
+        margin-top: 0.65rem; /* Vertical alignment with the radio */
     }
     /* Normalize the height of the inline buttons-radios */
     .tiny-radio-selector {
