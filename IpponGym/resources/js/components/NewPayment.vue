@@ -147,7 +147,10 @@
                 small
                 type="grow"
                 v-if="savingPayment"></b-spinner>
-            {{ savingPayment ? 'Guardando datos...' : errors.has('np-alteryear') ? 'El año introducido no es correcto' : paymentData.paymenttype == 'Domiciliación' && paymentData.iban == null ? 'No se puede registrar, no hay iban. Modifica el pago en la ficha del socio' : interval == null ? 'Selecciona un intervalo para el nuevo pago' : paymentData.paymenttype == 'Domiciliación' && selectedState == null ? 'Selecciona un estado para el nuevo pago' : 'Registrar pago' }}
+            <span
+                class="ml-2">
+                {{ savingPayment ? 'Guardando datos...' : errors.has('np-alteryear') ? 'El año introducido no es correcto' : paymentData.paymenttype == 'Domiciliación' && paymentData.iban == null ? 'No se puede registrar, no hay iban. Modifica el pago en la ficha del socio' : interval == null ? 'Selecciona un intervalo para el nuevo pago' : paymentData.paymenttype == 'Domiciliación' && selectedState == null ? 'Selecciona un estado para el nuevo pago' : 'Registrar pago' }}
+            </span>
         </b-button>
         <b-link
             positioning="top"
