@@ -1,18 +1,21 @@
 
 <template>
     <div>
-        <Wizard
-            name="wzd-pagos-confirming"
-            v-show="confirming"
-            :steps=wpcSteps></Wizard>
-        <Wizard
-            name="wzd-pagos-download"
-            v-show="manualDownload"
-            :steps=wpdSteps></Wizard>
-        <Wizard
-            name="wzd-main-pagos"
-            v-show="!confirming && !manualDownload"
-            :steps=wmpSteps></Wizard>
+        <span
+            v-if="$route.name == 'payments.index'">
+            <Wizard
+                name="wzd-pagos-confirming"
+                v-show="confirming"
+                :steps=wpcSteps></Wizard>
+            <Wizard
+                name="wzd-pagos-download"
+                v-show="manualDownload"
+                :steps=wpdSteps></Wizard>
+            <Wizard
+                name="wzd-main-pagos"
+                v-show="!confirming && !manualDownload"
+                :steps=wmpSteps></Wizard>
+        </span>
             <b-collapse
                 :visible="$route.name == 'payments.index' && rowsSelected.length > 200">
                 <b-alert
