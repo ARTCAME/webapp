@@ -19,23 +19,29 @@
                                 cols="12"
                                 v-if="$route.name != 'customers.new'">
                                 <b-row
-                                    align-h="end"
                                     no-gutters>
-                                    <small class="customer-dates text-muted">
-                                        Fecha de alta: {{ form.created_at }}
-                                    </small>
-                                    <small class="customer-dates text-muted">
-                                        Última actualización: {{ form.updated_at }}
-                                    </small>
-                                    <span
-                                        v-b-tooltip.hover.bottomLeft.noninteractive
-                                        :title="active ? 'Socio activo' : 'Socio inactivo'">
-                                        <b-form-checkbox
-                                            class="ml-2 mt-2"
-                                            switch
-                                            v-model="active"
-                                            :disabled="isDisabled || $route.name == 'customers.new'"></b-form-checkbox>
-                                    </span>
+                                    <b-col
+                                        class="col-11 ml-auto mt-2"
+                                        v-if="$route.name != 'customers.new'">
+                                        <small class="customer-dates mr-2 text-muted">
+                                            Fecha de alta: {{ form.created_at }}
+                                        </small>
+                                        <small class="customer-dates mr-2 text-muted">
+                                            Última actualización: {{ form.updated_at }}
+                                        </small>
+                                    </b-col>
+                                    <b-col class="col-1 mr-auto text-right">
+                                        <span
+                                            class="d-inline-block"
+                                            v-b-tooltip.hover.left.noninteractive
+                                            :title="active ? 'Socio activo' : 'Socio inactivo'">
+                                            <b-form-checkbox
+                                                class="ml-2 mt-2"
+                                                switch
+                                                v-model="active"
+                                                :disabled="isDisabled || $route.name == 'customers.new'"></b-form-checkbox>
+                                        </span>
+                                    </b-col>
                                 </b-row>
                             </b-col>
                         </b-row>
@@ -207,14 +213,14 @@
 <!-- Sexo -->
                     <b-form-row no-gutters>
                         <b-form-group
-                            class="col col-6 col-lg-auto"
+                            class="col col-12 col-sm-6 col-lg-auto"
                             id="sexo-group"
                             label="Sexo"
                             :disabled="isDisabled">
                             <b-form-radio-group
                                 buttons
                                 button-variant="outline-secondary"
-                                class="radio-selector"
+                                class="radio-selector w-100"
                                 id="sexo"
                                 name="sexo"
                                 v-validate="'required'"
@@ -231,7 +237,7 @@
                             </transition>
                         </b-form-group>
 <!-- Fecha nacimiento -->
-                        <b-form-group class="col col-6 col-lg" label="Fecha de nacimiento" label-for="fechanac">
+                        <b-form-group class="col col-12 col-sm-6 col-lg" label="Fecha de nacimiento" label-for="fechanac">
                             <!-- v-if="form != null" -->
                             <b-form-input
                                 id="fechanac"
@@ -250,7 +256,7 @@
                             </transition>
                         </b-form-group>
 <!-- Es menor? -->
-                        <b-form-group class="col col-6 col-lg" label="¿Es menor?" label-for="esmenor">
+                        <b-form-group class="col col-12 col-sm-6 col-lg" label="¿Es menor?" label-for="esmenor">
                             <!-- v-if="form != null" -->
                             <b-form-input
                                 autocomplete="off"
@@ -262,7 +268,7 @@
                         </b-form-group>
 <!-- Dni -->
                         <b-form-group
-                            class="col col-6 col-lg"
+                            class="col col-12 col-sm-6 col-lg"
                             label="Dni"
                             label-for="dni">
                             <!-- v-if="form != null" -->
@@ -340,14 +346,14 @@
                         <b-form-row
                             class="align-items-end">
                             <b-form-group
-                                class="col-auto mx-2 p-0"
+                                class="col-lg-auto col-12 p-0 px-1"
                                 id="tarifas-group"
                                 label="Tarifa"
                                 :disabled="isDisabled">
                                 <b-form-radio-group
                                     buttons
                                     button-variant="outline-secondary"
-                                    class="radio-selector"
+                                    class="radio-selector w-100"
                                     id="tarifa"
                                     name="tarifa"
                                     v-validate="'required'"
@@ -383,14 +389,14 @@
                                 </transition>
                             </b-form-group>
                             <b-form-group
-                                class="mx-2 p-0"
+                                class="col-lg-auto col-12 p-0 px-1"
                                 id="formas-pago-group"
                                 label="Formas de pago"
                                 :disabled="isDisabled">
                                 <b-form-radio-group
                                     buttons
                                     button-variant="outline-secondary"
-                                    class="radio-selector"
+                                    class="radio-selector w-100"
                                     id="tipoPago"
                                     name="tipoPago"
                                     v-validate="'required'"
@@ -756,7 +762,6 @@
                     <b-row align-h="end" no-gutters>
                         <transition-group name="slide-fade">
                             <b-button
-                                class="mr-2"
                                 key="mf-btn-submit"
                                 type="submit"
                                 variant="ig-solid-green"
@@ -765,6 +770,7 @@
                                 Guardar
                             </b-button>
                             <b-button
+                                class="ml-2"
                                 key="mf-btn-edit"
                                 v-if="$route.name == 'customers.edit' || $route.name == 'customers.profile'"
                                 :variant="$route.name == 'customers.edit' ? 'warning' : 'primary'"
@@ -997,6 +1003,9 @@
         created() {
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
+            /* Listen to the scroll and load changes */
+            window.addEventListener('resize', this.stackRadios);
+            window.addEventListener('load', this.stackRadios);
         },
         computed: {
             /* Mount the vuex getters and setters to the local form fields (the childrens has its computations too */
@@ -1056,6 +1065,8 @@
         destroyed() {
             /* Destroy de listeners */
             window.removeEventListener('beforeunload', this.beforeUnload);
+            window.removeEventListener('resize', this.stackRadios);
+            window.removeEventListener('load', this.stackRadios);
         },
         methods: {
             /* Mapping vuex */
@@ -1183,6 +1194,21 @@
                         this.amount = '';
                 }
             },
+            /**
+             * Manages the stacking of the radio selectors
+             */
+            stackRadios() {
+                if (window.innerWidth < 650) {
+                    document.getElementById('tarifa').classList.add('btn-group-vertical');
+                    document.getElementById('tarifa').classList.remove('btn-group');
+                } else if (window.innerWidth >= 650 && document.getElementById('tarifa').classList.contains('btn-group-vertical')) {
+                    document.getElementById('tarifa').classList.remove('btn-group-vertical');
+                    document.getElementById('tarifa').classList.add('btn-group');
+                }
+            },
+            /**
+             * Submits the form
+             */
             submit() {
                 /* Change the submit flag to avoid alert the customer at the page leave */
                 this.submitting = true;
@@ -1429,8 +1455,7 @@
         overflow: hidden;
     }
     .customer-dates {
-        margin-right: 0.5rem;
-        margin-top: 0.65rem; /* Vertical alignment with the radio */
+        white-space: nowrap;
     }
     /* Normalize the height of the inline buttons-radios */
     .tiny-radio-selector {
@@ -1438,5 +1463,8 @@
     }
     .tiny-radio-selector .btn.btn-sm {
         line-height: 1;
+    }
+    #tarifa {
+        white-space: nowrap;
     }
 </style>
