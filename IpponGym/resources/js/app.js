@@ -158,10 +158,10 @@ function createVue() {
                         } else if (error.response.data.message.toLowerCase().includes('token')) {
                             // location.reload()
                                 // .then(() => {
-                                    this.$showToast('danger', 'Sesión expirada', 'Error de sesión', 8000);
+                                    this.$showToast('danger', 'Sesión expirada. Vuelve a iniciar sesión.', 'Error de sesión', 8000);
                                 // });
                         } else {
-                            this.$showToast('danger', 'Se ha cerrado la sesión', 'Error de sesión', 8000);
+                            this.$showToast('danger', 'Se ha cerrado la sesión. Vuelve a iniciarla.', 'Error de sesión', 8000);
                         }
                     }
                     console.error(error);
