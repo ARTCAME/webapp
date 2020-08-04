@@ -34,15 +34,15 @@
                 </h5>
                 <b-row class="mb-2" no-gutters>
                     <b-form-input
+                        class="col col-12 col-sm-4 mr-1 mb-1 px-2"
                         data-v-step="wzd-cinturones-update-2"
                         id="date-cinturones"
                         key="trans-datepicker"
                         size="sm"
                         type="date"
-                        v-model="beltsNewDate"
-                        class="col-4 mr-1 px-2"></b-form-input>
+                        v-model="beltsNewDate"></b-form-input>
                     <span
-                        class="d-inline-block"
+                        class="col col-12 col-sm-auto d-inline-block mb-1"
                         data-v-step="wzd-cinturones-update-3"
                         key="trans-btns-update"
                         tabindex="0"
@@ -50,6 +50,7 @@
                         :title="deleteInCourse ? 'No puedes actualizar cinturones mientras editas una línea de la tabla' : rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : beltsNewDate == '' ? 'Selecciona una fecha' : updateCsv ? 'Descargando...' : 'Guardar y descargar archivo'">
                         <!-- Disabled when no grades are selected and no date was selected or if the process to save the file and download it has been started -->
                         <b-button
+                            class="w-100"
                             size="sm"
                             :disabled="beltsNewDate == '' || rowsSelected.length == 0 || updateCsv == true"
                             :variant="beltsNewDate == '' || rowsSelected.length == 0 || updating == false ? 'outline-success' : 'success'"
@@ -109,16 +110,16 @@
                     Descarga manual de archivo para diplomas
                 </h5>
                 <b-row class="mb-2" no-gutters>
-                    <b-col cols="auto">
+                    <!-- <b-col cols="auto"> -->
                         <span
-                            class="d-inline-block"
+                            class="col col-12 col-sm-auto d-inline-block mb-1"
                             data-v-step="wzd-cinturones-download-2"
                             tabindex="0"
                             v-b-tooltip.hover.noninteractive.top
                             :title="deleteInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
                             <!-- Disabled when no grades are selected or if a row has an edit open or if the process to download the grades has been started -->
                             <b-button
-                                class="cols-4"
+                                class="w-100"
                                 size="sm"
                                 :disabled="rowsSelected.length == 0 || deleteInCourse || downloadCsvManual"
                                 :variant="rowsSelected.length == 0 || deleteInCourse  ? 'outline-success' : 'success'"
@@ -140,12 +141,12 @@
                         <!-- Shown when some grade was selected -->
                         <transition name="slide-fade">
                             <span
-                                class="d-inline-block ig-inline-text ml-3"
+                                class="d-inline-block ig-inline-text ml-3 my-auto"
                                 v-if="rowsSelected.length > 0">
                                 Vas a descargar un archivo con {{ rowsSelected.length }} socio/s
                             </span>
                         </transition>
-                    </b-col>
+                    <!-- </b-col> -->
                     <b-button
                         class="ml-auto"
                         size="sm"
@@ -244,58 +245,61 @@
                 </b-col>
                 <b-col cols="md-8">
                     <b-row align-h="end" no-gutters>
-                        <b-col class="col-12 col-sm d-flex flex-nowrap justify-content-end mt-1">
-                            <!-- Button to show only the selected items -->
-                            <span
-                                class="d-inline-block mr-1"
-                                key="trans-btn-show-all"
-                                tabindex="0"
-                                v-b-tooltip.hover.noninteractive
-                                :title="rowsSelected.length == 0 ? 'No hay ninguna fila seleccionado' : 'Mostrar solo las filas seleccionadas'">
-                                <!-- It will be disabled when no rows are selected -->
-                                <b-button
-                                    size="sm"
-                                    variant="outline-dark"
+                        <b-col class="col-12 col-sm d-flex flex-nowrap justify-content-end">
+                            <b-row no-gutters>
+                                <!-- Button to show only the selected items -->
+                                <span
+                                    class="d-inline-block mr-1 mt-1"
+                                    key="trans-btn-show-all"
+                                    tabindex="0"
                                     v-b-tooltip.hover.noninteractive
-                                    :disabled="rowsSelected.length == 0"
-                                    @click="addTagAllSelected()">
-                                    Seleccionadas
-                                </b-button>
-                            </span>
-                            <!-- Filter by current grade -->
-                            <b-dropdown
-                                class="ig-dropdown mr-1 px-0"
-                                size="sm"
-                                split
-                                text="Grado"
-                                variant="secondary">
-                                <b-dropdown-form>
-                                    <b-form-checkbox-group
-                                        buttons
-                                        button-variant="outline-dark"
+                                    :title="rowsSelected.length == 0 ? 'No hay ninguna fila seleccionado' : 'Mostrar solo las filas seleccionadas'">
+                                    <!-- It will be disabled when no rows are selected -->
+                                    <b-button
+                                        class="w-100"
                                         size="sm"
-                                        stacked
-                                        v-model="getSelectedGrade">
-                                        <b-form-checkbox
-                                            v-for="grade in grades"
-                                            :class="'ig-dropdown-item dropdown-grado ' + grade"
-                                            :key="grade"
-                                            :value="grade"
-                                            @change.native="addTags(grade)">
-                                        </b-form-checkbox>
-                                    </b-form-checkbox-group>
-                                </b-dropdown-form>
-                            </b-dropdown>
-                            <!-- Reset filters button -->
-                            <b-button
-                                class="btn-fa-tiny"
-                                size="sm"
-                                title="Quitar todos los filtros"
-                                variant="outline-warning"
-                                v-b-tooltip.hover.noninteractive
-                                @click="resetFilters()">
-                                <fa-icon icon="backspace"></fa-icon>
-                            </b-button>
+                                        variant="outline-dark"
+                                        v-b-tooltip.hover.noninteractive
+                                        :disabled="rowsSelected.length == 0"
+                                        @click="addTagAllSelected()">
+                                        Seleccionadas
+                                    </b-button>
+                                </span>
+                                <!-- Filter by current grade -->
+                                <b-dropdown
+                                    class="ig-dropdown mr-1 mt-1 px-0"
+                                    size="sm"
+                                    split
+                                    text="Grado"
+                                    variant="secondary">
+                                    <b-dropdown-form>
+                                        <b-form-checkbox-group
+                                            buttons
+                                            button-variant="outline-dark"
+                                            size="sm"
+                                            stacked
+                                            v-model="getSelectedGrade">
+                                            <b-form-checkbox
+                                                v-for="grade in grades"
+                                                :class="'ig-dropdown-item dropdown-grado ' + grade"
+                                                :key="grade"
+                                                :value="grade"
+                                                @change.native="addTags(grade)">
+                                            </b-form-checkbox>
+                                        </b-form-checkbox-group>
+                                    </b-dropdown-form>
+                                </b-dropdown>
+                                <!-- Reset filters button -->
+                                <b-button
+                                    class="btn-fa-tiny mt-1"
+                                    size="sm"
+                                    title="Quitar todos los filtros"
+                                    variant="outline-warning"
+                                    v-b-tooltip.hover.noninteractive
+                                    @click="resetFilters()">
+                                    <fa-icon icon="backspace"></fa-icon>
+                                </b-button>
+                            </b-row>
                         </b-col>
                         <b-col class="d-flex flex-nowrap ml-3 mt-1" cols="auto">
                             <!-- Show all row details button -->
@@ -509,7 +513,7 @@
                         #table-caption>
                         <p>La tabla solo muestra los socios activos. Mostrar los inactivos
                             <b-form-checkbox
-                                class="d-inline"
+                                class="d-inline inline-switch"
                                 size="sm"
                                 switch
                                 v-model="inactives"
