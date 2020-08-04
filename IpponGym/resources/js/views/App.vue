@@ -26,7 +26,7 @@
             <transition appear mode="out-in" name="fade">
                 <router-view></router-view>
             </transition>
-            <transition appear mode="out-in" name="fade">
+            <transition appear mode="out-in" name="launcher-appear">
                 <DocLauncher
                     v-if="isLoggedIn && $route.name != '404' && $route.name != 'wiki'"></DocLauncher>
             </transition>
@@ -43,18 +43,21 @@
             <transition appear mode="out-in" name="fade">
                 <router-view></router-view>
             </transition>
-            <transition appear mode="out-in" name="fade">
+            <transition appear name="launcher-appear">
                 <DocLauncher
                     v-if="$route.name != '404' && $route.name != 'wiki'"></DocLauncher>
                     <!-- v-if="$route.name != 'home' && $route.name != '404' && $route.name != 'wiki'"></DocLauncher> -->
             </transition>
-            <b-button
-                id="tester-news"
-                title="Mostrar novedades"
-                v-if="$route.name != '404' && $route.name != 'wiki'"
-                @click="$bvModal.show('welcome-home-modal')">
-                <fa-icon icon="newspaper"></fa-icon>
-            </b-button>
+            <transition appear name="launcher-appear">
+                <b-button
+                    id="tester-news"
+                    title="Novedades"
+                    v-b-tooltip.hover.right.noninteractive
+                    v-if="$route.name != '404' && $route.name != 'wiki'"
+                    @click="$bvModal.show('welcome-home-modal')">
+                    <fa-icon icon="newspaper"></fa-icon>
+                </b-button>
+            </transition>
             <!-- <loading v-if="$root.isLoading == true"></loading> -->
         </div>
     </div>
@@ -62,7 +65,7 @@
 <script>
     import addBottomAlert from '../mixins/addBottomAlert.vue';
     import axios from 'axios';
-    import DocLauncher from '../components/userdocassets/Launcher';
+    import DocLauncher from '../components/userdocassets/DocLauncher';
     import { http } from "../utils/http";
     import { mapActions, mapGetters, mapState } from 'vuex';
     export default {
@@ -157,17 +160,18 @@
     #tester-news {
         background: rgba(0, 131, 81, 1);
         border: rgba(0, 131, 81, 1);
+        bottom: 55px;
         box-shadow: 0 0 3px rgba(0, 0, 0, .5);
         font-size: 17px;
         height: 30px;
-        left: calc(1.7% - 4px);
+        left: .5rem;
         line-height: 30px;
         opacity: .4;
         overflow: hidden;
         padding: 0;
         position: fixed;
         text-align: center;
-        top: 20px;
+        /* top: 20px; */
         transform: scale(0.98);
         transition: all .3s;
         width: 30px;
