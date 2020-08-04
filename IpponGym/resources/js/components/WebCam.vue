@@ -206,7 +206,6 @@
     #ctn-video {
         border: 1px solid rgba(206, 212, 218, 1);
         border-radius: 50%;
-        cursor: pointer;
         height: 200px;
         margin: 0 auto;
         overflow: hidden;
