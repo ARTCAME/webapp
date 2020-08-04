@@ -66,25 +66,22 @@ export const wmcSteps = [
         target: '[data-v-step="wzd-main-cinturones-0"]',
         content: 'En esta tabla verás los socios que tienen una tarifa que incluye karate actualmente. Desde aquí podrás consultar, modificar o seleccionar los socios y sus grados, usar los seleccionados para descargar archivos de grado para generar diplomas u otorgar nuevos grados a los socios que los hayan conseguido.',
         offset: '-135',
-        // duration: 1000,
         params: {
             placement: 'top',
         }
     },
     {
         target: '[data-v-step="wzd-main-cinturones-1"]',
-        content: 'Usa los filtos para buscar en la tabla más fácilmente.',
+        content: 'Usa los filtros para buscar en la tabla más fácilmente.',
         offset: '-135',
-        // duration: 1000,
         params: {
             placement: 'top',
         }
     },
     {
         target: '[data-v-step="wzd-main-cinturones-2"]',
-        content: 'Aquí verás los filtros aplicados en la tabla.',
+        content: 'Aquí verás los filtros aplicados en la tabla. Los filtros aplicados aparecerán aquí y si este campo se encuentra vacío es que estás viendo todos los datos sin aplicar ningún filtro.',
         offset: '-135',
-        // duration: 1000,
         params: {
             placement: 'bottom',
         }
@@ -94,7 +91,7 @@ export const wmcSteps = [
         content: 'Puedes acceder a la ficha del socio pulsando sobre el identificador de socio.',
         offset: '-135',
         params: {
-            placement: 'right'
+            placement: 'bottom'
         }
     },
     {
@@ -102,7 +99,7 @@ export const wmcSteps = [
         content: 'Desde el nombre del socio o desde el grado actual podrás acceder a ver el histórico de grados. La fecha que ves hacer referencia a cuándo se otorgó ese grado y si no hay fecha es que el socio tiene pendiente conseguirlo.',
         offset: '-135',
         params: {
-            placement: 'right'
+            placement: 'top'
         }
     },
     {
@@ -110,7 +107,7 @@ export const wmcSteps = [
         content: 'Imprime los datos de la tabla usando este botón.',
         offset: '-135',
         params: {
-            placement: 'left'
+            placement: 'left',
         }
     },
     {
@@ -118,7 +115,8 @@ export const wmcSteps = [
         content: 'Desde la barra de navegación podrás acceder a varias acciones como la actualización masiva de grados que incluye la descarga del fichero para la creación de diplomas o la descarga manual de ese fichero. Si activas cualquiera de ellas podrás ver información más detallada de cada proceso.',
         offset: '-135',
         params: {
-           placement: 'bottom-start'
+           placement: 'bottom',
+           enableScrolling: false /* Doesn't have effect, pointing to the navbar scrolls up jumping the fixed body padding */
         }
     },
 ]
