@@ -1,3 +1,4 @@
+
 .blur-in-enter-active,
 .blur-in-leave-active {
     transition: opacity .3s ease,  blur .3s ease;
@@ -77,6 +78,17 @@ USED ??
     opacity: 0;
     transform: translateX(10px);
 } */
+/* Transition the bottom fixed buttons wich launch the news or documentation */
+.launcher-appear-enter-active,
+.launcher-appear-leave-active {
+    transition: left 1.5s ease-in,  blur 1.5s ease-in;
+}
+.launcher-appear-enter,
+.launcher-appear-leave-to {
+    left: -3rem!important;
+    filter: blur(5px);
+    opacity: 0;
+}
 /* Used on the form fields to show the errors */
 .liveFeedbacks-enter-active {
     transition: all .3s ease;
@@ -131,4 +143,14 @@ USED ??
     filter: blur(4px);
     opacity: 0;
     visibility: hidden;
+}
+.wzd-launcher-appear-enter-active,
+.wzd-launcher-appear-leave-active {
+    transition: right 1s ease,  blur 1s ease;
+}
+.wzd-launcher-appear-enter,
+.wzd-launcher-appear-leave-to {
+    right: -3rem!important;
+    filter: blur(5px);
+    opacity: 0;
 }
