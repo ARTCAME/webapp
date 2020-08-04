@@ -31,7 +31,7 @@ a.unformated-link:hover {
     text-decoration: none;
 }
 body {
-    margin-bottom: 50px;
+    margin-bottom: 100px;
     padding-top: 135px; /* Gap of the navbars */
     transition: padding-top .3s;
 }
@@ -194,8 +194,9 @@ html {
 .modal.ig-custom-modal header.modal-header {
     border-bottom: unset!important;
 }
-.modal.ig-custom-modal .modal-body{
+.modal.ig-custom-modal .modal-body {
     padding: 1rem 3rem!important;
+    /* padding-bottom: 60px; */
 }
 .modal.ig-custom-modal .modal-content {
     /* background: rgba(250, 250, 250, 1); */
@@ -516,12 +517,13 @@ li.page-item {
     color: rgba(0, 0, 0, .2);
     font-size: calc(40px + (70 - 40) * ((100vw - 300px) / (1600 - 300))); /* minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
     letter-spacing: -.04em;
-    line-height: 50px;
+    line-height: 40px /* 50px */;
     user-select: none;
 }
 /* Custom subtitle smaller format */
 .subtitle-sub {
     font-size: calc(25px + (40 - 25) * ((100vw - 300px) / (1600 - 300))); /* minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
+    line-height: 30px /* 50px */;
 }
 .tabs li {
     padding: 5px 5px 0!important;
@@ -580,7 +582,10 @@ li.page-item {
 
 /* MEDIA QUERIES */
 @media screen and (max-width:768px) {
-    /* This two properties are adding a padding top at the first level elements of a form-row neutralizing the not useful by adding minus value to the parent */
+    .modal.ig-custom-modal .modal-body{
+        padding: 1rem .3rem!important;
+    }
+   /* This two properties are adding a padding top at the first level elements of a form-row neutralizing the not useful by adding minus value to the parent */
     .form-row {
         margin-top: -.25rem;
     }
