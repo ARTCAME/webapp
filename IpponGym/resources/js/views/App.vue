@@ -51,6 +51,7 @@
             <b-button
                 id="tester-news"
                 title="Mostrar novedades"
+                v-if="$route.name != '404' && $route.name != 'wiki'"
                 @click="$bvModal.show('welcome-home-modal')">
                 <fa-icon icon="newspaper"></fa-icon>
             </b-button>
