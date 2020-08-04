@@ -14,20 +14,18 @@
             </div>
         </transition>
         <!-- Button launcher always visible on the parent -->
-        <div
-            id="wzd-btn-start"
-            :class="'wzd-launcher' + (wizardLaunched ? ' launched' : '')"
-            @click="$tours[wizardName].start()">
-            <!-- Tooltip out of its target because it needs to be conditionally rendered -->
-            <b-tooltip
-                boundary="window"
-                noninteractive
-                target="wzd-btn-start"
-                v-if="!wizardLaunched">Ayuda</b-tooltip>
-            <span id="wrp-wzdnav-icon">
-                <fa-icon icon="question"></fa-icon>
-            </span>
-        </div>
+        <transition appear name="wzd-launcher-appear">
+            <div
+                id="wzd-btn-start"
+                title="Ayuda"
+                v-b-tooltip.hover.noninteractive.left
+                :class="'wzd-launcher' + (wizardLaunched ? ' launched' : '')"
+                @click="$tours[wizardName].start()">
+                <span id="wrp-wzdnav-icon">
+                    <fa-icon icon="question"></fa-icon>
+                </span>
+            </div>
+        </transition>
         <!-- Invoke vue tour -->
         <v-tour
             ref="tour"
@@ -251,16 +249,16 @@
         background-position: 0;
         background-size: 100%;
         border-radius: 50%;
-        bottom: 45px;
+        bottom: -1px /* 45px */;
         box-shadow: 0 0 3px rgba(0,0,0,.5);
         color: rgba(250, 250, 250, 1);
         font-size: 20px;
         height: 40px;
-        left: 1.7%;
         line-height: 40px;
         opacity: .7;
         overflow: hidden;
         position: fixed;
+        right: .2rem;
         text-align: center;
         transform: scale(0.98);
         transform: translate(-10px, -10px);
