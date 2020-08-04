@@ -32,70 +32,74 @@
                     Confirmación de estado de pagos domiciliados
                 </h5>
                 <b-row align-h="start" class="mb-2" no-gutters>
-                    <b-col cols="auto">
+                    <b-col cols="sm-12 auto">
                         <!-- It is shown conditionally when the confirmation of payments has been started -->
-                        <span
-                            class="d-inline-block"
-                            id="wrp-tlt-stats"
-                            key="trans-radio-new-state"
-                            tabindex="0"
-                            v-b-tooltip.hover.noninteractive
-                            :title="showingDetails ? 'No puedes confirmar pagos mientras editas una línea de la tabla' : ''">
-                            <!-- It will be disabled when a row in the table is being edited or if the confirmation of payments process has not been started -->
-                            <b-form-radio-group
-                                buttons
-                                button-variant="outline-secondary"
-                                data-v-step="wzd-pagos-confirming-2"
-                                size="sm"
-                                v-model="newStateSelected"
-                                :disabled="showingDetails || !confirming">
-                                <b-form-radio
-                                    name="radio-stats"
-                                    value="confirmado">
-                                    Confirmado
-                                </b-form-radio>
-                                <b-form-radio
-                                    name="radio-stats"
-                                    value="devuelto">
-                                    Devuelto
-                                </b-form-radio>
-                            </b-form-radio-group>
-                        </span>
-                        <!-- It is shown conditionally when the confirmation of payments has been started -->
-                        <span
-                            class="d-inline-block ml-4"
-                            id="save-confirmation"
-                            key="trans-btn-save-confirm"
-                            tabindex="0"
-                            v-b-tooltip.hover.noninteractive
-                            :title="showingDetails ? 'No puedes confirmar pagos mientras editas una línea de la tabla' : newStateSelected == false && rowsSelected.length == 0 ? 'Selecciona un estado y algún pago de la tabla' : newStateSelected == false ? 'Selecciona un estado' : rowsSelected.length == 0 ?  'Selecciona algún pago de la tabla' : csvDownloadConfirmation ? 'Descargando...' : ''">
-                            <!-- It will be disabled when the user hasn't selected a new state for the payment or if he hasn't select a row in the table or if a row in the table is being edited or if the flag wich controls the download of the file is actived -->
-                            <b-button
-                                data-v-step="wzd-pagos-confirming-3"
-                                size="sm"
-                                :disabled="!newStateSelected || rowsSelected.length == 0 || showingDetails || csvDownloadConfirmation"
-                                :variant="csvDownloadConfirmation == false && (newStateSelected && rowsSelected.length > 0 && !showingDetails) ? 'success' : 'outline-success'"
-                                @click="confirmingState()">
-                                <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
-                                <b-spinner
-                                    small
-                                    type="grow"
-                                    v-if="csvDownloadConfirmation == true"></b-spinner>
-                                <fa-icon
-                                    icon="check-double"
-                                    v-else></fa-icon>
-                                &ensp;Confirmar estado
-                            </b-button>
-                        </span>
-                        <!-- It will be shown when the confimation of payments has started and has been selected some rows -->
-                        <transition name="slide-fade">
+                        <b-row no-gutters>
                             <span
-                                class="d-inline-block ig-inline-text ml-3"
-                                key="trans-confirm-text"
-                                v-if="confirming && rowsSelected.length > 0">
-                                Vas a confirmar {{ rowsSelected.length }} pago/s
+                                class="col col-12 col-sm-auto mb-1 mr-1"
+                                id="wrp-tlt-stats"
+                                key="trans-radio-new-state"
+                                tabindex="0"
+                                v-b-tooltip.hover.noninteractive
+                                :title="showingDetails ? 'No puedes confirmar pagos mientras editas una línea de la tabla' : ''">
+                                <!-- It will be disabled when a row in the table is being edited or if the confirmation of payments process has not been started -->
+                                <b-form-radio-group
+                                    buttons
+                                    button-variant="outline-secondary"
+                                    class="w-100"
+                                    data-v-step="wzd-pagos-confirming-2"
+                                    size="sm"
+                                    v-model="newStateSelected"
+                                    :disabled="showingDetails || !confirming">
+                                    <b-form-radio
+                                        name="radio-stats"
+                                        value="confirmado">
+                                        Confirmado
+                                    </b-form-radio>
+                                    <b-form-radio
+                                        name="radio-stats"
+                                        value="devuelto">
+                                        Devuelto
+                                    </b-form-radio>
+                                </b-form-radio-group>
                             </span>
-                        </transition>
+                            <!-- It is shown conditionally when the confirmation of payments has been started -->
+                            <span
+                                class="col col-12 col-sm-auto d-inline-block mb-1"
+                                id="save-confirmation"
+                                key="trans-btn-save-confirm"
+                                tabindex="0"
+                                v-b-tooltip.hover.noninteractive
+                                :title="showingDetails ? 'No puedes confirmar pagos mientras editas una línea de la tabla' : newStateSelected == false && rowsSelected.length == 0 ? 'Selecciona un estado y algún pago de la tabla' : newStateSelected == false ? 'Selecciona un estado' : rowsSelected.length == 0 ?  'Selecciona algún pago de la tabla' : csvDownloadConfirmation ? 'Descargando...' : ''">
+                                <!-- It will be disabled when the user hasn't selected a new state for the payment or if he hasn't select a row in the table or if a row in the table is being edited or if the flag wich controls the download of the file is actived -->
+                                <b-button
+                                    class="w-100"
+                                    data-v-step="wzd-pagos-confirming-3"
+                                    size="sm"
+                                    :disabled="!newStateSelected || rowsSelected.length == 0 || showingDetails || csvDownloadConfirmation"
+                                    :variant="csvDownloadConfirmation == false && (newStateSelected && rowsSelected.length > 0 && !showingDetails) ? 'success' : 'outline-success'"
+                                    @click="confirmingState()">
+                                    <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
+                                    <b-spinner
+                                        small
+                                        type="grow"
+                                        v-if="csvDownloadConfirmation == true"></b-spinner>
+                                    <fa-icon
+                                        icon="check-double"
+                                        v-else></fa-icon>
+                                    &ensp;Confirmar estado
+                                </b-button>
+                            </span>
+                            <!-- It will be shown when the confimation of payments has started and has been selected some rows -->
+                            <transition name="slide-fade">
+                                <span
+                                    class="d-inline-block ig-inline-text ml-3"
+                                    key="trans-confirm-text"
+                                    v-if="confirming && rowsSelected.length > 0">
+                                    Vas a confirmar {{ rowsSelected.length }} pago/s
+                                </span>
+                            </transition>
+                        </b-row>
                     </b-col>
                     <b-button
                         class="ml-auto"
@@ -138,16 +142,17 @@
                     Descarga manual de fichero de remesa para los pagos pendientes
                 </h5>
                 <b-row class="mb-2" no-gutters>
-                    <b-col cols="auto">
+                    <!-- <b-col cols="auto"> -->
                         <!-- It will be shown when the manual download -->
                         <span
-                            class="d-inline-block"
+                            class="col col-12 col-sm-auto d-inline-block mb-1"
                             key="trans-btn-download"
                             tabindex="0"
                             v-b-tooltip.hover.noninteractive
                             :title="rowsSelected.length == 0 ? 'Selecciona algún pago de la tabla' : showingDetails ? 'No puedes generar el archivo de pagos mientras editas una línea de la tabla' : csvDownloadManual ? 'Descargando...' : ''">
                             <!-- Disabled when any row on the table has been selected or if the edition of some row is actived or if the process of manual download hasn't been started of if the flag wich controls the download of the file is true -->
                             <b-button
+                                class="w-100"
                                 data-v-step="wzd-pagos-download-2"
                                 size="sm"
                                 key="trans-btn-save-confirm"
@@ -168,13 +173,12 @@
                         <!-- Shown when the manual download has been initiated and when has been selected some row on the table -->
                         <transition name="slide-fade">
                             <span
-                                class="d-inline-block ig-inline-text ml-3"
-                                key="trans-text-download"
-                                v-if="manualDownload && rowsSelected.length > 0">
+                                class="d-inline-block ig-inline-text ml-3 my-auto"
+                                key="trans-text-download">
                                 Vas a generar un archivo para {{ rowsSelected.length }} pago/s
                             </span>
                         </transition>
-                    </b-col>
+                    <!-- </b-col> -->
                     <b-button
                         class="ml-auto"
                         size="sm"
@@ -811,11 +815,12 @@
                         <b-row align-h="between" no-gutters>
                             <!-- Shown only at the main payments page -->
                             <b-col
-                                cols="6"
-                                v-if="$route.name == 'payments.index'">
-                                <p>La tabla solo muestra los socios activos. Mostrar los inactivos
+                                v-if="$route.name == 'payments.index'"
+                                :cols="$refs.paymentsTable && $refs.paymentsTable.isFiltered && ($refs.paymentsTable.filteredItems.length > 1000 || paymentsItems.length > 1000) ? 6 : 'auto'">
+                                <p>
+                                    La tabla solo muestra los socios activos. Mostrar los inactivos
                                     <b-form-checkbox
-                                        class="d-inline"
+                                        class="d-inline custom inline-switch"
                                         size="sm"
                                         switch
                                         v-model="inactives"></b-form-checkbox>
