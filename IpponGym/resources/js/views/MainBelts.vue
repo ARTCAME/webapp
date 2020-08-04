@@ -352,7 +352,7 @@
                                         small
                                         type="grow"
                                         v-if="downloadCsvTable == true && ($refs.beltsTable && $refs.beltsTable.filteredItems.length != 0)"></b-spinner>
-                                    <!-- By default, show a icon -->
+                                    <!-- By default, show an icon -->
                                     <fa-icon
                                         icon="download"
                                         v-else></fa-icon>
@@ -415,7 +415,6 @@
                     <template
                         #cell(customerNumber)="row">
                         <b-link
-                            data-v-step="wzd-main-cinturones-3"
                             positioning="top"
                             target="_blank"
                             title="Abre la ficha del socio"
@@ -426,7 +425,6 @@
                     <template
                         #cell(name)="row">
                         <b-link
-                            data-v-step="wzd-main-cinturones-4"
                             class="unformated-link"
                             positioning="top"
                             title="Muestra/Oculta los cinturones del socio"
@@ -578,8 +576,8 @@
                     { key: 'selected', label: '', },
                     { key: 'active', label: 'Activo', sortable: true, class: 'text-center', },
                     // { key: 'id', label: 'ID', sortable: true, },
-                    { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', },
-                    { key: 'name', label: 'Socio', sortable: true, },
+                    { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', thAttr: { 'data-v-step': 'wzd-main-cinturones-3' } },
+                    { key: 'name', label: 'Socio', sortable: true, thAttr: { 'data-v-step': 'wzd-main-cinturones-4' } },
                     { key: 'grade', label: 'Grado actual', sortable: true, class: 'text-center', },
                     { key: 'nextGrade', label: 'Siguiente grado', sortable: true, class: 'text-center', },
                 ], /* Fields of the table beltsTable, some conditional showed fields are not included by default and it will be included in some function */
