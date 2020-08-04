@@ -1,5 +1,6 @@
 <template>
-    <span>
+    <span
+        :class="{ 'mobile-wizard' : mobile }">
         <div
             id="wzd-full-disable-face"
             v-if="wizardLaunched">
@@ -99,6 +100,7 @@
         data() {
             return {
                 currentEl: null, /* Element wizarded */
+                mobile: window.innerWidth <= 700,
                 wizardName: null, /* Name of the wizard passed from the parent at name */
                 wizardLaunched: false, /* Flag to determine if the wizard has been launched */
                 wzdCallbacks: {
@@ -111,11 +113,17 @@
         },
         beforDestroy() {
             window.removeEventListener('keyup', this.keyNav);
+            window.removeEventListener('resize');
         },
         computed: {
             tour() {
                 return this.$refs.tour;
             }
+        },
+        created() {
+            window.addEventListener('resize', () => {
+                this.mobile = window.innerWidth <= 500 || window.innerHeight <= 500
+            });
         },
         methods: {
             /**
@@ -228,15 +236,28 @@
         position: relative;
         z-index: 1001!important;
     }
+    /* Mobile styles */
+    .mobile-wizard .v-step__content * {
+        font-size: 12px!important;
+    }
+    .mobile-wizard .v-step__content {
+        padding: .5rem .5rem 0 .5rem!important;
+    }
+    .mobile-wizard .wzd-nav {
+        font-size: 10px!important;
+        height: 15px!important;
+        line-height: 15px!important;
+    }
 </style>
 <style scoped>
+    /* Normal styles */
     .v-step {
         background-color: rgba(255, 255, 255, .95);
         border-radius: .25rem;
         color: rgba(90, 90, 90, 1);
         filter: drop-shadow(0 0 3px rgba(0,0,0,.5));
         padding: 0;
-        max-width: calc(100vw - 60%);
+        /* max-width: calc(100vw - 60%); */
     }
     .wrp-wzd-nav {
         display: flex;
@@ -258,7 +279,7 @@
         opacity: .7;
         overflow: hidden;
         position: fixed;
-        right: .2rem;
+        right: 0rem;
         text-align: center;
         transform: scale(0.98);
         transform: translate(-10px, -10px);
@@ -287,7 +308,7 @@
         height: 25px;
         line-height: 25px;
         transition: all .3s, background-position 1s;
-        /* width: 40px; */
+        width: 40px;
     }
     .wzd-nav:nth-child(1) {
         background: linear-gradient(65deg, rgba(0, 50, 131, .95) 1%, rgba(0, 131, 81, .95) 10%);
