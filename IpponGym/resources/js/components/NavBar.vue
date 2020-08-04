@@ -254,6 +254,7 @@
             return {
                 alta: { name: 'ALTA', path: 'customers.new' },
                 cinturones: { name: 'CINTURONES', path: 'belts.index' },
+                lastScroll: 0,
                 pagos: { name: 'PAGOS', path: 'payments.index' },
                 routes: {},
                 tests: { name: 'TESTS', path: 'tests.index' },
@@ -316,14 +317,33 @@
                 elem.classList.toggle("nav-expanded")
             },
             /**
-             * Called when a scroll is produced, if a scrolltop occurs show a shadow to the navbar
+             * Manage the behaviour of the navbars
              */
             scroll() {
-                let nav = document.getElementById('ig-tools-navbar');
-                document.getElementsByTagName('html')[0].scrollTop > 0 ? nav.classList.add('scrolling') : nav.classList.remove('scrolling');
+                const toolsNav = document.getElementById('ig-tools-navbar');
+                const mainNav = document.getElementById('ig-main-navbar');
+                /* Add class with the box-shadow behaviour */
+                document.getElementsByTagName('html')[0].scrollTop > 0 ? toolsNav.classList.add('scrolling') : toolsNav.classList.remove('scrolling');
+                /* Hide/Unhide the navbar based on the scroll position */
+                const scrollY = window.scrollY;
+                var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollY > 350) {
+                    if (currentScroll < this.lastScroll) {
+                        toolsNav.style.transform = 'unset';
+                        mainNav.style.transform = 'unset';
+                    } else {
+                        toolsNav.style.transform = 'translateY(-150px)';
+                        mainNav.style.transform = 'translateY(-100px)';
+                    }
+                } else if (scrollY <= 350) {
+                    toolsNav.style.transform = 'unset';
+                    mainNav.style.transform = 'unset';
+                }
+                this.lastScroll = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
             },
         },
         mounted() {
+            this.lastScroll = window.pageYOffset || document.documentElement.scrollTop;
             /* Generate random gradient to the main title */
             this.$randomGradient(document.getElementById('ippon-ttl'));
         }
@@ -468,6 +488,7 @@
     }
     #ig-main-navbar,
     #ig-tools-navbar {
+        transition: transform .2s;
         width: 100vw; /* Resolving jumps on appear scrollbar */
     }
     #ig-main-navbar {
