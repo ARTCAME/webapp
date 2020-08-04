@@ -9,13 +9,6 @@
         </router-link>
     </div>
 </template>
-
-<script>
-    export default {
-
-    }
-</script>
-
 <style scoped>
     .documentation-launcher {
         background: rgba(0, 50, 131, .95);
