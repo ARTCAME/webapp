@@ -8,7 +8,7 @@
                     v-if="!isDisabled"
                     @click="delFormElement({ _id: form._id, entity: target, entityIndex: contactIndex, field: 'phones', fieldIndex: phoneIndex, })"></b-btn-close>
                 <b-form-row>
-                    <b-form-group class="col-6 col-md-3" label="Teléfono">
+                    <b-form-group class="col-12 col-md-3" label="Teléfono">
                         <b-form-input
                             autocomplete="off"
                             type="tel"
@@ -27,7 +27,7 @@
                             </b-form-invalid-feedback>
                         </transition>
                     </b-form-group>
-                    <b-form-group class="col-6 col-md-9" label="Notas">
+                    <b-form-group class="col-12 col-md-9" label="Notas">
                         <b-form-input
                             autocomplete="off"
                             placeholder="Si es del trabajo, de casa, horario o persona de contacto, etc"
