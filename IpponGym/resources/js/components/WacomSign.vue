@@ -240,7 +240,8 @@
         width: 100%;
     }
     #capture-btn {
-        width: 342px;
+        max-width: 342px;
+        width: 100%;
     }
     #capture-btn * {
         font-size: 0.875rem!important
@@ -248,15 +249,18 @@
     #imageBox {
         border: 1px solid rgba(180, 180, 180, 1);
         border-radius: .25rem;
-        height: 200px;
-        width: 342px;
+        height: auto;
+        max-height: 200px;
+        max-width: 342px;
+        width: 100%;
     }
     #imageBox.is-invalid {
         border-color: #dc3545;
         border-radius: 0.25rem;
     }
     #txtDisplay {
-        width: 342px;
+        max-width: 342px;
+        width: 100%;
     }
     @media screen and (max-width: 768px) {
         #imageBox,
