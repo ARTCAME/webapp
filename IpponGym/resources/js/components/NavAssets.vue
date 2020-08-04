@@ -102,12 +102,9 @@
             modal-class="ig-custom-modal"
             no-close-on-backdrop
             scrollable
+            title="Genera y descarga documentos"
             @hidden="$manageScrollBar"
             @show="$manageScrollBar">
-            <template
-                #modal-title>
-                <h1>Novedades y actualización de errores</h1>
-            </template>
             <PrintFile></PrintFile>
         </b-modal>
     </b-row>
@@ -116,10 +113,27 @@
     #payments-nav-modal.ig-custom-modal .modal-header,
     #print-nav-modal.ig-custom-modal .modal-header,
     #search-nav-modal.ig-custom-modal .modal-header {
-        padding-left: 4rem!important;
+        padding-left: 3rem;
+    }
+    #payments-nav-modal.ig-custom-modal .modal-header .modal-title,
+    #print-nav-modal.ig-custom-modal .modal-header .modal-title,
+    #search-nav-modal.ig-custom-modal .modal-header .modal-title {
+        margin-top: 10px; /* Align with the close cross */
+    }
+    #payments-nav-modal.ig-custom-modal .modal-header .close,
+    #print-nav-modal.ig-custom-modal .modal-header .close,
+    #search-nav-modal.ig-custom-modal .modal-header .close {
+        padding-right: .5rem;
     }
     .navbar-light .navbar-toggler {
         border-color: transparent; /* Delete the hambur icon border */
+    }
+    @media screen and (max-width:768px) {
+        #payments-nav-modal.ig-custom-modal .modal-header,
+        #print-nav-modal.ig-custom-modal .modal-header,
+        #search-nav-modal.ig-custom-modal .modal-header {
+            padding-left: .5rem;
+        }
     }
 </style>
 <style scoped>
