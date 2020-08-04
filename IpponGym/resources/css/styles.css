@@ -481,6 +481,9 @@ input.form-control {
     letter-spacing: -.04em;
     opacity: 1;
 }
+.inline-switch label {
+    margin-top: 3px;
+}
 .invalid-feedback {
     margin-top: 0!important;
     position: absolute;
