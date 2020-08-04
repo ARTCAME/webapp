@@ -13,24 +13,15 @@
         </h4>
         <p>
             <h5>Cambios recientes:</h5>
-            &emsp;- Se ha revisado la conexión con la base de datos ya que al guardar los socios no se estaban mostrando en las búsquedas, ahora ya funciona correctamente
-            <br>&emsp;- Se ha añadido esta página de noticias para mostrar las novedades más importantes, se desactivará automáticamente al cerrarla y volverá a aparecer cuando existan actualizaciones
-            <br>&emsp;- Se ha solucionado fallo en página de inicio que no permitía hacer scroll en la página
-            <br>&emsp;- Se ha añadido protección https a la aplicación y ahora está disponible desde el dominio app.ippongymzaragoza.es
-        </p>
-        <p>
-            <h5>Errores detectados:</h5>
-            &emsp;- Al guardar un socio puede existir un error en la fecha de nacimiento que genere un aviso de error. Por favor, cuando utilices este campo comprueba correctamente que:
-            <br>&emsp;&emsp;- Que la fecha tenga el formato correcto, el campo debería obligarte a aplicarlo pero siempre deberá ser DD/MM/AAAA
-            <br>&emsp;&emsp;- La fecha de nacimiento sea correcta, el sistema detectará que un 30 de febrero o 34 de enero no pueden existir
-            <br>&emsp;&emsp;- Si el socio es menor automáticamente te pedirá rellenar datos del tutor, verifica que esto sea así
-            <br>&emsp;&emsp;- Si el error persiste recuerda hacer una captura y añadírmela en el test que estuvieras haciendo (si estás en un navegador de ordenador y puedes acceder a la consola añádela a la captura, si este último punto te suena a chino haz como si no lo hubieras leído)
+            &emsp;- Se ha añadido la fecha de creación y actualización a la ficha de socios
+            <br>&emsp;- Se ha confirmado el funcionamiento correcto de la captura de imagen a través de la cámara
+            <br>&emsp;- Se ha confirmado el funcionamiento correcto de la captura de firma a través de la tableta wacom y se han añadido firmas a las fichas de socio existentes
+            <br>&emsp;- Se han añadido nuevos tests en tu sección de tests
+            <br>&emsp;- Se ha mejorado el funcionamiento en la versión móvil, diversos elementos se solapaban o no tenían una maquetación correcta en pantallas pequeñas. Especialmente en el formulario de alta.
         </p>
         <p>
             <h5>Fallos conocidos que se solucionarán en próximas versiones:</h5>
             &emsp;- Al guardar un socio se descargará automáticamente documentación. Esta documentación por el momento no es correcta y puede contener fallos que no indican un error
-            <br>&emsp;- La cámara del formulario de edición/alta no funciona y puede provocar otros fallos al activarla
-            <br>&emsp;- La firma del formulario de edición/alta no funciona por el momento
         </p>
         <h3>
             Gracias por ayudar a mejorar la aplicación 💝
