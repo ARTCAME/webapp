@@ -4,7 +4,7 @@
         title="Documentación"
         v-b-tooltip.hover.right.noninteractive
         v-b-modal.user-doc>
-        <router-link target="_blank" to="wiki">
+        <router-link target="_blank" to="/wiki">
             <fa-icon id="lancher-icon" icon="book-open"></fa-icon>
         </router-link>
     </div>
