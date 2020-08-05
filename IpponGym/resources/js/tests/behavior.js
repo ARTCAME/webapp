@@ -32,4 +32,15 @@ export const COMPORTAMIENTO = [
         { spec: '- ¿Crees que la información incluída en la aplicación ha sido suficiente para entender todos los procesos?' },
         { spec: '- Explica si añadirías alguna explicación más o más nivel de detalle en algún proceso para ayudar a entenderlo mejor' },
     ],
+    /* 05/08/20 */
+    [
+        { title: 'Comportamiento general en ordenador', desc: 'Describe en detalle cómo ha sido tu experiencia con las siguientes cuestiones (es recomendado responder cuando hayas hecho tests sobre procesos):', testName: 'test-comportamiento-6', },
+        { spec: '- Dando por hecho que has utilizado la aplicación en un ordenador ¿El funcionamiento visual ha sido correcto? ¿Has encontrado algún elemento que produjera saltos o cualquier otro error de diseño?' },
+        { spec: '- Al indicar algún error especifica al máximo dónde y cómo ha ocurrido para que podamos solucionarlo' },
+    ],
+    [
+        { title: 'Comportamiento general en móvil', desc: 'Describe en detalle cómo ha sido tu experiencia con las siguientes cuestiones (es recomendado responder cuando hayas hecho tests sobre procesos):', testName: 'test-comportamiento-7', },
+        { spec: '- Dando por hecho que has utilizado la aplicación en un móvil ¿El funcionamiento visual ha sido correcto? ¿Has encontrado algún elemento que produjera saltos o cualquier otro error de diseño?' },
+        { spec: '- Al indicar algún error especifica al máximo dónde y cómo ha ocurrido para que podamos solucionarlo' },
+    ],
 ]
