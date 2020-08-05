@@ -9,7 +9,7 @@ export const wmpSteps = [
     },
     {
         target: '[data-v-step="wzd-main-pagos-1"]',
-        content: 'Desde este botón podrás editar los datos relevantes del pago: "Tarifa", "Importe", "Forma de pago", "Estado" y "Fecha de pago confirmado". Si necesitas modificar algún otro dato del socio puedes acceder a su ficha directamente.',
+        content: 'Desde esta columna podrás editar los datos relevantes del pago: "Tarifa", "Importe", "Forma de pago", "Estado" y "Fecha de pago confirmado". Si necesitas modificar algún otro dato del socio puedes acceder a su ficha directamente.',
         offset: '-135',
         params: {
            placement: 'left'
