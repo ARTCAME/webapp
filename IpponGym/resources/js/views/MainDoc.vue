@@ -194,6 +194,23 @@
         },
     }
 </script>
+<style>
+    /* Not scoped to apply it to the imported child components */
+    @media screen and (max-width: 500px) {
+        #doc-wrp *:not(.subtitle):not(#wzd-btn-start) {
+            font-size: 12px!important;
+        }
+        #doc-ctn * {
+            margin-left: .1rem!important;
+            margin-right: .1rem!important;
+        }
+        #doc-content,
+        #doc-ctn {
+            padding-left: 0!important;
+            padding-right: 0!important;
+        }
+    }
+</style>
 <style scoped>
     .doc-article {
         margin: 0 auto;
