@@ -17,7 +17,8 @@
             <br>&emsp;- Se ha confirmado el funcionamiento correcto de la captura de imagen a través de la cámara
             <br>&emsp;- Se ha confirmado el funcionamiento correcto de la captura de firma a través de la tableta wacom y se han añadido firmas a las fichas de socio existentes
             <br>&emsp;- Se han añadido nuevos tests en tu sección de tests
-            <br>&emsp;- Se ha mejorado el funcionamiento en la versión móvil, diversos elementos se solapaban o no tenían una maquetación correcta en pantallas pequeñas. Especialmente en el formulario de alta.
+            <br>&emsp;- Se han añadido mejoras para facilitar el uso en pantallas de menor tamaño
+            <br>&emsp;- Se han revisado los tutoriales de ayuda para facilitar su uso en pantallas de menor tamaño y confirmar se ha confirmado su correcto funcionamiento
         </p>
         <p>
             <h5>Fallos conocidos que se solucionarán en próximas versiones:</h5>
