@@ -581,7 +581,7 @@ li.page-item {
 }
 
 /* MEDIA QUERIES */
-@media screen and (max-width:768px) {
+@media screen and (max-width: 768px) {
     .modal.ig-custom-modal .modal-body{
         padding: 1rem .3rem!important;
     }
@@ -593,7 +593,7 @@ li.page-item {
         margin-top: .25rem;
     }
 }
-@media screen and (min-width:576px) {
+@media screen and (min-width: 576px) {
     #main-alta.card-columns {
         -webkit-column-count:2;
         column-count:2;
