@@ -13,7 +13,8 @@
         </h4>
         <p>
             <h5>Cambios recientes:</h5>
-            &emsp;- Se ha añadido la fecha de creación y actualización a la ficha de socios
+            &emsp;- Como hemos cambiado al mes de agosto, a todos los socios se les habrá añadido el pago del mes de agosto
+            <br>&emsp;- Se ha añadido la fecha de creación y actualización a la ficha de socios
             <br>&emsp;- Se ha confirmado el funcionamiento correcto de la captura de imagen a través de la cámara
             <br>&emsp;- Se ha confirmado el funcionamiento correcto de la captura de firma a través de la tableta wacom y se han añadido firmas a las fichas de socio existentes
             <br>&emsp;- Se han añadido nuevos tests en tu sección de tests
