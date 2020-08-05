@@ -99,7 +99,7 @@ export const wmcSteps = [
         content: 'Desde el nombre del socio o desde el grado actual podrás acceder a ver el histórico de grados. La fecha que ves hacer referencia a cuándo se otorgó ese grado y si no hay fecha es que el socio tiene pendiente conseguirlo.',
         offset: '-135',
         params: {
-            placement: 'top'
+            placement: 'left'
         }
     },
     {
