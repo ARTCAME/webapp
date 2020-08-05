@@ -1,12 +1,12 @@
 /* **************************************************************************
   SigCaptX-Globals.js
-   
+
   This file contains enumerators, function objects and global variables common to various functions
-  
+
   Copyright (c) 2018 Wacom Co. Ltd. All rights reserved.
-  
+
    v4.0
-  
+
 ***************************************************************************/
 
 /* Define global variables */
@@ -25,7 +25,8 @@ var OUTLINE = 4;              // Ditto
 var CHECKBOX_USETICKSYMBOL = 2;  // Specifies whether the tick symbol should be used to show that the checkbox has been clicked
 
 const BITMAP_BACKGROUNDCOLOR = 0x00FFFFFF;
-const BITMAP_IMAGEFORMAT = "bmp";
+// const BITMAP_IMAGEFORMAT = "bmp";
+const BITMAP_IMAGEFORMAT = "png";
 const BITMAP_INKCOLOR = 0x00000000;
 const BITMAP_INKWIDTH = 0.7;
 const BITMAP_PADDING_X = 4;
@@ -34,10 +35,10 @@ const BITMAP_PADDING_Y = 4;
 const TIMEOUT = 1500;         //  Timeout value for connecting to the port used for the SigCaptX service
 const SERVICEPORT = 8000;     //  Port used for the SigCaptX service
 const LICENCEKEY = "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI3YmM5Y2IxYWIxMGE0NmUxODI2N2E5MTJkYTA2ZTI3NiIsImV4cCI6MjE0NzQ4MzY0NywiaWF0IjoxNTYwOTUwMjcyLCJyaWdodHMiOlsiU0lHX1NES19DT1JFIiwiU0lHQ0FQVFhfQUNDRVNTIl0sImRldmljZXMiOlsiV0FDT01fQU5ZIl0sInR5cGUiOiJwcm9kIiwibGljX25hbWUiOiJTaWduYXR1cmUgU0RLIiwid2Fjb21faWQiOiI3YmM5Y2IxYWIxMGE0NmUxODI2N2E5MTJkYTA2ZTI3NiIsImxpY191aWQiOiJiODUyM2ViYi0xOGI3LTQ3OGEtYTlkZS04NDlmZTIyNmIwMDIiLCJhcHBzX3dpbmRvd3MiOltdLCJhcHBzX2lvcyI6W10sImFwcHNfYW5kcm9pZCI6W10sIm1hY2hpbmVfaWRzIjpbXX0.ONy3iYQ7lC6rQhou7rz4iJT_OJ20087gWz7GtCgYX3uNtKjmnEaNuP3QkjgxOK_vgOrTdwzD-nm-ysiTDs2GcPlOdUPErSp_bcX8kFBZVmGLyJtmeInAW6HuSp2-57ngoGFivTH_l1kkQ1KMvzDKHJbRglsPpd4nVHhx9WkvqczXyogldygvl0LRidyPOsS5H2GYmaPiyIp9In6meqeNQ1n9zkxSHo7B11mp_WXJXl0k1pek7py8XYCedCNW5qnLi4UCNlfTd6Mk9qz31arsiWsesPeR9PN121LBJtiPi023yQU8mgb9piw_a-ccciviJuNsEuRDN3sGnqONG3dMSA";  // Licence key used for sigCtl and wizCtl in SigCaptX-SessionControl.js
-const PIN_MAXLENGTH = 4;      //  Max lenght of PIN 
+const PIN_MAXLENGTH = 4;      //  Max lenght of PIN
 const PIN_MINLENGTH = 1;      //  Min length of PIN
 
-var padRange = 
+var padRange =
 {
    STU300: "300",
    STU430: "430",
@@ -45,7 +46,7 @@ var padRange =
    STU5X0: "5X0"
 };
 
-var padType = 
+var padType =
 {
    STU300: "Wacom STU-300",
    STU430: "Wacom STU-430",
@@ -106,7 +107,7 @@ var buttonEvent =
 var radioSelection =
 {
   MALE:  "Male",
-  FEMALE: "Female"  
+  FEMALE: "Female"
 };
 
 // Set up the functions used for defining the various objects which are to be displayed on the pad
