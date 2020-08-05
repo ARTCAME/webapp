@@ -115,4 +115,31 @@ export const EDITAR = [
         { spec: '- El socio debe tener contactos' },
         { spec: '- Elimina uno o varios contactos' },
     ],
+    /* 05/08/20 */
+    [
+        { title: 'Editar un socio', desc: 'Desde la ficha de cualquier socio realiza modificaciones a sus datos:', testName: 'test-edit-10', },
+        { spec: '- Añade una foto a la ficha de socio (no debía tener previamente)' },
+        { spec: '- No modifiques los cinturones' },
+        { spec: '- No modifiques los pagos' },
+        { spec: '- El socio debe tener tutor' },
+        { spec: '- Modifica datos base del socio: nombre, dirección, dni, tarifa o forma de pago' },
+        { spec: '- Modifica datos base del tutor: nombre, dirección o dni' },
+    ],
+    [
+        { title: 'Editar un socio', desc: 'Desde la ficha de cualquier socio realiza modificaciones a sus datos:', testName: 'test-edit-11', },
+        { spec: '- Añade una foto a la ficha de socio (no debía tener previamente)' },
+        { spec: '- No modifiques los cinturones' },
+        { spec: '- No modifiques los pagos' },
+        { spec: '- El socio debe tener contacto' },
+        { spec: '- Modifica datos dinámicos del socio: teléfonos o e-mails' },
+        { spec: '- Modifica datos base de uno o varios contactos: nombre' },
+    ],
+    [
+        { title: 'Editar un socio', desc: 'Desde la ficha de cualquier socio realiza modificaciones a sus datos:', testName: 'test-edit-12', },
+        { spec: '- Sustituye la foto de la fiche de socio (debía tener previamente)' },
+        { spec: '- No modifiques los cinturones' },
+        { spec: '- No modifiques los pagos' },
+        { spec: '- El socio debe tener contacto' },
+        { spec: '- Modifica datos dinámicos de uno o varios contactos: teléfonos o e-mails' },
+    ],
 ]
