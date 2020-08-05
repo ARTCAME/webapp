@@ -558,7 +558,6 @@
                     selectable
                     show-empty
                     small
-                    sticky-header="10000px"
                     striped
                     :busy="paymentsTableBusy"
                     :current-page="paymentsTablePagination"
@@ -566,6 +565,7 @@
                     :filter="paymentsSearch"
                     :filter-function="filterTable"
                     :items="paymentsItems">
+                    <!-- sticky-header="10000px" -> causes that the head elements cannot to be focused -->
                     <!-- :tbody-transition-props="{ mode: 'out-in', name: 'fade' }"> will cause jumps between filtered states -->
                     <template
                         #head(selected)>
@@ -744,13 +744,18 @@
                             </span>
                         </transition-group>
                     </template>
+                    <template
+                        #head(editRow)>
+                        <span class="d-inline-block" data-v-step="wzd-main-pagos-1">
+                            <fa-icon icon="edit"></fa-icon>
+                        </span>
+                    </template>
                     <!-- Conditionally rendered at the customer profile (when the isDisabled prop is false) -->
                     <template
                         #cell(editRow)="row"
                         v-if="isDisabled == false">
                         <!-- Shown only when the flag wich indicates there is a row on edition is false. Only can edit one row at time -->
                         <fa-icon
-                            data-v-step="wzd-main-pagos-1"
                             icon="edit"
                             v-if="!showingDetails"
                             :id="'tooltip_edit_row' + row.index"
@@ -1030,7 +1035,7 @@
                     { key: 'interval', label: 'Periodo', sortable: true, },
                     { key: 'status', label: 'Estado', sortable: true, },
                     { key: 'dateconfirmed', label: 'Fecha de pago confirmado', sortable: true, },
-                    { key: 'editRow', label: 'editRow', label: '', class: 'tableEditRow'},
+                    { key: 'editRow', class: 'tableEditRow' },
                 ], /* Array width the fields of the main b-table */
                 paymentsTableBusy: true, /* Flag to mark table as busy */
                 paymentsTablePagination: 1, /* The pagination index of the table */
