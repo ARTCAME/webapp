@@ -19,6 +19,7 @@
             <br>&emsp;- Se han añadido nuevos tests en tu sección de tests
             <br>&emsp;- Se han añadido mejoras para facilitar el uso en pantallas de menor tamaño
             <br>&emsp;- Se han revisado los tutoriales de ayuda para facilitar su uso en pantallas de menor tamaño y confirmar se ha confirmado su correcto funcionamiento
+            <br>&emsp;- <u>Se han añadido nuevos tests</u>
         </p>
         <p>
             <h5>Fallos conocidos que se solucionarán en próximas versiones:</h5>
