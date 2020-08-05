@@ -941,6 +941,7 @@
             /* Stops the webcam and sign components */
             this.$refs.webcamcomponent.cancel();
             // this.$refs.wacomsign.disconnect();
+            wizardEventController.stop();
             /* Confirm the left with the user */
             let answer = true;
             if (!this.submitting && from.name != 'customers.profile') {
