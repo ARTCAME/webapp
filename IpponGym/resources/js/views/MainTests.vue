@@ -9,7 +9,7 @@
             <br>
             &emsp;- Preguntas generales sobre comportamiento y contenidos
             <br><br>
-            <u>Importante</u>: Para poder resolver las preguntas generales es recomendado que primero hagas un gran número de tests sobre procesos para así tener el máximo de conocimiento.
+            <u>Importante</u>: Para poder resolver las preguntas generales es recomendable que primero hagas un gran número de tests sobre procesos para así tener el máximo de conocimiento.
 
         </b-alert>
         <b-card no-body>
