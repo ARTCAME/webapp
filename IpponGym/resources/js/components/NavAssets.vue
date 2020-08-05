@@ -120,11 +120,6 @@
     #search-nav-modal.ig-custom-modal .modal-header .modal-title {
         margin-top: 10px; /* Align with the close cross */
     }
-    #payments-nav-modal.ig-custom-modal .modal-header .close,
-    #print-nav-modal.ig-custom-modal .modal-header .close,
-    #search-nav-modal.ig-custom-modal .modal-header .close {
-        padding-right: .5rem;
-    }
     .navbar-light .navbar-toggler {
         border-color: transparent; /* Delete the hambur icon border */
     }
@@ -133,6 +128,11 @@
         #print-nav-modal.ig-custom-modal .modal-header,
         #search-nav-modal.ig-custom-modal .modal-header {
             padding-left: .5rem;
+        }
+        #payments-nav-modal.ig-custom-modal .modal-header .close,
+        #print-nav-modal.ig-custom-modal .modal-header .close,
+        #search-nav-modal.ig-custom-modal .modal-header .close {
+            padding-right: .5rem;
         }
     }
 </style>
