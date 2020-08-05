@@ -444,7 +444,8 @@
         background: rgba(255,255,255.1);
     }
     .nav-expanded {
-        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important
+        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important;
+        transition: box-shadow 3s;
     }
     .nav-desc-tools {
         display: none;
@@ -488,7 +489,7 @@
     }
     #ig-main-navbar,
     #ig-tools-navbar {
-        transition: transform .2s;
+        transition: box-shadow .25s, transform .25s;
         width: 100vw; /* Resolving jumps on appear scrollbar */
     }
     #ig-main-navbar {
