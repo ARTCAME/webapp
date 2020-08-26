@@ -157,7 +157,7 @@
                     :key="'tutor_phone_' + phoneIndex"
                     :phoneIndex="phoneIndex"
                     :value="phone"
-                    @input="setTutorFields({ _id: form._id, field: 'phones', index: phoneIndex, newVal: $event })"></PhoneBase>
+                    @input="setTutorFields({ _id: form._id, field: 'phones', fieldIndex: phoneIndex, newVal: $event })"></PhoneBase>
                 <!-- Shown when the form is being edited and the tutor is not a customer -->
                 <b-row
                     class="mb-4"
@@ -189,7 +189,7 @@
                     :isDisabled="!!_id || isDisabled"
                     :key="'tutor_email_' + index"
                     :value="email"
-                    @input="setTutorFields({ _id: form._id, field: 'emails', index: index, newVal: $event })"></EmailBase>
+                    @input="setTutorFields({ _id: form._id, field: 'emails', fieldIndex: index, newVal: $event })"></EmailBase>
                 <!-- Shown when the form is being edited and the tutor is not a customer -->
                 <b-row
                     class="mb-4"
@@ -287,5 +287,13 @@ export default {
         'isDisabled', /* Indicates if the form is being edited */
         'underage', /* Informs if the dateofbirth on the parent is underage */
     ],
+    /**
+     * Provide the same $validator to the childs
+     */
+    provide() {
+        return {
+            $validator: this.$validator,
+        }
+    },
 }
 </script>
