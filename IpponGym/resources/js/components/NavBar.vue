@@ -328,7 +328,8 @@
                 const scrollY = window.scrollY;
                 var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
                 if (scrollY > 350) {
-                    if (currentScroll < this.lastScroll) {
+                    /* If is scrolling up */
+                    if (currentScroll < (this.lastScroll - 250)) {
                         toolsNav.style.transform = 'unset';
                         mainNav.style.transform = 'unset';
                     } else {
@@ -520,7 +521,7 @@
         background-clip: text;
         -webkit-background-clip: text;
         letter-spacing: -.05em;
-        padding-right: 15px;
+        padding-right: 3px; /* Prevents hides on the cursive letters */
         -webkit-text-fill-color: transparent;
         text-align: center;
         user-select: none;
