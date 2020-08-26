@@ -19,7 +19,7 @@
             </small>
         </transition>
         <b-button
-            class="my-2"
+            class="d-block my-2"
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
