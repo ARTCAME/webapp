@@ -461,75 +461,76 @@
                         </span>
                     </b-form-group>
 <!-- Cinturones -->
-                    <b-form-group
-                        id="main-edit-cinturones"
-                        v-if="rate.includes('Karate') || hasBelts">
-                        <b-form-group>
+                    <transition appear name="fade-height">
+                        <b-form-group
+                            id="main-edit-cinturones"
+                            v-if="rate.includes('Karate') || hasBelts">
                             <h5 md="4" class="subtitle">Histórico de cinturones</h5>
+                            <span
+                                v-if="$route.name != 'customers.new'">
+                                <b-alert
+                                    class="py-2"
+                                    show
+                                    variant="info"
+                                    v-if="isDisabled == false && $route.name == 'customers.edit'">
+                                    Los cambios que hagas a los grados se guardan al aplicarlos.
+                                </b-alert>
+                                <b-form-row id="btn-group-cinturones" class="my-4 mx-0" no-gutters>
+                                    <b-form-checkbox-group
+                                        buttons
+                                        :disabled="isDisabled">
+                                        <b-form-checkbox
+                                            v-for="belt in form.belts"
+                                            v-model="selectedBelts"
+                                            :class="'mb-1 btn-cinturon ' + belt.grade"
+                                            :key="belt.grade"
+                                            :title="'Cinturón ' + belt.grade"
+                                            :value="{ grade: belt.grade, date: belt.date }">
+                                            {{ belt.date }}
+                                        </b-form-checkbox>
+                                    </b-form-checkbox-group>
+                                </b-form-row>
+                                <b-form-row
+                                    class="ml-0"
+                                    no-gutters
+                                    v-if="!isDisabled">
+                                    <b-form-input
+                                        class="col-3"
+                                        type="date"
+                                        v-model="beltsNewDate"></b-form-input>
+                                    <span
+                                        v-b-tooltip.hover.noninteractive
+                                        :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : beltsNewDate == '' ? 'Selecciona una fecha' : 'Guarda la fecha seleccionado en los grados seleccionados'">
+                                        <b-button
+                                            class="ml-2"
+                                            variant="outline-primary"
+                                            :disabled="selectedBelts.length == 0 || beltsNewDate == ''"
+                                            @click="beltsUpdate()">Aplicar nueva fecha</b-button>
+                                    </span>
+                                    <span
+                                        v-b-tooltip.hover.noninteractive
+                                        :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : 'Borra la fecha de los grados seleccionados'">
+                                        <b-button
+                                            class="ml-2"
+                                            variant="outline-danger"
+                                            :disabled="selectedBelts.length == 0"
+                                            @click="beltsDelete()">Borrar fecha</b-button>
+                                    </span>
+                                </b-form-row>
+                            </span>
+                            <span
+                                v-else-if="$route.name == 'customers.new'">
+                                <b-alert class="py-2" show variant="secondary">
+                                    Una vez guardes la ficha del socio podrás editar los grados.
+                                </b-alert>
+                            </span>
                         </b-form-group>
-                        <span
-                            v-if="$route.name != 'customers.new'">
-                            <b-alert
-                                class="py-2"
-                                show
-                                variant="info"
-                                v-if="isDisabled == false && $route.name == 'customers.edit'">
-                                Los cambios que hagas a los grados se guardan al aplicarlos.
-                            </b-alert>
-                            <b-form-row id="btn-group-cinturones" class="my-4 mx-0" no-gutters>
-                                <b-form-checkbox-group
-                                    buttons
-                                    :disabled="isDisabled">
-                                    <b-form-checkbox
-                                        v-for="belt in form.belts"
-                                        v-model="selectedBelts"
-                                        :class="'mb-1 btn-cinturon ' + belt.grade"
-                                        :key="belt.grade"
-                                        :title="'Cinturón ' + belt.grade"
-                                        :value="{ grade: belt.grade, date: belt.date }">
-                                        {{ belt.date }}
-                                    </b-form-checkbox>
-                                </b-form-checkbox-group>
-                            </b-form-row>
-                            <b-form-row
-                                class="ml-0"
-                                no-gutters
-                                v-if="!isDisabled">
-                                <b-form-input
-                                    class="col-3"
-                                    type="date"
-                                    v-model="beltsNewDate"></b-form-input>
-                                <span
-                                    v-b-tooltip.hover.noninteractive
-                                    :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : beltsNewDate == '' ? 'Selecciona una fecha' : 'Guarda la fecha seleccionado en los grados seleccionados'">
-                                    <b-button
-                                        class="ml-2"
-                                        variant="outline-primary"
-                                        :disabled="selectedBelts.length == 0 || beltsNewDate == ''"
-                                        @click="beltsUpdate()">Aplicar nueva fecha</b-button>
-                                </span>
-                                <span
-                                    v-b-tooltip.hover.noninteractive
-                                    :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : 'Borra la fecha de los grados seleccionados'">
-                                    <b-button
-                                        class="ml-2"
-                                        variant="outline-danger"
-                                        :disabled="selectedBelts.length == 0"
-                                        @click="beltsDelete()">Borrar fecha</b-button>
-                                </span>
-                            </b-form-row>
-                        </span>
-                        <span
-                            v-else-if="$route.name == 'customers.new'">
-                            <b-alert class="py-2" show variant="secondary">
-                                Una vez guardes la ficha del socio podrás editar los grados.
-                            </b-alert>
-                        </span>
-                    </b-form-group>
+                    </transition>
 <!-- Firma y documentos -->
                     <b-form-group>
                         <h5 md="4" class="subtitle">Firma y documentos</h5>
                         <b-alert
+                            class="mt-2"
                             show
                             variant="danger"
                             v-if="$route.name == 'customers.new'">
@@ -941,7 +942,6 @@
             /* Stops the webcam and sign components */
             this.$refs.webcamcomponent.cancel();
             // this.$refs.wacomsign.disconnect();
-            wizardEventController.stop();
             /* Confirm the left with the user */
             let answer = true;
             if (!this.submitting && from.name != 'customers.profile') {
