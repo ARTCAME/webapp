@@ -518,6 +518,7 @@ li.page-item {
     font-size: calc(40px + (70 - 40) * ((100vw - 300px) / (1600 - 300))); /* minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
     letter-spacing: -.04em;
     line-height: 40px /* 50px */;
+    margin-bottom: 1rem;
     user-select: none;
 }
 /* Custom subtitle smaller format */
