@@ -343,99 +343,169 @@
                     <b-form-group class="mt-5">
                         <h5 class="subtitle" md="4">Datos de pago</h5>
                         <!-- v-if="form != null" -->
-                        <b-form-row
-                            class="align-items-end">
-                            <b-form-group
-                                class="col-lg-auto col-12 p-0 px-1"
-                                id="tarifas-group"
-                                label="Tarifa"
-                                :disabled="isDisabled">
-                                <b-form-radio-group
-                                    buttons
-                                    button-variant="outline-secondary"
-                                    class="radio-selector w-100"
-                                    id="tarifa"
-                                    name="tarifa"
-                                    v-validate="'required'"
-                                    :checked="rate"
-                                    :class="{ 'is-invalid' : errors.has('tarifa') }"
-                                    :options="rates"
-                                    @change="rate = $event"
-                                    @input="selectAmount()"></b-form-radio-group>
-                                <transition mode="out-in" name="liveFeedbacks">
-                                    <b-form-invalid-feedback
-                                        v-if="errors.has('tarifa')">
-                                        {{ errors.first('tarifa') }}
-                                    </b-form-invalid-feedback>
-                                </transition>
-                            </b-form-group>
-                            <b-form-group class="col-lg-2" label="Importe">
-                                <b-form-input
-                                    name="importe"
-                                    type="number"
-                                    step="0.01"
-                                    v-model="amount"
-                                    v-validate="'required|between:10,99.99'"
-                                    :class="{ 'is-invalid' : errors.has('importe') }"
-                                    :disabled="isDisabled || !rate.startsWith('Personalizada')"
-                                    @keypress="$isNumberDecimal($event)"></b-form-input>
-                                <transition mode="out-in" name="liveFeedbacks">
-                                    <b-form-invalid-feedback
-                                        id="amout-payment-data"
-                                        v-for="error in errors.collect('importe')"
-                                        :key="error">
-                                        {{ error }}
-                                    </b-form-invalid-feedback>
-                                </transition>
-                            </b-form-group>
-                            <b-form-group
-                                class="col-lg-auto col-12 p-0 px-1"
-                                id="formas-pago-group"
-                                label="Formas de pago"
-                                :disabled="isDisabled">
-                                <b-form-radio-group
-                                    buttons
-                                    button-variant="outline-secondary"
-                                    class="radio-selector w-100"
-                                    id="tipoPago"
-                                    name="tipoPago"
-                                    v-validate="'required'"
-                                    :checked="paymenttype"
-                                    :class="{ 'is-invalid' : errors.has('tipoPago') }"
-                                    :options="paymentTypes"
-                                    @change="paymenttype = $event"></b-form-radio-group>
-                                <transition mode="out-in" name="liveFeedbacks">
-                                    <b-form-invalid-feedback
-                                        v-if="errors.has('tipoPago')">
-                                        {{ errors.first('tipoPago') }}
-                                    </b-form-invalid-feedback>
-                                </transition>
-                            </b-form-group>
-                            <transition name="slide-fade">
+                        <b-form-row>
+                            <b-col cols="12" md>
                                 <b-form-group
-                                    class="col-lg-3"
-                                    label="IBAN"
-                                    label-for="iban"
-                                    v-if="paymenttype == 'Domiciliación'">
-                                    <!-- Disabled for tests -> v-validate="'required|iban'" -->
-                                    <b-form-input
-                                        id="iban"
-                                        name="iban"
-                                        placeholder="ES00 0000 0000 0000 0000"
-                                        v-model="iban"
-                                        :class="{ 'is-invalid' : errors.has('iban') }"
-                                        :disabled="isDisabled || paymenttype != 'Domiciliación'"></b-form-input>
+                                    class="p-0"
+                                    id="tarifas-group"
+                                    label="Tarifa"
+                                    :disabled="isDisabled">
+                                    <b-form-radio-group
+                                        buttons
+                                        button-variant="outline-secondary"
+                                        class="radio-selector w-100"
+                                        id="tarifa"
+                                        name="tarifa"
+                                        v-validate="'required'"
+                                        :checked="rate"
+                                        :class="{ 'is-invalid' : errors.has('tarifa') }"
+                                        :options="rates"
+                                        @change="rate = $event"
+                                        @input="selectAmount()"></b-form-radio-group>
                                     <transition mode="out-in" name="liveFeedbacks">
                                         <b-form-invalid-feedback
-                                            v-for="error in errors.collect('iban')"
+                                            v-if="errors.has('tarifa')">
+                                            {{ errors.first('tarifa') }}
+                                        </b-form-invalid-feedback>
+                                    </transition>
+                                </b-form-group>
+                            </b-col>
+                            <b-col md="2">
+                                <b-form-group label="Importe">
+                                    <b-form-input
+                                        name="importe"
+                                        type="number"
+                                        step="0.01"
+                                        v-model="amount"
+                                        v-validate="'required|between:10,99.99'"
+                                        :class="{ 'is-invalid' : errors.has('importe') }"
+                                        :disabled="isDisabled || !rate.startsWith('Personalizada')"
+                                        @keypress="$isNumberDecimal($event)"></b-form-input>
+                                    <transition mode="out-in" name="liveFeedbacks">
+                                        <b-form-invalid-feedback
+                                            id="amout-payment-data"
+                                            v-for="error in errors.collect('importe')"
                                             :key="error">
                                             {{ error }}
                                         </b-form-invalid-feedback>
                                     </transition>
                                 </b-form-group>
-                            </transition>
+                            </b-col>
                         </b-form-row>
+                        <b-form-row>
+                            <b-col cols="12" md>
+                                <b-form-group
+                                    class="p-0"
+                                    id="formas-pago-group"
+                                    label="Formas de pago"
+                                    :disabled="isDisabled">
+                                    <b-form-radio-group
+                                        buttons
+                                        button-variant="outline-secondary"
+                                        class="radio-selector w-100"
+                                        id="tipoPago"
+                                        name="tipoPago"
+                                        v-validate="'required'"
+                                        :checked="paymenttype"
+                                        :class="{ 'is-invalid' : errors.has('tipoPago') }"
+                                        :options="paymentTypes"
+                                        @change="paymenttype = $event"></b-form-radio-group>
+                                    <transition mode="out-in" name="liveFeedbacks">
+                                        <b-form-invalid-feedback
+                                            v-if="errors.has('tipoPago')">
+                                            {{ errors.first('tipoPago') }}
+                                        </b-form-invalid-feedback>
+                                    </transition>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <transition appear name="fade-height">
+                            <b-form-row
+                                v-if="paymenttype == 'Domiciliación'">
+                                <b-col cols="12" md>
+                                    <b-form-group
+                                        label="IBAN"
+                                        label-for="iban">
+                                        <!-- Disabled for tests -> v-validate="'required|iban'" -->
+                                        <b-form-input
+                                            id="iban"
+                                            name="iban"
+                                            placeholder="ES00 0000 0000 0000 0000"
+                                            v-model="iban"
+                                            :class="{ 'is-invalid' : errors.has('iban') }"
+                                            :disabled="isDisabled || paymenttype != 'Domiciliación'"></b-form-input>
+                                        <transition mode="out-in" name="liveFeedbacks">
+                                            <b-form-invalid-feedback
+                                                v-for="error in errors.collect('iban')"
+                                                :key="error">
+                                                {{ error }}
+                                            </b-form-invalid-feedback>
+                                        </transition>
+                                    </b-form-group>
+                                </b-col>
+                                <b-col cols="12" md>
+                                    <b-form-group
+                                        label="Dni del titular"
+                                        label-for="ibanownerdni">
+                                        <!-- V-validate deshabilitado para pruebas  |dnie|lengthDnie' -->
+                                        <b-form-input
+                                            id="ibanownerdni"
+                                            name="ibanownerdni"
+                                            v-model="ibanownerdni"
+                                            v-validate="'required'"
+                                            :class="{ 'is-invalid' : errors.has('ibanownerdni') }"
+                                            :disabled="isDisabled || paymenttype != 'Domiciliación'"
+                                            @drop.prevent
+                                            @focusout="ibanownerdni ? (ibanownerdni = ibanownerdni.toUpperCase()) : ''"
+                                            @keypress="$isAlphaNum($event)"
+                                            @paste="ibanownerdni = $isAlphaNum($event)"></b-form-input>
+                                        <transition mode="out-in" name="liveFeedbacks">
+                                            <b-form-invalid-feedback
+                                                v-for="error in errors.collect('ibanownerdni')"
+                                                :key="error">
+                                                {{ error }}
+                                            </b-form-invalid-feedback>
+                                        </transition>
+                                    </b-form-group>
+                                </b-col>
+                                <b-col cols="12" lg="6">
+                                    <b-form-group
+                                        label="Titular de la cuenta"
+                                        label-for="ibanownername">
+                                        <b-form-input
+                                            id="ibanownername"
+                                            name="ibanownername"
+                                            v-model="ibanownername"
+                                            v-validate="'required'"
+                                            :class="{ 'is-invalid' : errors.has('ibanownername') }"
+                                            :disabled="isDisabled || paymenttype != 'Domiciliación'"></b-form-input>
+                                        <transition mode="out-in" name="liveFeedbacks">
+                                            <b-form-invalid-feedback
+                                                v-for="error in errors.collect('ibanownername')"
+                                                :key="error">
+                                                {{ error }}
+                                            </b-form-invalid-feedback>
+                                        </transition>
+                                    </b-form-group>
+                                </b-col>
+                                <b-col
+                                    cols="auto"
+                                    v-if="!isDisabled">
+                                    <span
+                                        class="d-block"
+                                        v-b-tooltip.hover.bottom.noninteractive
+                                        :title="dni == '' || name == '' ? 'Debes rellenar el nombre y dni del socio' : ''">
+                                        <b-button
+                                            id="btn-ibanowner"
+                                            variant="ig-outline-green"
+                                            :disabled="dni == '' || name == ''"
+                                            @click="fillIbanData()">Usar dni y nombre del socio</b-button>
+                                    </span>
+                                </b-col>
+                            </b-form-row>
+                        </transition>
                     </b-form-group>
+                    <b-button @click="mp();">xx</b-button>
 <!-- Pagos -->
                     <!-- When the customer doesn't have payments show an alert -->
                     <b-form-group>
@@ -1011,7 +1081,7 @@
         computed: {
             /* Mount the vuex getters and setters to the local form fields (the childrens has its computations too */
             ...computeBaseFields(['active', 'address', 'dateofbirth', 'dni', 'gender', 'name', 'notes', 'rightsImage', 'rightsProtect', 'rightsUnderage']),
-            ...computeObjectFields(['rate', 'amount', 'paymenttype', 'iban',], 'paymentData'),
+            ...computeObjectFields(['rate', 'amount', 'paymenttype', 'iban', 'ibanownername', 'ibanownerdni',], 'paymentData'),
             /* Mapping vuex */
             ...mapGetters(['getCustomerByField', 'getCustomerById', 'getDefaultState']),
             ...mapState({
@@ -1070,6 +1140,12 @@
             window.removeEventListener('load', this.stackRadios);
         },
         methods: {
+            mp() {
+                http.post('api/monthlyPayments')
+                    .then((response) => {
+                        console.log(response);
+                    })
+            },
             /* Mapping vuex */
             ...mapActions(['addNewCustomer', 'addNewElement', 'delFormElement', 'deleteBelts', 'getAllCustomers', 'fetchEditForm', 'fetchForm', 'setCustomerEdited', 'updateCustomerData']),
             ...mapMutations(['ADD_TUTOR', 'CLEAR_FORM', 'UPDATE_FIELD']),
@@ -1140,6 +1216,13 @@
                 this.beltsResetFields();
             },
             /**
+             * Fill the iban owner data with the customer data
+             */
+            fillIbanData() {
+                this.ibanownername = this.name;
+                this.ibanownerdni = this.dni;
+            },
+            /**
              * Prompt to the user a confirm message when the edition of the customer wants to be cancelled
              *
              * @return {Promise} A promise with the new route to navigate
@@ -1201,10 +1284,14 @@
             stackRadios() {
                 if (window.innerWidth < 650) {
                     document.getElementById('tarifa').classList.add('btn-group-vertical');
+                    document.getElementById('tipoPago').classList.add('btn-group-vertical');
                     document.getElementById('tarifa').classList.remove('btn-group');
-                } else if (window.innerWidth >= 650 && document.getElementById('tarifa').classList.contains('btn-group-vertical')) {
+                    document.getElementById('tipoPago').classList.remove('btn-group');
+                } else if (window.innerWidth >= 650 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
                     document.getElementById('tarifa').classList.remove('btn-group-vertical');
+                    document.getElementById('tipoPago').classList.remove('btn-group-vertical');
                     document.getElementById('tarifa').classList.add('btn-group');
+                    document.getElementById('tipoPago').classList.add('btn-group');
                 }
             },
             /**
@@ -1467,5 +1554,10 @@
     }
     #tarifa {
         white-space: nowrap;
+    }
+    @media screen and (min-width: 990px) {
+        #btn-ibanowner {
+            margin-top: calc(25px + .5rem); /* Vertical align with the labeled elements */
+        }
     }
 </style>
