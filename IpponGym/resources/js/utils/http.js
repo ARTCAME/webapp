@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '../store/customers';
 
-// const URL = 'http://127.0.0.1:8080/'
+// const URL = 'http://127.0.0.1:9898/'
 // const URL = 'http://127.0.0.1/'
 // const URL = 'http://209.97.131.50/'
 const URL = 'https://app.ippongymzaragoza.es/'
