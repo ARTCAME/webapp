@@ -1,6 +1,5 @@
 import auth from './modules/auth'
 import navbar from './modules/navbar'
-import axios from 'axios';
 import { http } from '../utils/http';
 import moment from 'moment';
 import router from '../router/router';
@@ -42,6 +41,8 @@ const DEFAULT_FORM = () => {
             amount: '',
             paymenttype: '',
             iban: '',
+            ibanownerdni: '',
+            ibanownername: '',
         },
         payments: [],
         belts: [
