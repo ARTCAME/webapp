@@ -49,6 +49,7 @@ class PaymentsController extends Controller {
 
         $filename = date('Y_m_d_H-i-s') . '_Remesa_.csv';
         $csvoutput = fopen($filename, 'w');
+        $csvData = [];
         foreach ($customers as $customer) {
             $auxPaymentData = $customer['paymentData'];
             /* Check if for the looped customercustomer we have a payment for the current month-year */
@@ -73,8 +74,24 @@ class PaymentsController extends Controller {
                 $auxCustomer->save();
                 /* Manage utf8 characters */
                 fprintf($csvoutput, chr(0xEF).chr(0xBB).chr(0xBF));
-                /* Put the customer/payment data into the csv file */
-                fputcsv($csvoutput, [$customer['name'], $customer['dni'], $newPayment['iban'], $newPayment['amount'], $newPayment['interval']]);
+            }
+            /* Only add to the array of csv file data the bank payments */
+            if ($newPayment['paymenttype'] == 'Domiciliación') {
+                /* If the current iban is used on the array of payments to add to the csv file add the amount to the same payment line because the iban is of the same owner */
+                if (array_search($auxPaymentData['iban'], array_column($csvData, 'iban')) != false) {
+                    (float)$csvData[array_search($auxPaymentData['ibanownerdni'], array_column($csvData, 'dni'))]['amount'] += (float)$auxPaymentData['amount'];
+                /* If the current iban is not used on the array of payments to add to the csv file, add it*/
+                } else {
+                    array_push($csvData, ['name' => $auxPaymentData['ibanownername'], 'dni' => $auxPaymentData['ibanownerdni'], 'iban' => $auxPaymentData['iban'], 'amount' => $auxPaymentData['amount'], 'interval' => $newPayment['interval']]);
+                }
+            }
+        }
+        /* Add the array data to the csv file */
+        if (sizeof($csvData) > 0) {
+            /* Put the customer/payment data into the csv file */
+            fputcsv($csvoutput, ['Nombre', 'Dni', 'Iban', 'Importe', 'Periodo']);
+            foreach ($csvData as $data) {
+                fputcsv($csvoutput, $data);
             }
         }
         /* Send email with the file generated */
