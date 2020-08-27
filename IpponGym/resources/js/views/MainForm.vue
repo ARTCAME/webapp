@@ -505,7 +505,6 @@
                             </b-form-row>
                         </transition>
                     </b-form-group>
-                    <b-button @click="mp();">xx</b-button>
 <!-- Pagos -->
                     <!-- When the customer doesn't have payments show an alert -->
                     <b-form-group>
@@ -1140,12 +1139,6 @@
             window.removeEventListener('load', this.stackRadios);
         },
         methods: {
-            mp() {
-                http.post('api/monthlyPayments')
-                    .then((response) => {
-                        console.log(response);
-                    })
-            },
             /* Mapping vuex */
             ...mapActions(['addNewCustomer', 'addNewElement', 'delFormElement', 'deleteBelts', 'getAllCustomers', 'fetchEditForm', 'fetchForm', 'setCustomerEdited', 'updateCustomerData']),
             ...mapMutations(['ADD_TUTOR', 'CLEAR_FORM', 'UPDATE_FIELD']),
