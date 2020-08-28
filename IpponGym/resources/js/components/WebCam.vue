@@ -64,11 +64,12 @@
     export default {
         data() {
             return {
-                video: null, /* Will contain the video stream object */
-                pic: null, /* Will contain the pic shooted */
-                captures: null, /* Stores the local canvas context */
-                started: false, /* Flag to cam state */
+                auxAvatar: null, /* Stores the existing image when reshooting an image */
                 captured: false, /* Flag to canvas state */
+                captures: null, /* Stores the local canvas context */
+                pic: null, /* Will contain the pic shooted */
+                started: false, /* Flag to cam state */
+                video: null, /* Will contain the video stream object */
             }
         },
         computed: {
@@ -103,17 +104,25 @@
              * Cancel the shooting closing the video stream and cleaning the modifications. This function is also called from the parent in component route guards
              */
             cancel() {
-                // this.avatar = null;
+                /* Reset the flags status */
                 this.started = false;
                 this.captured = false;
+                /* Reset the captured image if exists */
                 if (this.pic != null) {
                     this.pic.getContext("2d").clearRect(0, 0, 320, 240);
                 }
                 this.pic = null;
                 this.captures = null;
+                /* Reset the video stream if exists */
                 if (this.video != null) {
-                    this.video.srcObject.getTracks()[0].stop()
+                    if (this.video.srcObject != null) {
+                        this.video.srcObject.getTracks()[0].stop()
+                    }
                     this.video.srcObject = null;
+                }
+                /* Reset the avatar to its original data (database data) */
+                if (this.auxAvatar != null) {
+                    this.avatar = this.auxAvatar;
                 }
             },
             /**
@@ -134,8 +143,9 @@
                     return;
                 }
                 this.captured = true
+                /* Draw the image */
                 this.pic = this.$refs.canvas;
-                // let context = this.pic.getContext("2d").drawImage(this.video, 0, 0, 320, 240);
+                this.pic.getContext("2d").drawImage(this.video, 0, 0, 320, 240);
                 this.captures = canvas.toDataURL("image/png");
                 this.avatar = this.captures;
                 /* When has been shooted, stops the video stream */
@@ -146,13 +156,22 @@
              */
             start() {
                 this.video = this.$refs.video;
+                /* Reset the current image if exists */
+                if (this.avatar != null) {
+                    this.auxAvatar = this.avatar;
+                    this.pic = null;
+                    this.captured = false;
+                    this.captures = null;
+                    this.avatar = null;
+                }
                 /* Start the video stream on the navigator */
-                if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(stream => {
-                        this.video.srcObject = stream;
-                        this.video.play();
-                        this.started = true;
-                    });
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ audio: false, video: true })
+                        .then(stream => {
+                            this.video.srcObject = stream;
+                            this.video.play();
+                            this.started = true;
+                        });
                 }
             },
             /**
