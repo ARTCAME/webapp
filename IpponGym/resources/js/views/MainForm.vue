@@ -3,6 +3,7 @@
         <b-form @submit.prevent="$route.name == 'customers.edit' ? submitEdit() : $route.name == 'customers.new' ? submit() : null">
             <b-alert
                 class="py-2"
+                id="edit-alert"
                 show
                 variant="warning"
                 v-if="$route.name == 'customers.edit' && !isDisabled">
@@ -1544,6 +1545,12 @@
     }
     .tiny-radio-selector .btn.btn-sm {
         line-height: 1;
+    }
+    #edit-alert {
+        opacity: 75%;
+        position: fixed;
+        top: 64px;
+        z-index: 999;
     }
     #tarifa {
         white-space: nowrap;
