@@ -73,24 +73,6 @@
                                             {{ billNumber }}
                                         </b-row>
                                     </b-list-group-item>
-                                    <span v-if="underage">
-                                        <b-list-group-item class="py-1">
-                                            <b-row>
-                                                <b-col cols="4">
-                                                    NOMBRE DEL TUTOR:
-                                                </b-col>
-                                                {{ customer.tutor.name }}
-                                            </b-row>
-                                        </b-list-group-item>
-                                        <b-list-group-item class="py-1">
-                                            <b-row>
-                                                <b-col cols="4">
-                                                    DNI DEL TUTOR:
-                                                </b-col>
-                                                {{ customer.tutor.dni }}
-                                            </b-row>
-                                        </b-list-group-item>
-                                    </span>
                                     <b-list-group-item class="py-1">
                                         <b-row>
                                             <b-col cols="4">
@@ -99,7 +81,29 @@
                                             {{ customer.name }}
                                         </b-row>
                                     </b-list-group-item>
-                                    <b-list-group-item class="py-1">
+                                    <b-list-group-item
+                                        class="py-1"
+                                        v-if="underage">
+                                        <b-row>
+                                            <b-col cols="4">
+                                                NOMBRE DEL TUTOR:
+                                            </b-col>
+                                            {{ customer.tutor.name }}
+                                        </b-row>
+                                    </b-list-group-item>
+                                    <b-list-group-item
+                                        class="py-1"
+                                        v-if="underage">
+                                        <b-row>
+                                            <b-col cols="4">
+                                                DNI DEL TUTOR:
+                                            </b-col>
+                                            {{ customer.tutor.dni }}
+                                        </b-row>
+                                    </b-list-group-item>
+                                    <b-list-group-item
+                                        class="py-1"
+                                        v-else>
                                         <b-row>
                                             <b-col cols="4">
                                                 DNI:
