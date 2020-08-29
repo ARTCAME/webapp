@@ -29,7 +29,7 @@
                     class="ig-modal-return-btn"
                     size="sm"
                     variant="outline-secondary"
-                    @click="customer = null">
+                    @click="customer = null; interval = null">
                     Volver
                 </b-button>
                 <b-form-group class="mb-0">
@@ -45,7 +45,7 @@
                     <div
                         key="pf-bill-print"
                         v-if="fileType == 0">
-                        <b-form-group class="mb-0">
+                        <b-form-group class="mb-0 mt-2">
                             <h5 class="subtitle subtitle-sub" md="4">Selecciona el periodo de cobro del recibo</h5>
                         </b-form-group>
                         <b-alert class="py-2" show variant="info">
@@ -73,6 +73,24 @@
                                             {{ billNumber }}
                                         </b-row>
                                     </b-list-group-item>
+                                    <span v-if="underage">
+                                        <b-list-group-item class="py-1">
+                                            <b-row>
+                                                <b-col cols="4">
+                                                    NOMBRE DEL TUTOR:
+                                                </b-col>
+                                                {{ customer.tutor.name }}
+                                            </b-row>
+                                        </b-list-group-item>
+                                        <b-list-group-item class="py-1">
+                                            <b-row>
+                                                <b-col cols="4">
+                                                    DNI DEL TUTOR:
+                                                </b-col>
+                                                {{ customer.tutor.dni }}
+                                            </b-row>
+                                        </b-list-group-item>
+                                    </span>
                                     <b-list-group-item class="py-1">
                                         <b-row>
                                             <b-col cols="4">
@@ -102,7 +120,7 @@
                                             <b-col cols="4">
                                                 IMPORTE:
                                             </b-col>
-                                            {{ customer.paymentData.amount }}
+                                            {{ customer.paymentData.amount }} (IVA incluido)
                                         </b-row>
                                     </b-list-group-item>
                                     <b-list-group-item class="py-1">
