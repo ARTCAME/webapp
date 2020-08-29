@@ -1129,7 +1129,6 @@
              * @return {Boolean} If the customer was underage on the signup date returns true
              */
             wasUnderage() {
-                console.log(this.form)
                 return this.$moment(this.form.created_at, 'YYYY-MM-DD').diff(this.$moment(this.dateofbirth, 'YYYY-MM-DD')) < 18;
             }
         },
@@ -1160,7 +1159,6 @@
              */
             beforeUnload(ev) {
                 let answer = true;
-                console.log(ev);
                 /* From Chrome 60 onward, the beforeunload dialog will only appear if the frame attempting to display it has received a user gesture or user interaction (or if any embedded frame has received such a gesture). */
                 if (!this.submitting && this.$route.name != 'customers.profile') {
                     answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
