@@ -33,7 +33,7 @@
         </b-row>
         <b-row>
             <b-col cols="4">Importe: </b-col>
-            <b-col>{{ customer.paymentData.amount }}</b-col> (IVA incluido)
+            <b-col>{{ customer.paymentData.amount }} (IVA incluido)</b-col>
         </b-row>
         <b-row>
             <b-col cols="4">Periodo de pago: </b-col>
