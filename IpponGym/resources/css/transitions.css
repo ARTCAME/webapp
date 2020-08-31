@@ -105,12 +105,14 @@ USED ??
 .liveFeedbacks-table-leave-active {
     position: absolute;
     transition: all .3s ease;
+    width: 130px;
 }
 .liveFeedbacks-table-enter,
 .liveFeedbacks-table-leave-to {
     display:block;
     opacity: 0;
     transform: translateY(-10px);
+    width: 130px;
 }
 /***
 USED ??
