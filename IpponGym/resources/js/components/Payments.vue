@@ -338,7 +338,7 @@
                                 v-for="tag in filterTags"
                                 :key="tag"
                                 :variant="months.includes(tag) ? 'info' : btnStates.includes(tag) ? 'secondary' : btnPayTypes.includes(tag) ? 'dark' : 'primary'"
-                                @remove="deleteTag(tag)">
+                                @remove="deleteTag(tag); cancelEdit()">
                                 {{ tag }}
                             </b-form-tag>
                             <!-- Shown when there are no tags added to the v-model of tags -->
@@ -626,7 +626,7 @@
                     <template
                         #cell(rate)="row">
                         <b-form-select
-                            :class="!row.detailsShowing ? 'slot-table-input disabled' : 'slot-table-input'"
+                            :class="'editable-field slot-table-input ' + (!row.detailsShowing ? 'disabled' : '')"
                             :disabled="!row.detailsShowing"
                             :options="rates"
                             :value="row.value"
@@ -638,7 +638,7 @@
                         <b-form-input
                             type="number"
                             v-validate="'required|numeric|max_value:99|min_value:10'"
-                            :class="(!row.detailsShowing ? 'slot-table-input disabled' : (row.item.rate != 'Personalizada' && row.item.rate != 'Personalizada + Karate') ? 'slot-table-input disabled' : 'slot-table-input') + (errors.has('amount-row' + row.index) ? ' is-invalid' : '')"
+                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : (row.item.rate != 'Personalizada' && row.item.rate != 'Personalizada + Karate') ? ' disabled' : '') + (errors.has('amount-row' + row.index) ? ' is-invalid' : '')"
                             :disabled="!row.detailsShowing"
                             :id="'amount-row' + row.index"
                             :name="'amount-row' + row.index"
@@ -657,7 +657,7 @@
                         #cell(paymenttype)="row">
                         <!-- Input disabled when the row is not showing details wich means is not being edited -->
                         <b-form-select
-                            :class="!row.detailsShowing ? 'slot-table-input disabled' : 'slot-table-input'"
+                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '')"
                             :disabled="!row.detailsShowing"
                             :id="'forma-pago-row' + row.index"
                             :name="'forma-pago-row' + row.index"
@@ -669,28 +669,43 @@
                     <template
                         #cell(iban)="row">
                         <!-- Input disabled when the row is not showing details wich means is not being edited -->
-                        <b-form-input
-                            v-validate="'iban'"
-                            :class="!row.detailsShowing ? 'slot-table-input disabled' : 'slot-table-input'"
-                            :disabled="!row.detailsShowing"
-                            :id="'iban-row' + row.index"
-                            :name="'iban-row' + row.index"
-                            :value="row.value"
-                            @input="updatePaymentField({ field: 'iban', newVal: $event, ...row.item })"></b-form-input>
-                        <transition mode="out-in" name="liveFeedbacks">
-                            <b-form-invalid-feedback
-                                v-for="error in errors.collect('iban-row' + row.index)"
-                                :key="error">
-                                {{ error }}
-                            </b-form-invalid-feedback>
-                        </transition>
+                        <transition-group mode="out-in" name="liveFeedbacks-table">
+                            <span
+                                v-if="row.item.paymenttype == 'Domiciliación'"
+                                :key="'trans-iban-input-' + row.index">
+                                <!-- V-validate deshabilitado para pruebas  |iban' -->
+                                <b-form-input
+                                    v-validate.immediate="'required'"
+                                    :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('iban-row' + row.index) ? ' is-invalid' : '')"
+                                    :disabled="!row.detailsShowing"
+                                    :id="'iban-row' + row.index"
+                                    :name="'iban-row' + row.index"
+                                    :value="row.value"
+                                    @input="updatePaymentField({ field: 'iban', newVal: $event, ...row.item })"></b-form-input>
+                                <transition mode="in-out" name="liveFeedbacks">
+                                    <b-form-invalid-feedback
+                                        v-for="error in errors.collect('iban-row' + row.index)"
+                                        :key="error">
+                                        {{ error }}
+                                    </b-form-invalid-feedback>
+                                </transition>
+                            </span>
+                            <!-- If the paymenttype of the payment is different from the original advise to the user that the IBAN will be deleted-->
+                            <div
+                                v-else-if="row.item.paymenttype != 'Domiciliación' && row.detailsShowing && onEditItem.iban != row.item.iban"
+                                :key="'trans-iban-advise-' + row.index">
+                                <span class="needs-attention-message">
+                                    El iban se borrará
+                                </span>
+                            </div>
+                        </transition-group>
                     </template>
                     <template
                         #cell(status)="row">
                         <!-- Depending of the selection on paymenttype during the edition, the options will change -->
                         <b-form-select
                             v-validate="'required'"
-                            :class="(!row.detailsShowing ? 'slot-table-input disabled' : row.value == '' ? 'slot-table-input is-invalid' : 'slot-table-input') + (!row.detailsShowing && row.value == 'Pendiente' ? ' text-warning' : !row.detailsShowing && row.value == 'Devuelto' ? ' text-danger' : '')"
+                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : row.value == '' ? ' is-invalid' : '') + (!row.detailsShowing && row.value == 'Pendiente' ? ' text-warning' : !row.detailsShowing && row.value == 'Devuelto' ? ' text-danger' : '')"
                             :disabled="!row.detailsShowing"
                             :id="'status-pago-row' + row.index"
                             :name="'status-pago-row' + row.index"
@@ -700,7 +715,8 @@
                         <transition mode="in-out" name="liveFeedbacks">
                             <b-form-invalid-feedback
                                 v-if="row.item.status == ''">
-                                {{ errors.first('forma-pago-row' + row.index) }}
+                                {{ errors.first('status-pago-row' + row.index) }}
+                                <!-- {{ errors.first('forma-pago-row' + row.index) }} -->
                             </b-form-invalid-feedback>
                         </transition>
                     </template>
@@ -795,12 +811,12 @@
                                     class="d-inline-block"
                                     tabindex="0"
                                     v-b-tooltip.hover.noninteractive
-                                    :title="!rowEdited(row.item) ? 'Nada que guardar' : row.item.status == '' || (newEditRowDate == null && row.item.status != 'Pendiente') ? 'Revisa los campos incorrectos' : 'Guardar'">
+                                    :title="!rowEdited(row.item) ? 'Nada que guardar' : row.item.status == '' || (newEditRowDate == null && row.item.status != 'Pendiente') || (row.item.paymenttype == 'Domiciliación' && errors.has('iban-row' + row.index)) || (errors.has('amount-row' + row.index)) ? 'Revisa los campos incorrectos' : 'Guardar'">
                                     <!-- Button disabled when if no changes are made to the data on the row, when the edition is started, the data on the row is stored on onEditItem -->
                                     <b-button
                                         size="sm"
                                         variant="primary"
-                                        :disabled="!rowEdited(row.item) || (newEditRowDate == null && row.item.status != 'Pendiente')"
+                                        :disabled="!rowEdited(row.item) || (newEditRowDate == null && row.item.status != 'Pendiente') || (row.item.paymenttype == 'Domiciliación' && row.item.iban == null || (errors.has('amount-row' + row.index) || errors.has('iban-row' + row.index) || errors.has('status-pago-row' + row.index)))"
                                         @click="applyEditRow(row.item)">
                                         Guardar
                                     </b-button>
@@ -813,7 +829,7 @@
                         <col
                             v-for="field in scope.fields"
                             :key="field.key"
-                            :style="{ width: field.key == 'selected' || field.key == 'editRow' || field.key == 'active' ? '30px' : field.key == 'amount' || field.key == 'interval' ? '60px' : field.key == 'status' || field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' :  field.key == 'dateconfirmed' || field.key == 'iban' ? '140px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                            :style="{ width: field.key == 'selected' || field.key == 'editRow' || field.key == 'active' ? '30px' : field.key == 'amount' ? '100px' : field.key == 'interval' ? '60px' : field.key == 'status' || field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' :  field.key == 'dateconfirmed' || field.key == 'iban' ? '140px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
                     </template>
                     <template
                         #table-caption>
@@ -1103,6 +1119,12 @@
                 return this.getProcedureState('paymentsPrinting');
             },
             /**
+             * Compute all the payments without any filter
+             */
+            paymentsAll() {
+                return this.getPayments();
+            },
+            /**
              * Initialize the payments data from the store. Determine the value of local variables.
              *
              * @return {Array} Array with the objects-rows to the table
@@ -1114,9 +1136,15 @@
                     /* Get only the selected rows */
                     payments = payments.filter(payment => this.rowsSelected.some(rs => rs._id == payment._id && rs.interval == payment.interval) == true);
                 }
-                /* Is necessary to maintain the state of the '_showDetails' attribute between table data changes */
+                /* Is necessary to maintain the state of the '_showDetails' attribute between table data changes, the filters are applied before change the attribute status and that makes necessary to check on paymentsAll to avoid errors */
                 if (this.showingDetails) {
-                    this.$set(payments.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval), '_showDetails', true);
+                    /* If the payment is on the current array of payments */
+                    if (payments.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval)) {
+                        this.$set(payments.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval), '_showDetails', true);
+                    /* If the payment is not on the current array of payments discard finding on all the payments */
+                    } else {
+                        this.$set(this.paymentsAll.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval), '_showDetails', true);
+                    }
                 }
                 return payments;
             },
@@ -1249,7 +1277,7 @@
             cancelEdit() {
                 if (this.showingDetails) {
                     /* Restore the _showDetails attr */
-                    this.$set(this.paymentsItems.find(payment => payment._id == this.onEditItem._id), '_showDetails', false);
+                    this.$set(this.paymentsAll.find(payment => payment._id == this.onEditItem._id), '_showDetails', false);
                     /* Restore the entire editable data from the backup variable */
                     this.updatePaymentData({ _id: this.onEditItem._id, interval: this.onEditItem.interval, ...this.onEditItem });
                     /* Restore the backup variable */
@@ -1799,6 +1827,9 @@
 </script>
 
 <style>
+    .editable-field {
+        padding: 0 2.5px;
+    }
     #paymentsTable .b-table-details {
         background-color: rgba(0, 81, 130, .2)!important;
     }
@@ -1807,7 +1838,7 @@
         height: 25px!important;
         margin-top: 2px!important; /* Align to the rest row inputs */
         padding: 0!important;
-        width: 130px!important;
+        /* width: 130px!important; */
     }
 </style>
 <style scoped>
@@ -1848,9 +1879,6 @@
     input[class*='disabled']:focus,
     select[class*='disabled']:focus  {
         box-shadow: unset!important;
-    }
-    input[class*='slot-table-input'] {
-        margin-top: 2px;
     }
     select[class*='slot-table-input'] {
         min-width: 130px;
