@@ -354,7 +354,7 @@
                                 class="filter-tag mr-1 mt-1"
                                 variant="primary"
                                 v-if="allSelected && $route.name == 'payments.index'"
-                                @remove="allSelected = false">
+                                @remove="allSelected = false; cancelEdit()">
                                 Seleccionadas
                             </b-form-tag>
                             <!-- It will show the content of the input wich filters the table data -->
@@ -844,7 +844,8 @@
                                         class="d-inline custom inline-switch"
                                         size="sm"
                                         switch
-                                        v-model="inactives"></b-form-checkbox>
+                                        v-model="inactives"
+                                        @change="cancelEdit()"></b-form-checkbox>
                                 </p>
                                 Filas seleccionadas:
                                 <AnimatedNum
@@ -1136,7 +1137,7 @@
                     /* Get only the selected rows */
                     payments = payments.filter(payment => this.rowsSelected.some(rs => rs._id == payment._id && rs.interval == payment.interval) == true);
                 }
-                /* Is necessary to maintain the state of the '_showDetails' attribute between table data changes, the filters are applied before change the attribute status and that makes necessary to check on paymentsAll to avoid errors */
+                /* If a row has its '_showDetails' attribute actived it is necessary to check on the current filtered payments and to avoid errors, if on the current is not founded, checks on all the payments also */
                 if (this.showingDetails) {
                     /* If the payment is on the current array of payments */
                     if (payments.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval)) {
