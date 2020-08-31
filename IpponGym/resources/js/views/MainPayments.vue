@@ -24,7 +24,7 @@
                 tableFields: [
                     { key: 'selected', label: '', },
                     // { key: '_id', label: 'ID', sortable: true, },
-                    { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', },
+                    // { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', },
                     { key: 'active', label: 'Activo', sortable: true, class: 'text-center', },
                     { key: 'name', label: 'Socio', sortable: true, },
                     { key: 'rate', label: 'Tarifa', sortable: true, },
