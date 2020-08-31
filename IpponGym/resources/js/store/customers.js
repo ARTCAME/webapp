@@ -463,6 +463,10 @@ export default new Vuex.Store({
             if (field == 'paymenttype' && data.status == 'Devuelto') {
                 dispatch('updatePaymentField', { field: 'status', newVal: '', _id, interval, ...data });
             }
+            /* If the paymenttype changes from inbank to another the iban will be deleted*/
+            if (field == 'paymenttype' && data.iban != '') {
+                dispatch('updatePaymentField', { field: 'iban', newVal: null, _id, interval, ...data })
+            }
         },
         /**
          * Update the payments row fields all at once when a api response was received or when a undo on a editing row has requested
@@ -823,16 +827,16 @@ export default new Vuex.Store({
             if (!inactives) {
                 payments = payments.filter(payment => payment.active == true);
             }
-            if (filterYears.length > 0) {
+            if (filterYears && filterYears.length > 0) {
                 payments = payments.filter(payment => filterYears.includes(moment(payment.interval,'YYYY-MM').year()));
             }
-            if (filterMonths.length > 0) {
+            if (filterMonths && filterMonths.length > 0) {
                 payments = payments.filter(payment => filterMonths.includes(moment(payment.interval,'YYYY-MM').month()));
             }
-            if (filterStates.length > 0) {
+            if (filterStates && filterStates.length > 0) {
                 payments = payments.filter(payment => filterStates.includes(payment.status));
             }
-            if (filterPaytype.length > 0) {
+            if (filterPaytype && filterPaytype.length > 0) {
                 payments = payments.filter(payment => filterPaytype.includes(payment.paytype));
             }
             return payments;
