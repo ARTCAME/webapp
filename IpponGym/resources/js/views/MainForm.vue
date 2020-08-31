@@ -928,7 +928,7 @@
                     { key: 'interval', label: 'Periodo', sortable: true, },
                     { key: 'status', label: 'Estado', sortable: true, },
                     { key: 'dateconfirmed', label: 'Confirmado', sortable: true, },
-                    { key: 'editRow', label: 'editRow', label: '', class: 'tableEditRow'},
+                    { key: 'editRow', label: 'editRow', label: '', class: 'tableEditRow text-center'},
                 ], /* Payment table fields */
                 paymentTypes: [
                     { value: 'Domiciliación', text: 'Domiciliación' },
