@@ -35,7 +35,7 @@
                     { key: 'interval', label: 'Periodo', sortable: true, },
                     { key: 'status', label: 'Estado', sortable: true, },
                     { key: 'dateconfirmed', label: 'Confirmado', sortable: true, },
-                    { key: 'editRow', label: 'editRow', label: '', class: 'tableEditRow'},
+                    { key: 'editRow', label: 'editRow', label: '', class: 'tableEditRow text-center'},
                 ], /* Array width the fields of the main b-table */
             }
         },
