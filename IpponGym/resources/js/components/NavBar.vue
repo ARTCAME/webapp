@@ -322,6 +322,7 @@
             scroll() {
                 const toolsNav = document.getElementById('ig-tools-navbar');
                 const mainNav = document.getElementById('ig-main-navbar');
+                const editAlert = document.getElementById('edit-alert') || null; /* Selects a MainForm alert element */
                 /* Add class with the box-shadow behaviour */
                 document.getElementsByTagName('html')[0].scrollTop > 0 ? toolsNav.classList.add('scrolling') : toolsNav.classList.remove('scrolling');
                 /* Hide/Unhide the navbar based on the scroll position */
@@ -332,13 +333,22 @@
                     if (currentScroll < (this.lastScroll - 250)) {
                         toolsNav.style.transform = 'unset';
                         mainNav.style.transform = 'unset';
+                        if (editAlert) {
+                            editAlert.style.boxShadow = 'unset';
+                        }
                     } else {
                         toolsNav.style.transform = 'translateY(-150px)';
                         mainNav.style.transform = 'translateY(-100px)';
+                        if (editAlert) {
+                            editAlert.style.boxShadow = '0px 0px 4px 0 rgba(133, 100, 4, 1)';
+                        }
                     }
                 } else if (scrollY <= 350) {
                     toolsNav.style.transform = 'unset';
                     mainNav.style.transform = 'unset';
+                    if (editAlert) {
+                        editAlert.style.boxShadow = 'unset';
+                    }
                 }
                 this.lastScroll = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
             },
