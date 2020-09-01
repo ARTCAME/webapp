@@ -545,7 +545,11 @@
                                     v-if="isDisabled == false && $route.name == 'customers.edit'">
                                     Los cambios que hagas a los grados se guardan al aplicarlos.
                                 </b-alert>
-                                <b-form-row id="btn-group-cinturones" class="my-4 mx-0" no-gutters>
+                                <BeltsRow
+                                    :belts="form.belts"
+                                    :customer="form"
+                                    :isDisabled="isDisabled"></BeltsRow>
+                                <!-- <b-form-row id="btn-group-cinturones" class="my-4 mx-0" no-gutters>
                                     <b-form-checkbox-group
                                         buttons
                                         :disabled="isDisabled">
@@ -586,7 +590,7 @@
                                             :disabled="selectedBelts.length == 0"
                                             @click="beltsDelete()">Borrar fecha</b-button>
                                     </span>
-                                </b-form-row>
+                                </b-form-row> -->
                             </span>
                             <span
                                 v-else-if="$route.name == 'customers.new'">
@@ -1074,7 +1078,7 @@
         created() {
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
-            /* Listen to the scroll and load changes */
+            /* Listen to the resize and load changes */
             window.addEventListener('resize', this.stackRadios);
             window.addEventListener('load', this.stackRadios);
         },
@@ -1200,6 +1204,9 @@
                     const response = await http.post('/api/updateBelts', ({ id: this.form._id, belts: this.selectedBelts, date: this.$moment(this.beltsNewDate).format('DD-MM-YYYY') }));
                     this.UPDATE_FIELD({ target: this.form, field: 'belts', newVal: response.data.updatedBelts });
                     this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
+                    /* Trigger a modification on the localStorage to propagate the changes on other windows */
+                    localStorage.setItem('customer_updated', this.form._id);
+                    localStorage.removeItem('customer_updated');
                 } catch(error) {
                     this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoFo@BeUp', 'Ha ocurrido un error')
                     console.error(error.response ? error.response.data : error);
@@ -1547,6 +1554,7 @@
     #edit-alert {
         opacity: 75%;
         position: fixed;
+        transition: .15s;
         top: 64px;
         z-index: 999;
     }
