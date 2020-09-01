@@ -101,7 +101,7 @@ export default new Vuex.Store({
          * Delete the belts of a specific belt from the bels main page AND THE FORM PAGE
          *
          * @param {String} id: the id of the customer to edit, references her/one row
-         * @param {Array} newRowBelts: new belts data from the db to set to the customer
+         * @param {Array} selectedBelts: array of belts to delete
          *
          * @return Object with the response data of the api call: the customer data. Is necessary at the component to refetch the customer edited data
          */
@@ -112,6 +112,28 @@ export default new Vuex.Store({
             /* Commit the changes on the edit form state */
             if (router.currentRoute.name == 'customers.edit' || router.currentRoute.name == 'customers.profile') {
                 commit('UPDATE_EDITED_BELTS', response.data.deletedBelts);
+            }
+            /* Trigger a modification on the localStorage to propagate the changes on other windows */
+            localStorage.setItem('customer_updated', id);
+            localStorage.removeItem('customer_updated');
+            return response.data;
+        },
+        /**
+         * Update the belts of a specific belt from the bels main page AND THE FORM PAGE
+         *
+         * @param {String} id: the id of the customer to edit, references her/one row
+         * @param {Array} selectedBelts: array of belts to update
+         * @param {String} date: date formatted to apply to the selectedBelts
+         *
+         * @return Object with the response data of the api call: the customer data. Is necessary at the component to refetch the customer edited data
+         */
+        async updateBelts({ commit, getters }, { id, selectedBelts, date }) {
+            const response = await http.post('/api/updateBelts', ({ id: id, belts: selectedBelts, date: date }));
+            /* Commit the changes on the customer */
+            commit('UPDATE_BELTS', { customer: getters.getCustomerById(id), newVal: response.data.updatedBelts });
+            /* Commit the changes on the edit form state */
+            if (router.currentRoute.name == 'customers.edit' || router.currentRoute.name == 'customers.profile') {
+                commit('UPDATE_EDITED_BELTS', response.data.updatedBelts);
             }
             /* Trigger a modification on the localStorage to propagate the changes on other windows */
             localStorage.setItem('customer_updated', id);
