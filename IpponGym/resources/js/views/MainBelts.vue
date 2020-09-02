@@ -47,7 +47,7 @@
                         key="trans-btns-update"
                         tabindex="0"
                         v-b-tooltip.hover.noninteractive
-                        :title="deleteInCourse ? 'No puedes actualizar cinturones mientras editas una línea de la tabla' : rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : beltsNewDate == '' ? 'Selecciona una fecha' : updateCsv ? 'Descargando...' : 'Guardar y descargar archivo'">
+                        :title="updateInCourse ? 'No puedes actualizar cinturones mientras editas una línea de la tabla' : rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : beltsNewDate == '' ? 'Selecciona una fecha' : updateCsv ? 'Descargando...' : 'Guardar y descargar archivo'">
                         <!-- Disabled when no grades are selected and no date was selected or if the process to save the file and download it has been started -->
                         <b-button
                             class="w-100"
@@ -98,7 +98,9 @@
                     <br>
                     3 - Para acabar, confirma los cambios.
                     <br>
+                    <br>
                     <u>Importante:</u>
+                    - En la columna 'Siguiente grado' verás el grado que vas a otorgar. Pulsa sobre cualquier otro grado no otorgado para cambiar el grado a otorgar.
                     - Si el grado actual es negro no podrás seleccionar a ese socio, si tiene algún grado pendiente deberás marcarlo como siguiente grado para poder actualizarlo.
                 </b-alert>
             </b-collapse>
@@ -116,14 +118,15 @@
                             data-v-step="wzd-cinturones-download-2"
                             tabindex="0"
                             v-b-tooltip.hover.noninteractive.top
-                            :title="deleteInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
+                            :title="updateInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
                             <!-- Disabled when no grades are selected or if a row has an edit open or if the process to download the grades has been started -->
                             <b-button
                                 class="w-100"
                                 size="sm"
-                                :disabled="rowsSelected.length == 0 || deleteInCourse || downloadCsvManual"
-                                :variant="rowsSelected.length == 0 || deleteInCourse  ? 'outline-success' : 'success'"
-                                @click="$tableToCsv([ 'name', 'grade', 'date' ], rowsSelected, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')">
+                                :disabled="rowsSelected.length == 0 || updateInCourse || downloadCsvManual"
+                                :variant="rowsSelected.length == 0 || updateInCourse  ? 'outline-success' : 'success'"
+                                @click="$tableToCsv([ 'name', 'grade', 'date' ], beltsSelectedDownload, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')">
+                                <!-- @click="$tableToCsv([ 'name', 'grade', 'date' ], rowsSelected, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')"> -->
                                 <!-- Shown during the download of the file -->
                                 <b-spinner
                                     small
@@ -161,9 +164,11 @@
                     class="mb-2"
                     show
                     variant="info">
-                    1 - Busca y selecciona en la tabla los socios que quieres actualizar.
+                    1 - Busca y selecciona en la tabla los socios de los quieres que se añadan al archivo de diplomas a descargar.
                     <br>
-                    2 - Para finalizar el proceso y descargar el fichero, pulsa sobre el botón 'Descargar'.
+                    2 - Por defecto se añadirá el último grado otorgado, si quieres cambiarlo pulsa sobre el grado o grados que quieras descargar.
+                    <br>
+                    3 - Para finalizar el proceso y descargar el fichero, pulsa sobre el botón 'Descargar'.
                 </b-alert>
             </b-collapse>
             <transition appear name="fade-height">
@@ -452,58 +457,41 @@
                     </template>
                     <template
                         #row-details="row">
-                        <b-row class="mx-0">
-                            <b-col class="px-0">
+                        <b-row no-gutters>
+                            <b-col class="ml-0 mr-auto">
+                                <BeltsRow
+                                    :ref="'beltsRow' + row.index"
+                                    :belts="row.item.belts"
+                                    :customer="getCustomerById(row.item._id)"
+                                    :downloadGrades="downloadGrades"
+                                    :isBeltSelectedToDelete="isBeltSelectedToDelete"
+                                    :isBeltSelectedToDownload="isBeltSelectedToDownload"
+                                    :isUpdating="isUpdating"
+                                    :isDisabled="false"
+                                    :manageDownloadBelts="manageDownloadBelts"
+                                    :manageNextGrade="manageNextGrade"
+                                    :row="row"></BeltsRow>
+                            </b-col>
+                            <b-col cols="auto" class="ig-line-height-0 mx-0">
                                 <span
+                                    class="d-inline-block mb-1"
+                                    tabindex="0"
                                     v-b-tooltip.hover.noninteractive
-                                    v-for="belt in row.item.belts"
-                                    :key="belt.grade"
-                                    :title="!isDeleting(row.item) ? row.item.nextGrade != belt.grade ? 'Marcar como siguiente grado' : 'Desmarcar como siguiente grado' : isBeltSelectedToDelete(belt, row.item) ? 'Deseleccionar' : 'Seleccionar'">
+                                    :title="row.item.belts.filter(belt => belt.date != null).length == 0 ? 'No hay grados que editar' : updating ? 'Para poder editar finaliza la actualización de grados' : downloadGrades ? 'Para poder editar finaliza la descarga de diplomas' : !isUpdating(row.item) ? 'Editar grados otorgados' : 'Cancelar la edición'">
                                     <b-button
+                                        class="btn-edit-cinturones"
                                         size="sm"
-                                        :class="'mb-1 btn-cinturon-table btn-cinturon ' + belt.grade + (isBeltSelectedToDelete(belt, row.item) ? ' borrando-cinturones' : '')"
-                                        :disabled="(!isDeleting(row.item) && belt.date != null) || (isDeleting(row.item) && belt.date == null)"
-                                        @click="manageDelBelts({ grade: belt.grade, date: belt.date }, row.item)">
-                                            {{ belt.date ? belt.date : '' }}
+                                        :disabled="updating || downloadGrades || row.item.belts.filter(belt => belt.date != null).length == 0"
+                                        :variant="!isUpdating(row.item) ? 'outline-info' : 'danger'"
+                                        @click="activateUpdate(row.item)">
+                                        <fa-icon
+                                            icon="edit"
+                                            v-if="!isUpdating(row.item)"></fa-icon>
+                                        <fa-icon
+                                            icon="times"
+                                            v-else></fa-icon>
                                     </b-button>
                                 </span>
-                            </b-col>
-                            <b-col cols="1">
-                                <b-row align-h="end">
-                                    <span
-                                        class="d-inline-block mb-1"
-                                        tabindex="0"
-                                        v-b-tooltip.hover.noninteractive
-                                        :title="row.item.belts.filter(belt => belt.date != null).length == 0 ? 'No hay grados que editar' : updating ? 'Finaliza la actualización de grados' : downloadGrades ? 'Finaliza la descarga de diplomas' : !isDeleting(row.item) ? 'Editar grados otorgados' : 'Cancelar'">
-                                        <b-button
-                                            class="btn-edit-cinturones"
-                                            size="sm"
-                                            :disabled="updating || downloadGrades || row.item.belts.filter(belt => belt.date != null).length == 0"
-                                            :variant="!isDeleting(row.item) ? 'outline-info' : 'warning'"
-                                            @click="activateDeleting(row.item)">
-                                            <fa-icon
-                                                icon="edit"
-                                                v-if="!isDeleting(row.item)"></fa-icon>
-                                            <fa-icon
-                                                icon="times"
-                                                v-else></fa-icon>
-                                        </b-button>
-                                    </span>
-                                    <span
-                                        class="d-inline-block"
-                                        tabindex="0"
-                                        v-b-tooltip.hover.noninteractive
-                                        :title="beltsSelectedDel.length > 0 ? 'Borrar' : 'Primero selecciona grados para borrar'">
-                                        <b-button
-                                            class="btn-select-cinturones"
-                                            size="sm"
-                                            :disabled="deletingRow || beltsSelectedDel.length == 0 || !isDeleting(row.item)"
-                                            :variant="beltsSelectedDel.length == 0 || !isDeleting(row.item) ? 'outline-danger' : 'danger'"
-                                            @click="beltsDelete(row.item)">
-                                            <fa-icon icon="trash"></fa-icon>
-                                        </b-button>
-                                    </span>
-                                </b-row>
                             </b-col>
                         </b-row>
                     </template>
@@ -572,6 +560,7 @@
                 beltsNewDate: '', /* v-model for the date that will be used for store new grados */
                 beltsSearch: '', /* v-model to the input search on table beltsTable */
                 beltsSelectedDel: [], /* Selected grades on a row when a delete action is actived */
+                beltsSelectedDownload: [], /* Selected grades on a row when a download action is actived */
                 beltsTableFields: [
                     { key: 'selected', label: '', },
                     { key: 'active', label: 'Activo', sortable: true, class: 'text-center', },
@@ -589,7 +578,7 @@
                 getSelectedGrade: [], /* v-model with the grade filter applied to the table */
                 grades: [ /* 'blbl',  */'blam', 'amam', 'amna', 'nana', 'nave', 'veve', 'veaz', 'azaz', 'azma', 'mama', 'nene', ], /* Code of grades */
                 inactives: false,
-                onDeleteRow: {},  /* Store the on delete row wich will be useful to manage the states of the elements allowed and disallowed at the delete of a row */
+                onUpdateRow: {},  /* Store the on delete row wich will be useful to manage the states of the elements allowed and disallowed at the delete of a row */
                 rowsSelected: [], /* Selected rows from beltsTable, its elements will be pushed on events at every row */
                 showingDetailsItems: [], /* Stores the elements wich are showing their details */
                 updateCsv: false, /* Flag to determine if a download csv was requested to apply visual modifications */
@@ -604,7 +593,7 @@
          */
         beforeRouteLeave(to, from, next) {
             let answer = true;
-            if (this.updating || this.downloadGrades || this.beltsTableItems.some(belt => this.isDeleting(belt))) {
+            if (this.updating || this.downloadGrades || this.beltsTableItems.some(belt => this.isUpdating(belt))) {
                 answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
                 if (!answer) {
                     next(false);
@@ -643,23 +632,31 @@
                 return belts;
             },
             /**
-             * Indicates if a row is being edited to delete some belts
-             *
-             * @return {Boolean} Boolean that indicates if a row is being edited to delete some belts
-             */
-            deleteInCourse() {
-                return Object.keys(this.onDeleteRow).length !== 0;
-            },
-            /**
              * v-model that indicates if the grades download process has been started
              */
             downloadGrades: {
                 get() {
-                    return this.getProcedureState('beltsPrinting');
+                    let state = this.getProcedureState('beltsPrinting');
+                    if (state == false) {
+                        this.beltsSelectedDownload = [];
+                    }
+                    if (state && this.updateInCourse) {
+                        this.resetUpdate();
+                        this.onUpdateRow = {};
+                    }
+                    return state;
                 },
                 set(val) {
                     this.setProcedureState({ procedure: 'beltsPrinting', newVal: val });
                 }
+            },
+            /**
+             * Gets the rows with belts to download on the csv file
+             *
+             * @return {Array} Array with the belts to download on the csv file
+             */
+            rowsSelectedToDownload() {
+                return this.beltsSelectedDownload.filter(bsd => this.rowsSelected.some(rs => rs.name == bsd.name));
             },
             /**
              * Determines if all the elements are selected under visible filtered elements on the table. This function is used at the simulated checkbox of the head at the col selected of the table
@@ -713,10 +710,26 @@
                 return this.$refs.beltsTable && this.$refs.beltsTable.isFiltered ? this.$refs.beltsTable.filteredItems.length : this.beltsTableItems.length
             },
             /**
+             * Indicates if a row is being edited to delete some belts
+             *
+             * @return {Boolean} Boolean that indicates if a row is being edited to delete some belts
+             */
+            updateInCourse() {
+                return Object.keys(this.onUpdateRow).length !== 0;
+            },
+            /**
              * v-model that indicates if the updating belts process has been started (it will be setted Vuex and its changes will be tracked on a watcher)
+             *
+             * @return {Boolean} Boolean with the status of the update of belts procedure
              */
             updating() {
-                return this.getProcedureState('beltsUpdating');
+                let status = this.getProcedureState('beltsUpdating');
+                /* Reset the row edit if exists */
+                if (status === true) {
+                    this.resetUpdate();
+                    this.onUpdateRow = {};
+                }
+                return status
             }
         },
         created() {
@@ -738,13 +751,13 @@
             /**
              * Function that 'starts' the delete action
              *
-             * @param {Object} row is the row from the table wich contains data and context of one socio
+             * @param {Object} row is the row from the table wich contains data and context of one customer
              */
-            activateDeleting(row) {
+            activateUpdate(row) {
                 /* Reset the previous deleting selected */
-                this.beltsSelectedDel = [];
-                /* Store the on delete */
-                this.onDeleteRow = this.onDeleteRow._id == row._id ? {} : { ...row };
+                this.resetUpdate();
+                /* Store the on delete data to use it to control the state of every row */
+                this.onUpdateRow = this.onUpdateRow._id == row._id ? {} : { ...row };
             },
             /**
              * Function to manage the tag for all-selected elements shown conditionally with the flag allSelected
@@ -777,7 +790,7 @@
             beforeUnload(ev) {
                 let answer = true;
                 /* From Chrome 60 onward, the beforeunload dialog will only appear if the frame attempting to display it has received a user gesture or user interaction (or if any embedded frame has received such a gesture). */
-                if (this.updating || this.downloadGrades || this.beltsTableItems.some(belt => this.isDeleting(belt))) {
+                if (this.updating || this.downloadGrades || this.beltsTableItems.some(belt => this.isUpdating(belt))) {
                     answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
                     if (!answer) {
                         ev.preventDefault();
@@ -792,35 +805,34 @@
                     this.$validator.pause();
                 }
             },
-            /**
-             * Function wich delete the grades of a socio
-             *
-             * @param {Object} row: is the row from the table wich contains data and context of one socio
-             */
-            async beltsDelete(row) {
-                /* Change the flag to disable the delete button */
-                this.deletingRow = true;
-                this.onDeleteRow = {};
-                try {
-                    const response = await this.deleteBelts({ id: row._id, selectedBelts: this.beltsSelectedDel });
-                    /* After the api action reset the involved var */
-                    this.beltsSelectedDel = [];
-                    if (row.belts != response.deletedBelts) {
-                        this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
-                        this.$set(row, 'grade', this.getLastBelts(response.deletedBelts).grade);
-                        this.$set(row, 'nextGrade', this.getLastBelts(response.deletedBelts).nextGrade);
-                    } else {
-                        this.$showToast('warning', 'No se ha actualizado ningún dato.', 'Actualización de grados')
-                    }
-                } catch (error) {
-                    this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoCi@BeDe', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
-                }
-                /* Change the flag to enable the delete button */
-                setTimeout(() => {
-                    this.deletingRow = false;
-                }, 2000);
-            },
+            // /**
+            //  * Function wich delete the grades of a socio
+            //  *
+            //  * @param {Object} row: is the row from the table wich contains data and context of one socio
+            //  */
+            // async beltsDelete(row) {
+            //     /* Change the flag to disable the delete button */
+            //     this.deletingRow = true;
+            //     this.onUpdateRow = {};
+            //     try {
+            //         const response = await this.deleteBelts({ id: row._id, selectedBelts: this.beltsSelectedDel });
+            //         /* After the api action reset the involved var */
+            //         if (row.belts != response.deletedBelts) {
+            //             this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
+            //             this.$set(row, 'grade', this.getLastBelts(response.deletedBelts).grade);
+            //             this.$set(row, 'nextGrade', this.getLastBelts(response.deletedBelts).nextGrade);
+            //         } else {
+            //             this.$showToast('warning', 'No se ha actualizado ningún dato.', 'Actualización de grados')
+            //         }
+            //     } catch (error) {
+            //         this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoCi@BeDe', 'Ha ocurrido un error')
+            //         console.error(error.response ? error.response.data : error);
+            //     }
+            //     /* Change the flag to enable the delete button */
+            //     setTimeout(() => {
+            //         this.deletingRow = false;
+            //     }, 2000);
+            // },
             /**
              * Function that takes the selected data by the user (rows of the table beltsTable) and store at the database its changes at his grades (cinturones).
              */
@@ -925,7 +937,6 @@
                 /* Add the row that are showing details to the array wich contains these items */
                 if (this.showingDetailsItems.length > 0) {
                     const index = this.showingDetailsItems.findIndex(sdi => sdi._id == row._id);
-                    console.log(index);
                     if (index != -1) {
                         this.showingDetailsItems.splice(index, 1);
                     } else {
@@ -935,9 +946,9 @@
                     this.showingDetailsItems = [ ...this.showingDetailsItems, { ...row } ];
                 }
                 /* If the row is deleting, reset it */
-                if (this.isDeleting(row)) {
-                    this.beltsSelectedDel = [];
-                    this.onDeleteRow = {};
+                if (this.isUpdating(row)) {
+                    this.resetUpdate();
+                    this.onUpdateRow = {};
                 }
             },
             /**
@@ -989,6 +1000,22 @@
                 return !this.beltsSearch || valueClean.includes(filterClean)
             },
             /**
+             * Function to get the last grade obtained
+             *
+             * @param {Object} row: the row item of the table element
+             *
+             * @return {Object|null} Returns the grade object or null if not exists any obtained grade
+             */
+            getLastGrade(row) {
+                let lastGrade = null;
+                row.belts.forEach(belt => {
+                    if (belt.date != null && belt.date != '') {
+                        lastGrade = belt;
+                    }
+                })
+                return lastGrade;
+            },
+            /**
              * Determines if a belts is included on the selected belts to delete from a row
              *
              * @param {Object} belt: is the item to check if is or isn't selected
@@ -1000,14 +1027,25 @@
                 return this.beltsSelectedDel.filter(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl._id == row._id).length > 0;
             },
             /**
+             * Determines if a belts is included on the selected belts to download from a row
+             *
+             * @param {Object} belt: is the item to check if is or isn't selected
+             * @param {Object} row: the row item of the table element
+             *
+             * @return {Boolean} Boolean that confirms if the row passed has some belt selected to download
+             */
+            isBeltSelectedToDownload(belt, row) {
+                return this.beltsSelectedDownload.filter(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl.name == row.name).length > 0;
+            },
+            /**
              * Determines if a table row passed is selected to edit its belts
              *
              * @param {Object} row: the row item of the table element
              *
              * @return {Boolean} Boolean that confirms if the row passed has initiated its belt edition or not
              */
-            isDeleting(row) {
-                return row._id == this.onDeleteRow._id;
+            isUpdating(row) {
+                return row._id == this.onUpdateRow._id;
             },
             /**
              * Determines if a specific row is selected on the table. Its used on every row simulated checkbox at the select col
@@ -1019,23 +1057,44 @@
             isSelected(row) {
                 return this.rowsSelected.some(el => el._id == row._id);
             },
+            // /**
+            //  * Function that manage the selection of the elements who composes the grades of a customer. Here we arrives after interact with one of the grades of the customer, depending of whether the delete action is activated or not the interaction results on a selection to delete the element or to mark as next grade
+            //  *
+            //  * @param {Object} belt: contains the selected grade data
+            //  * @param {Object} row: is the row from the table wich contains data and context of one customer
+            //  */
+            // manageDelBelts(belt, row) {
+            //     /* If the row is deleting */
+            //     if (this.isUpdating(row)) {
+            //         /* Check if the grade (belt) passed exists on the array and delete it if its true or push it if its false */
+            //         if (!this.isBeltSelectedToDelete(belt, row)) {
+            //             this.beltsSelectedDel.push({ _id: row._id, ...belt });
+            //         } else if (this.isBeltSelectedToDelete(belt, row)) {
+            //             this.beltsSelectedDel.splice(this.beltsSelectedDel.findIndex(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl._id == row._id), 1);
+            //         }
+            //     /* Else, if the delete action is not actived, the belt passed will be the nextGrade */
+            //     } /* else if (!this.isUpdating(row)) {
+            //         let nextGrade = belt.grade == row.nextGrade ? '' : belt.grade;
+            //         this.$set(row, 'nextGrade', nextGrade);
+            //     } */
+            // },
             /**
-             * Function that manage the selection of the elements who composes the grades of a customer. Here we arrives after interact with one of the grades of the customer, depending of whether the delete action is activated or not the interaction results on a selection to delete the element or to mark as next grade
+             * Manages the selection of the elements to download on the certificates csv file
              *
              * @param {Object} belt: contains the selected grade data
              * @param {Object} row: is the row from the table wich contains data and context of one customer
              */
-            manageDelBelts(belt, row) {
-                /* If the row is deleting */
-                if (this.isDeleting(row)) {
-                    /* Check if the grade (belt) passed exists on the array and delete it if its true or push it if its false */
-                    if (!this.isBeltSelectedToDelete(belt, row)) {
-                        this.beltsSelectedDel.push({ _id: row._id, ...belt });
-                    } else if (this.isBeltSelectedToDelete(belt, row)) {
-                        this.beltsSelectedDel.splice(this.beltsSelectedDel.findIndex(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl._id == row._id), 1);
-                    }
-                /* Else, if the delete action is not actived, the belt passed will be the nextGrade */
-                } else if (!this.isDeleting(row)) {
+            manageDownloadBelts(belt, row) {
+                 /* Check if the grade (belt) passed exists on the array and delete it if its true or push it if its false */
+                if (!this.isBeltSelectedToDownload(belt, row)) {
+                    // this.beltsSelectedDownload.push({ _id: row._id, ...belt });
+                    this.beltsSelectedDownload.push({ name: row.name, ...belt });
+                } else if (this.isBeltSelectedToDownload(belt, row)) {
+                    this.beltsSelectedDownload.splice(this.beltsSelectedDownload.findIndex(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl.name == row.name), 1);
+                }
+            },
+            manageNextGrade(belt, row) {
+                if (!this.isUpdating(row)) {
                     let nextGrade = belt.grade == row.nextGrade ? '' : belt.grade;
                     this.$set(row, 'nextGrade', nextGrade);
                 }
@@ -1052,13 +1111,39 @@
                 this.inactives = false;
             },
             /**
-             * Function that select a row by clicking on its checkbox or on the header checkbox. The selected element comes from the table beltsTable and is pushed on the rowsSelected array. The function checks if all the elements of its table are selected too
+             * Reset the edit on every row determining the rows on edition and calling to the child function
+             */
+            resetUpdate() {
+                /* Get the $refs of every row existent */
+                let refs = Object.keys(this.$refs).filter(key => key.startsWith('beltsRow'));
+                refs.forEach(ref => {
+                    /* Reset the updating for every row */
+                    this.$refs[ref] && this.$refs[ref].resetUpdating();
+                })
+            },
+            /**
+             * Function that select a row by clicking on its checkbox or on the header checkbox. The selected element comes from the table beltsTable and is pushed on the rowsSelected array. Also manage the download grades selected when the procedure is actived
              *
              * @param {Array} row: is the data from a row of the table beltsTable
              * @param {Event} newVal: is the checkbox event that indicates the new value for vuex
              */
             rowSelect(row, newVal) {
-                newVal ? this.rowsSelected.push(row) : this.rowsSelected.splice(this.rowsSelected.findIndex(el => el._id == row._id), 1);
+                if (newVal) {
+                    this.rowsSelected.push(row);
+                    /* If the download array doesn't contain the selected row */
+                    if (this.downloadGrades) {
+                        /* If the row has not selected belts, push the last belt acquired */
+                        if (!this.beltsSelectedDownload.some(el => el.name == row.name)) {
+                            this.beltsSelectedDownload.push({ name: row.name, ...this.getLastGrade(row) });
+                        }
+                    }
+                } else {
+                    this.rowsSelected.splice(this.rowsSelected.findIndex(el => el._id == row._id), 1);
+                    /* If exists a belt selected of the row, unselect it */
+                    if (this.beltsSelectedDownload.some(el => el.name == row.name)) {
+                        this.beltsSelectedDownload = this.beltsSelectedDownload.filter(bsd => bsd.name != row.name);
+                    }
+                }
             },
             /**
              * Function activated via clicking the header checkbox on tables beltsTable and it calls to rowSelect respective function to select al the avaiable rows on the table
@@ -1100,15 +1185,25 @@
             },
         },
         watch: {
+            downloadGrades(newVal, oldVal) {
+                /* If a row is selected before the download procedure has started add the last belt if no belts of a row has been previously added */
+                if (newVal === true && this.selectedSome) {
+                    this.rowsSelected.forEach(row => {
+                        if (!row.belts.some(belt => this.isBeltSelectedToDownload(belt, row))) {
+                            this.beltsSelectedDownload.push({ name: row.name, ...this.getLastGrade(row) });
+                        }
+                    });
+                }
+            },
             /* Watch the updating changes to evaluate the rows selected */
             updating(newVal, oldVal) {
-                if (newVal == true) {
+                if (newVal === true) {
                     /* Evaluate the valid selected rows */
                     if (this.rowsSelected.length > 0) {
                         this.evaluateRowSelectedState();
                     }
                 }
-            }
+            },
         },
     }
 </script>
@@ -1121,11 +1216,11 @@
     /* Selectors are ordered from generic to specific and then alphabetical and its properties are in alphabetical order */
     .btn-edit-cinturones,
     .btn-select-cinturones {
-        height: 27px!important;
+        height: 25px!important;
         line-height: 1;
         margin: 0 .2rem 0 0;
         padding: 0;
-        width: 27px;
+        width: 25px;
     }
     .btn-edit-cinturones svg,
     .btn-select-cinturones svg {
