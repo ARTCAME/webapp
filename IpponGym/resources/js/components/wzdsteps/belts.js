@@ -96,7 +96,7 @@ export const wmcSteps = [
     },
     {
         target: '[data-v-step="wzd-main-cinturones-4"]',
-        content: 'Desde el nombre del socio o desde el grado actual podrás acceder a ver el histórico de grados. La fecha que ves hacer referencia a cuándo se otorgó ese grado y si no hay fecha es que el socio tiene pendiente conseguirlo.',
+        content: 'Desde el nombre del socio o desde el grado actual podrás acceder a ver el histórico de grados. En el histórico verás la fecha en que se otorgó cada grado y si no hay fecha es que el socio tiene pendiente conseguirlo. Además, en el histórico de grados podrás acceder a editar los grados individualmente.',
         offset: '-135',
         params: {
             placement: 'left'
