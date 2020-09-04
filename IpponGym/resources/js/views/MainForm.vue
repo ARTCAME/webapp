@@ -549,48 +549,6 @@
                                     :belts="form.belts"
                                     :customer="form"
                                     :isDisabled="isDisabled"></BeltsRow>
-                                <!-- <b-form-row id="btn-group-cinturones" class="my-4 mx-0" no-gutters>
-                                    <b-form-checkbox-group
-                                        buttons
-                                        :disabled="isDisabled">
-                                        <b-form-checkbox
-                                            v-for="belt in form.belts"
-                                            v-model="selectedBelts"
-                                            :class="'mb-1 btn-cinturon ' + belt.grade"
-                                            :key="belt.grade"
-                                            :title="'Cinturón ' + belt.grade"
-                                            :value="{ grade: belt.grade, date: belt.date }">
-                                            {{ belt.date }}
-                                        </b-form-checkbox>
-                                    </b-form-checkbox-group>
-                                </b-form-row>
-                                <b-form-row
-                                    class="ml-0"
-                                    no-gutters
-                                    v-if="!isDisabled">
-                                    <b-form-input
-                                        class="col-3"
-                                        type="date"
-                                        v-model="beltsNewDate"></b-form-input>
-                                    <span
-                                        v-b-tooltip.hover.noninteractive
-                                        :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : beltsNewDate == '' ? 'Selecciona una fecha' : 'Guarda la fecha seleccionado en los grados seleccionados'">
-                                        <b-button
-                                            class="ml-2"
-                                            variant="outline-primary"
-                                            :disabled="selectedBelts.length == 0 || beltsNewDate == ''"
-                                            @click="beltsUpdate()">Aplicar nueva fecha</b-button>
-                                    </span>
-                                    <span
-                                        v-b-tooltip.hover.noninteractive
-                                        :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : 'Borra la fecha de los grados seleccionados'">
-                                        <b-button
-                                            class="ml-2"
-                                            variant="outline-danger"
-                                            :disabled="selectedBelts.length == 0"
-                                            @click="beltsDelete()">Borrar fecha</b-button>
-                                    </span>
-                                </b-form-row> -->
                             </span>
                             <span
                                 v-else-if="$route.name == 'customers.new'">
