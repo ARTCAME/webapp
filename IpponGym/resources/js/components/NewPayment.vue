@@ -167,8 +167,8 @@
             centered
             id="everywhere-payment-confirm"
             size="md"
-            @hidden="$manageScrollBar"
-            @show="$manageScrollBar">
+            @hidden="$manageScrollBar(true)"
+            @show="$manageScrollBar(true)">
             <template #modal-header>
                 <h5>Confirma los datos del pago</h5>
             </template>
