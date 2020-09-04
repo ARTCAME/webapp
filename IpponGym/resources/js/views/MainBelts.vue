@@ -805,34 +805,6 @@
                     this.$validator.pause();
                 }
             },
-            // /**
-            //  * Function wich delete the grades of a socio
-            //  *
-            //  * @param {Object} row: is the row from the table wich contains data and context of one socio
-            //  */
-            // async beltsDelete(row) {
-            //     /* Change the flag to disable the delete button */
-            //     this.deletingRow = true;
-            //     this.onUpdateRow = {};
-            //     try {
-            //         const response = await this.deleteBelts({ id: row._id, selectedBelts: this.beltsSelectedDel });
-            //         /* After the api action reset the involved var */
-            //         if (row.belts != response.deletedBelts) {
-            //             this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
-            //             this.$set(row, 'grade', this.getLastBelts(response.deletedBelts).grade);
-            //             this.$set(row, 'nextGrade', this.getLastBelts(response.deletedBelts).nextGrade);
-            //         } else {
-            //             this.$showToast('warning', 'No se ha actualizado ningún dato.', 'Actualización de grados')
-            //         }
-            //     } catch (error) {
-            //         this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoCi@BeDe', 'Ha ocurrido un error')
-            //         console.error(error.response ? error.response.data : error);
-            //     }
-            //     /* Change the flag to enable the delete button */
-            //     setTimeout(() => {
-            //         this.deletingRow = false;
-            //     }, 2000);
-            // },
             /**
              * Function that takes the selected data by the user (rows of the table beltsTable) and store at the database its changes at his grades (cinturones).
              */
@@ -1057,27 +1029,6 @@
             isSelected(row) {
                 return this.rowsSelected.some(el => el._id == row._id);
             },
-            // /**
-            //  * Function that manage the selection of the elements who composes the grades of a customer. Here we arrives after interact with one of the grades of the customer, depending of whether the delete action is activated or not the interaction results on a selection to delete the element or to mark as next grade
-            //  *
-            //  * @param {Object} belt: contains the selected grade data
-            //  * @param {Object} row: is the row from the table wich contains data and context of one customer
-            //  */
-            // manageDelBelts(belt, row) {
-            //     /* If the row is deleting */
-            //     if (this.isUpdating(row)) {
-            //         /* Check if the grade (belt) passed exists on the array and delete it if its true or push it if its false */
-            //         if (!this.isBeltSelectedToDelete(belt, row)) {
-            //             this.beltsSelectedDel.push({ _id: row._id, ...belt });
-            //         } else if (this.isBeltSelectedToDelete(belt, row)) {
-            //             this.beltsSelectedDel.splice(this.beltsSelectedDel.findIndex(bsdEl => bsdEl.grade == belt.grade && bsdEl.date == belt.date && bsdEl._id == row._id), 1);
-            //         }
-            //     /* Else, if the delete action is not actived, the belt passed will be the nextGrade */
-            //     } /* else if (!this.isUpdating(row)) {
-            //         let nextGrade = belt.grade == row.nextGrade ? '' : belt.grade;
-            //         this.$set(row, 'nextGrade', nextGrade);
-            //     } */
-            // },
             /**
              * Manages the selection of the elements to download on the certificates csv file
              *
