@@ -10,7 +10,7 @@
             name="sign"
             v-model="sign"
             :class="{ 'is-invalid' : errors.has('sign') }"
-            :src="sign == '' ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : sign"></b-img>
+            :src="sign == '' || sign == null ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : sign"></b-img>
         <transition mode="out-in" name="liveFeedbacks">
             <small
                 class="fake-invalid-feedback"
@@ -249,10 +249,12 @@
     #imageBox {
         border: 1px solid rgba(180, 180, 180, 1);
         border-radius: .25rem;
-        height: auto;
-        max-height: 200px;
-        max-width: 342px;
-        width: 100%;
+        /* height: auto; */
+        height: 200px;
+        /* max-height: 200px; */
+        /* max-width: 342px; */
+        /* width: 100%; */
+        width: 342px;
     }
     #imageBox.is-invalid {
         border-color: #dc3545;
