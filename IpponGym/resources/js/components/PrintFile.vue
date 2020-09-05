@@ -171,7 +171,7 @@
                     <div
                         key="pf-print-procetcrights"
                         v-if="fileType == 1 || fileType == 2">
-                        <b-form-group class="mb-0">
+                        <b-form-group class="mb-0 mt-2">
                             <h5 class="subtitle subtitle-sub" md="4">Resumen de datos para el documento</h5>
                         </b-form-group>
                         <b-list-group>
@@ -215,7 +215,7 @@
                             </b-list-group-item>
                         </b-list-group>
                         <span v-if="underage && (fileType == 1 || fileType == 2)">
-                            <b-form-group class="mb-0">
+                            <b-form-group class="mb-0 mt-2">
                                 <h5 class="subtitle subtitle-sub" md="4">Datos del tutor</h5>
                             </b-form-group>
                             <b-list-group
