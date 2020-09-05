@@ -500,7 +500,7 @@
     }
     #ig-main-navbar,
     #ig-tools-navbar {
-        transition: box-shadow .25s, transform .25s;
+        transition: box-shadow .25s, transform .15s;
         width: 100vw; /* Resolving jumps on appear scrollbar */
     }
     #ig-main-navbar {
