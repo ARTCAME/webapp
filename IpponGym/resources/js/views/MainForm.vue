@@ -613,11 +613,11 @@
                                                 name="rightsProtect"
                                                 size="sm"
                                                 v-validate="'required'"
-                                                :checked="rightsProtect"
+                                                :checked="RPaccept"
                                                 :class="{ 'is-invalid' : errors.has('rightsProtect') && !isDisabled }"
                                                 :options="yesno"
                                                 :state="errors.has('rightsProtect')"
-                                                @change="rightsProtect = $event"></b-form-radio-group>
+                                                @change="RPaccept = $event"></b-form-radio-group>
                                             <transition mode="out-in" name="liveFeedbacks">
                                                 <b-form-invalid-feedback
                                                     v-if="errors.has('rightsProtect')">
@@ -665,11 +665,11 @@
                                                 name="rightsImage"
                                                 size="sm"
                                                 v-validate="'required'"
-                                                :checked="rightsImage"
+                                                :checked="RIaccept"
                                                 :class="{ 'is-invalid' : errors.has('rightsImage') && !isDisabled }"
                                                 :options="yesno"
                                                 :state="errors.has('rightsImage')"
-                                                @change="rightsImage = $event"></b-form-radio-group>
+                                                @change="RIaccept = $event"></b-form-radio-group>
                                             <transition mode="out-in" name="liveFeedbacks">
                                                 <b-form-invalid-feedback
                                                     v-if="errors.has('rightsImage')">
@@ -719,11 +719,11 @@
                                                 name="rightsUnderage"
                                                 size="sm"
                                                 v-validate="'required'"
-                                                :checked="rightsUnderage"
+                                                :checked="RUaccept"
                                                 :class="{ 'is-invalid' : errors.has('rightsUnderage') && !isDisabled }"
                                                 :options="yesno"
                                                 :state="errors.has('rightsUnderage')"
-                                                @change="rightsUnderage = $event"></b-form-radio-group>
+                                                @change="RUaccept = $event"></b-form-radio-group>
                                             <transition mode="out-in" name="liveFeedbacks">
                                                 <b-form-invalid-feedback
                                                     v-if="errors.has('rightsUnderage')">
@@ -868,6 +868,10 @@
                     /* The id will be null on customers.new page, its managed at vuex */
                     this.updateCustomerData({ _id: this.form._id, objectKey: object, field: key, newVal: value });
                     // this.UPDATE_FIELD({ target: this.form[object], field: key, newVal: value });
+                    /* The legal accepts or declines needs to add the current date */
+                    if (object == 'rightsImage' || object == 'rightsProtect' || object == 'rightsUnderage') {
+                        this.updateCustomerData({ _id: this.form._id, objectKey: object, field: 'date', newVal: this.$moment().format('DD-MM-YYYY HH:MM:SS') });
+                    }
                 }
             }
         });
@@ -1042,8 +1046,13 @@
         },
         computed: {
             /* Mount the vuex getters and setters to the local form fields (the childrens has its computations too */
-            ...computeBaseFields(['active', 'address', 'dateofbirth', 'dni', 'gender', 'name', 'notes', 'rightsImage', 'rightsProtect', 'rightsUnderage']),
+            // ...computeBaseFields(['active', 'address', 'dateofbirth', 'dni', 'gender', 'name', 'notes', 'rightsImage', 'rightsProtect', 'rightsUnderage']),
+// COMPROBAR FUNCIONAMIENTO, AÑADIR AL COMPUTE QUE CUANDO SEA LAS KEIS ACCEPT SE AÑADA LA FECHA
+            ...computeBaseFields(['active', 'address', 'dateofbirth', 'dni', 'gender', 'name', 'notes']),
             ...computeObjectFields(['rate', 'amount', 'paymenttype', 'iban', 'ibanownername', 'ibanownerdni',], 'paymentData'),
+            ...computeObjectFields(['RIaccept', 'date'], 'rightsImage'),
+            ...computeObjectFields(['RPaccept', 'date'], 'rightsProtect'),
+            ...computeObjectFields(['RUaccept', 'date'], 'rightsUnderage'),
             /* Mapping vuex */
             ...mapGetters(['getCustomerByField', 'getCustomerById', 'getDefaultState']),
             ...mapState({
@@ -1282,11 +1291,12 @@
                                         this.CLEAR_FORM('form');
                                         await this.$router.push({ name: 'customers.profile', params: { id : id } });
                                         /* Print the documentation */
-                                        await this.printFile('RI');
+                                        /* NOT FOR NOW */
+                                        // await this.printFile('RI');
                                         // await this.printFile('RP');
-                                        if (this.underage) {
-                                            await this.printFile('RU');
-                                        }
+                                        // if (this.underage) {
+                                            // await this.printFile('RU');
+                                        // }
                                         /* Trigger a modification on the localStorage to propagate the changes on other windows */
                                         localStorage.setItem('customer_updated', id);
                                         localStorage.removeItem('customer_updated');
