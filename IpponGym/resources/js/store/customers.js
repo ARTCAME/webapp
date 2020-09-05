@@ -59,9 +59,21 @@ const DEFAULT_FORM = () => {
             { grade: 'mama', date: null, },
             { grade: 'nene', date: null, }
         ],
-        rightsProtect: null,
-        rightsUnderage: null,
-        rightsImage: null,
+        // rightsProtect: null,
+        // rightsUnderage: null,
+        // rightsImage: null,
+        rightsProtect: {
+            RPaccept: null,
+            date: null,
+        },
+        rightsUnderage: {
+            RUaccept: null,
+            date: null,
+        },
+        rightsImage: {
+            RIaccept: null,
+            date: null,
+        },
     }
 }
 const DEFAULT_PHONE = () => {
