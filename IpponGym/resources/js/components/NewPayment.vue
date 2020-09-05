@@ -362,7 +362,6 @@
                     if (this.existsPayment == undefined) {
                         /* Add the payment at the db */
                         response = await http.post('/api/newPayment', { id: this.customer._id, paymentData: this.customer.paymentData, interval: this.interval, status: this.state });
-                        console.log(response);
                         /* Before to modifiy the state, stores a local copy of the interval */
                         this.inInterval = this.interval;
                         /* Propagate the changes to the current state */
