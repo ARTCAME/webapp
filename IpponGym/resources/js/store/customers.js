@@ -59,9 +59,6 @@ const DEFAULT_FORM = () => {
             { grade: 'mama', date: null, },
             { grade: 'nene', date: null, }
         ],
-        // rightsProtect: null,
-        // rightsUnderage: null,
-        // rightsImage: null,
         rightsProtect: {
             RPaccept: null,
             date: null,
