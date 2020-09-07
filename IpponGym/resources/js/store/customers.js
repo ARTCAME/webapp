@@ -20,9 +20,7 @@ const DEFAULT_CONTACT = () => {
 }
 const DEFAULT_FORM = () => {
     return {
-        // _id: '',
         _id: null,
-        // customerNumber: '',
         customerNumber: null,
         active: true,
         sign: '',
@@ -46,7 +44,6 @@ const DEFAULT_FORM = () => {
         },
         payments: [],
         belts: [
-            // { grade: 'blbl', date: null, },
             { grade: 'blam', date: null, },
             { grade: 'amam', date: null, },
             { grade: 'amna', date: null, },
@@ -494,10 +491,11 @@ export default new Vuex.Store({
             if (field == 'paymenttype' && data.status == 'Devuelto') {
                 dispatch('updatePaymentField', { field: 'status', newVal: '', _id, interval, ...data });
             }
-            /* If the paymenttype changes from inbank to another the iban will be deleted*/
-            if (field == 'paymenttype' && data.iban != '') {
-                dispatch('updatePaymentField', { field: 'iban', newVal: null, _id, interval, ...data })
-            }
+/* VER SI ES NECESARIO BORRAR LOS DATOS DE IBAN, SI FUERA ASÍ DEBERÏAMOS AÑADIR ibanownername e ibanownerdni */
+/* If the paymenttype changes from inbank to another the iban will be deleted*/
+if (field == 'paymenttype' && data.iban != '') {
+    // dispatch('updatePaymentField', { field: 'iban', newVal: null, _id, interval, ...data })
+}
         },
         /**
          * Update the payments row fields all at once when a api response was received or when a undo on a editing row has requested
