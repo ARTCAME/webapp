@@ -142,6 +142,8 @@ class PaymentsController extends Controller {
                 $newPayment['paymenttype'] = $customer['paymentData']['paymenttype'];
                 $newPayment['interval'] = $request->interval;
                 $newPayment['iban'] = $customer['paymentData']['paymenttype'] == 'Domiciliación' ? $customer['paymentData']['iban'] : null;
+                $newPayment['ibanownerdni'] = $customer['paymentData']['paymenttype'] == 'Domiciliación' ? $customer['paymentData']['ibanownerdni'] : null;
+                $newPayment['ibanownername'] = $customer['paymentData']['paymenttype'] == 'Domiciliación' ? $customer['paymentData']['ibanownername'] : null;
                 $newPayment['dategenerated'] = $newDate;
                 $newPayment['status'] = $request->status ? $request->status : 'Confirmado';
                 $newPayment['dateconfirmed'] = $newPayment['status'] != 'Pendiente' ? $newDate : null;
@@ -189,6 +191,8 @@ class PaymentsController extends Controller {
                             $pago['paymenttype'] = $el['paymenttype'];
                             $pago['status'] = $el['status'];
                             $pago['iban'] = $el['paymenttype'] == 'Domiciliación' ? $el['iban'] : null;
+                            $pago['ibanownername'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownername'] : null;
+                            $pago['ibanownerdni'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownerdni'] : null;
                             $pago['dateconfirmed'] = $newFechaConfirmacion; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
                             $pago['_id'] = $el['_id'];
                             $socio['payments.' . $idx] = $pago;
