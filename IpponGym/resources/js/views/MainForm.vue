@@ -891,6 +891,8 @@
                     { key: 'amount', label: 'Importe', sortable: true, },
                     { key: 'paymenttype', label: 'Forma de pago', sortable: true, },
                     { key: 'iban', label: 'Iban', sortable: true, },
+                    { key: 'ibanownername', label: 'IBAN Titular', sortable: true, oneditField: true, },
+                    { key: 'ibanownerdni', label: 'IBAN Dni', sortable: true, oneditField: true, },
                     { key: 'interval', label: 'Periodo', sortable: true, },
                     { key: 'status', label: 'Estado', sortable: true, },
                     { key: 'dateconfirmed', label: 'Confirmado', sortable: true, },
