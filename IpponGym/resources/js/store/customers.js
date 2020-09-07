@@ -493,9 +493,9 @@ export default new Vuex.Store({
             }
 /* VER SI ES NECESARIO BORRAR LOS DATOS DE IBAN, SI FUERA ASÍ DEBERÏAMOS AÑADIR ibanownername e ibanownerdni */
 /* If the paymenttype changes from inbank to another the iban will be deleted*/
-if (field == 'paymenttype' && data.iban != '') {
-    // dispatch('updatePaymentField', { field: 'iban', newVal: null, _id, interval, ...data })
-}
+// if (field == 'paymenttype' && data.iban != '') {
+//     // dispatch('updatePaymentField', { field: 'iban', newVal: null, _id, interval, ...data })
+// }
         },
         /**
          * Update the payments row fields all at once when a api response was received or when a undo on a editing row has requested
