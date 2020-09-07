@@ -561,7 +561,7 @@
                     striped
                     :busy="paymentsTableBusy"
                     :current-page="paymentsTablePagination"
-                    :fields="tableFields"
+                    :fields="computedFields"
                     :filter="paymentsSearch"
                     :filter-function="filterTable"
                     :items="paymentsItems">
@@ -664,7 +664,6 @@
                             :options="paymentTypes"
                             :value="row.value"
                             @change="updatePaymentField({ field: 'paymenttype', newVal: $event, ...row.item })"></b-form-select>
-
                     </template>
                     <template
                         #cell(iban)="row">
@@ -696,6 +695,73 @@
                                 :key="'trans-iban-advise-' + row.index">
                                 <span class="needs-attention-message">
                                     El iban se borrará
+                                </span>
+                            </div>
+                        </transition-group>
+                    </template>
+                    <template
+                        #cell(ibanownername)="row">
+                        <!-- Input disabled when the row is not showing details wich means is not being edited -->
+                        <transition-group mode="out-in" name="liveFeedbacks-table">
+                            <span
+                                v-if="row.item.paymenttype == 'Domiciliación'"
+                                :key="'trans-ibanownername-input-' + row.index">
+                                <b-form-input
+                                    v-validate.immediate="'required'"
+                                    :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('ibanownername-row' + row.index) ? ' is-invalid' : '')"
+                                    :disabled="!row.detailsShowing"
+                                    :id="'ibanownername-row' + row.index"
+                                    :name="'ibanownername-row' + row.index"
+                                    :value="row.value"
+                                    @input="updatePaymentField({ field: 'ibanownername', newVal: $event, ...row.item })"></b-form-input>
+                                <transition mode="in-out" name="liveFeedbacks">
+                                    <b-form-invalid-feedback
+                                        v-for="error in errors.collect('ibanownername-row' + row.index)"
+                                        :key="error">
+                                        {{ error }}
+                                    </b-form-invalid-feedback>
+                                </transition>
+                            </span>
+                            <!-- If the paymenttype of the payment is different from the original advise to the user that the IBAN owner name will be deleted-->
+                            <div
+                                v-else-if="row.item.paymenttype != 'Domiciliación' && row.detailsShowing && onEditItem.ibanownername != row.item.ibanownername"
+                                :key="'trans-iban-advise-' + row.index">
+                                <span class="needs-attention-message">
+                                    El titular se borrará
+                                </span>
+                            </div>
+                        </transition-group>
+                    </template>
+                    <template
+                        #cell(ibanownerdni)="row">
+                        <!-- Input disabled when the row is not showing details wich means is not being edited -->
+                        <transition-group mode="out-in" name="liveFeedbacks-table">
+                            <span
+                                v-if="row.item.paymenttype == 'Domiciliación'"
+                                :key="'trans-ibanownerdni-input-' + row.index">
+                                <!-- V-validate deshabilitado para pruebas  |dnie|lengthDnie' -->
+                                <b-form-input
+                                    v-validate.immediate="'required'"
+                                    :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('ibanownerdni-row' + row.index) ? ' is-invalid' : '')"
+                                    :disabled="!row.detailsShowing"
+                                    :id="'ibanownerdni-row' + row.index"
+                                    :name="'ibanownerdni-row' + row.index"
+                                    :value="row.value"
+                                    @input="updatePaymentField({ field: 'ibanownerdni', newVal: $event, ...row.item })"></b-form-input>
+                                <transition mode="in-out" name="liveFeedbacks">
+                                    <b-form-invalid-feedback
+                                        v-for="error in errors.collect('ibanownerdni-row' + row.index)"
+                                        :key="error">
+                                        {{ error }}
+                                    </b-form-invalid-feedback>
+                                </transition>
+                            </span>
+                            <!-- If the paymenttype of the payment is different from the original advise to the user that the IBAN owner dni will be deleted-->
+                            <div
+                                v-else-if="row.item.paymenttype != 'Domiciliación' && row.detailsShowing && onEditItem.ibanownerdni != row.item.ibanownerdni"
+                                :key="'trans-iban-advise-' + row.index">
+                                <span class="needs-attention-message">
+                                    El dni se borrará
                                 </span>
                             </div>
                         </transition-group>
@@ -829,7 +895,7 @@
                         <col
                             v-for="field in scope.fields"
                             :key="field.key"
-                            :style="{ width: field.key == 'selected' || field.key == 'editRow' || field.key == 'active' ? '30px' : field.key == 'amount' ? '100px' : field.key == 'interval' ? '60px' : field.key == 'status' || field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' :  field.key == 'dateconfirmed' || field.key == 'iban' ? '140px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                            :style="{ width: field.key == 'selected' || field.key == 'editRow' || field.key == 'active' ? '30px' : field.key == 'amount' ? '100px' : field.key == 'interval' ? '60px' : field.key == 'status' || field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' :  field.key == 'dateconfirmed' || field.key == 'iban' ? '180px' : field.key == 'customerNumber' ? '75px' : field.key == 'ibanownerdni' ? '130px' : 'auto' }">
                     </template>
                     <template
                         #table-caption>
@@ -897,7 +963,7 @@
     import { mapActions, mapGetters } from 'vuex';
     import * as WzdSteps from './wzdsteps/payments';
     const QS = require('qs'); /* Needed at axios.post function to pass arrays as params to the controller */
-    const RESTORE_FIELDS = [ '_id', '_showDetails', 'amount', 'dateconfirmed', 'dategenerated', 'iban', 'interval', 'paymenttype', 'rate', 'status'];
+    const RESTORE_FIELDS = [ '_id', '_showDetails', 'amount', 'dateconfirmed', 'dategenerated', 'iban', 'ibanownername', 'ibanownerdni', 'interval', 'paymenttype', 'rate', 'status'];
     const SPECIAL_CHARACTERS = { 'Ã': 'A', 'À': 'A', 'Á': 'A', 'Ä': 'A', 'Â': 'A', 'È': 'E', 'É': 'E', 'Ë': 'E', 'Ê': 'E', 'Ì': 'I', 'Í': 'I', 'Ï': 'I', 'Î': 'I', 'Ò': 'O', 'Ó': 'O', 'Ö': 'O', 'Ô': 'O', 'Ù': 'U', 'Ú': 'U', 'Ü': 'U', 'Û': 'U', 'ã': 'a', 'à': 'a', 'á': 'a', 'ä': 'a', 'â': 'a', 'è': 'e', 'é': 'e', 'ë': 'e', 'ê': 'e', 'ì': 'i', 'í': 'i', 'ï': 'i', 'î': 'i', 'ò': 'o', 'ó': 'o', 'ö': 'o', 'ô': 'o', 'ù': 'u', 'ú': 'u', 'ü': 'u', 'û': 'u', 'Ñ': 'N', 'ñ': 'n', 'Ç': 'c', 'ç': 'c' };
     export default {
         components: { BarChart, LineChart },
@@ -1041,19 +1107,19 @@
                 newEditRowDate: null, /* v-model to the datepicker of the table row modifications */
                 newStateSelected: false, /* v-model for a b-checkbox-group, acts like a flag to activate options on the confirming payments procedure */
                 onEditItem: {}, /* Stores the data of a row when it is edited to allow recover it */
-                paymentsItemsFields: [
-                    { key: 'selected', label: '', class: 'text-center' },
-                    { key: 'id', label: 'ID', sortable: true, },
-                    { key: 'name', label: 'Socio', sortable: true, },
-                    { key: 'rate', label: 'Tarifa', sortable: true, },
-                    { key: 'amount', label: 'Importe', sortable: true, },
-                    { key: 'paymenttype', label: 'Forma de pago', sortable: true, },
-                    // { key: 'fechaPago', label: 'Fecha de pago', sortable: true, },
-                    { key: 'interval', label: 'Periodo', sortable: true, },
-                    { key: 'status', label: 'Estado', sortable: true, },
-                    { key: 'dateconfirmed', label: 'Fecha de pago confirmado', sortable: true, },
-                    { key: 'editRow', class: 'tableEditRow' },
-                ], /* Array width the fields of the main b-table */
+                // paymentsItemsFields: [
+                //     { key: 'selected', label: '', class: 'text-center' },
+                //     { key: 'id', label: 'ID', sortable: true, },
+                //     { key: 'name', label: 'Socio', sortable: true, },
+                //     { key: 'rate', label: 'Tarifa', sortable: true, },
+                //     { key: 'amount', label: 'Importe', sortable: true, },
+                //     { key: 'paymenttype', label: 'Forma de pago', sortable: true, },
+                //     // { key: 'fechaPago', label: 'Fecha de pago', sortable: true, },
+                //     { key: 'interval', label: 'Periodo', sortable: true, },
+                //     { key: 'status', label: 'Estado', sortable: true, },
+                //     { key: 'dateconfirmed', label: 'Fecha de pago confirmado', sortable: true, },
+                //     { key: 'editRow', class: 'tableEditRow' },
+                // ], /* Array width the fields of the main b-table */
                 paymentsTableBusy: true, /* Flag to mark table as busy */
                 paymentsTablePagination: 1, /* The pagination index of the table */
                 paymentTypes: [
@@ -1105,6 +1171,16 @@
                 },
                 set(val) {
                     this.setProcedureState({ procedure: 'paymentsCharts', newVal: val });
+                }
+            },
+            /**
+             * Determine the fields to shown on the table, depending on the edition of a row we need to show or no some fields
+             */
+            computedFields() {
+                if (this.showingDetails) {
+                    return this.tableFields.filter(tf => !tf.showingDetails || tf.oneditField);
+                } else {
+                    return this.tableFields.filter(tf => !tf.oneditField);
                 }
             },
             /**
