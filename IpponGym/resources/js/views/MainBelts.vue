@@ -409,7 +409,7 @@
                             :title="updating && row.item.belts.some(el => el.date == null) && row.item.nextGrade == '' ? 'No tiene marcado ningún Siguiente grado, revisa si tiene cinturones para otorgar y selecciona alguno' : ''">
                             <b-button
                                 :class="'ig-table-checkbox' + (isSelected(row.item) ? ' ig-checked' : '')"
-                                :disabled="updating && (row.item.belts.some(el => el.date != null) && row.item.nextGrade == '')"
+                                :disabled="(updating && (row.item.belts.some(el => el.date != null) && row.item.nextGrade == '')) || (downloadGrades && (row.item.belts.every(el => el.date == null)))"
                                 @click="rowSelect(row.item, !isSelected(row.item))">
                                 <fa-icon
                                     icon="check"
@@ -928,8 +928,8 @@
              */
             evaluateRowSelectedState() {
                 this.rowsSelected.forEach((row, idx) => {
-                    /* If the row has a nextGrade empty or don't have grades pending too (without date) it can't be updated */
-                    if (row.nextGrade == '') {
+                    /* On the updating procedure we can only select the rows with a nextGrade selected or with some belt.date as null, on the downloadGrades procedure we can only select the rows with any belt acquired */
+                    if ((this.updating == true && (row.belts.every(belt => belt.date != null) || row.nextGrade == '')) || (this.downloadGrades && (row.belts.every(belt => belt.date == null)))) {
                         this.rowSelect(row, false)
                         /* Recursive call to iterate over all the items of the array */
                         this.evaluateRowSelectedState();
@@ -1120,10 +1120,11 @@
                 this.$refs.beltsTable.filteredItems.forEach(el => {
                     /* Algorithm that allows to select the elements wich can be selected
                     beltsTable: if we are updating grades and one or more of the row grades are pending and the nextGrade isn't empy or out of the updating procedure */
-                    if ((this.updating == true && el.belts.some(cintu => cintu.date == null) && el.nextGrade != '') || this.updating == false) {
+                    if ((this.updating == true && el.belts.some(cintu => cintu.date == null) && el.nextGrade != '') || (this.downloadGrades && (el.belts.some(belt => belt.date != null)))) {
+                        usefulItems.push(el);
+                    } else if (this.updating == false && this.downloadGrades == false) {
                         usefulItems.push(el);
                     }
-
                 });
                 /* Iterate the useful items to mark they selected or unselected */
                 usefulItems.forEach(el => {
@@ -1139,6 +1140,8 @@
             downloadGrades(newVal, oldVal) {
                 /* If a row is selected before the download procedure has started add the last belt if no belts of a row has been previously added */
                 if (newVal === true && this.selectedSome) {
+                    /* Evaluate the valid selected rows */
+                    this.evaluateRowSelectedState();
                     this.rowsSelected.forEach(row => {
                         if (!row.belts.some(belt => this.isBeltSelectedToDownload(belt, row))) {
                             this.beltsSelectedDownload.push({ name: row.name, ...this.getLastGrade(row) });
