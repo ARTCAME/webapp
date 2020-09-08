@@ -477,11 +477,11 @@
                                     class="d-inline-block mb-1"
                                     tabindex="0"
                                     v-b-tooltip.hover.noninteractive
-                                    :title="row.item.belts.filter(belt => belt.date != null).length == 0 ? 'No hay grados que editar' : updating ? 'Para poder editar finaliza la actualización de grados' : downloadGrades ? 'Para poder editar finaliza la descarga de diplomas' : !isUpdating(row.item) ? 'Editar grados otorgados' : 'Cancelar la edición'">
+                                    :title="updating ? 'Para poder editar finaliza la actualización de grados' : downloadGrades ? 'Para poder editar finaliza la descarga de diplomas' : !isUpdating(row.item) ? 'Editar grados' : 'Cancelar la edición'">
                                     <b-button
                                         class="btn-edit-cinturones"
                                         size="sm"
-                                        :disabled="updating || downloadGrades || row.item.belts.filter(belt => belt.date != null).length == 0"
+                                        :disabled="updating || downloadGrades"
                                         :variant="!isUpdating(row.item) ? 'outline-info' : 'danger'"
                                         @click="activateUpdate(row.item)">
                                         <fa-icon
