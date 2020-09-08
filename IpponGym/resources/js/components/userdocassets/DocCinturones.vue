@@ -9,9 +9,15 @@
             </p>
             <DocImg alt="Gestión global de grados" desc="Desde la vista general de grados podemos ver el grado actual y el siguiente de nuestros socios y podremos acceder a todo el histórico así como buscar o filtrar para localizar los que necesitemos" img="Grados1.png" type="image/png"></DocImg>
             <p>
-                En esta sección también podremos borrar individualmente grados a un socio, esta acción está pensada como un acceso rápido ya que si necesitamos hacer modificaciones individualizadas lo ideal es hacerlas desde la ficha del socio. Para acceder al borrado pulsaremos el nombre del socio o su grado actual o siguiente y usaremos el botón de edición para activarla:
+                Datos importantes sobre la sección cinturones:
+                <br>
+                &emsp;- La tabla nos presenta una línea por cada socio activo que tenga o haya tenido progresión de grados de karate, si quisiéramos podríamos visualizar datos de los socios inactivos marcando la opción en la parte inferior de la tabla.
+                <br>
+                &emsp;- Pulsando sobre el nombre del socio o su grado actual podemos acceder al detalle de grados que tiene este socio, podemos usar los botones del margen superior derecho de la tabla para desplegar todos o contraer todos.
+                <br>
+                &emsp;- Desde la tabla podremos editar los grados individualmente en cada socio de forma muy similar a como podemos realizarlo en la ficha del socio. Para acceder a la edición de los grados de un socio pulsaremos en el nombre del socio o su grado actual para desplegar el detalle de grados y una vez aquí usaremos el botón de edición para poder acceder a editar los grados. Como se ve en la captura podremos añadir una nueva fecha a los grados seleccionados o borrar la fecha que tengan los grados que seleccionemos.
             </p>
-            <DocImg alt="Borrando cinturones" desc="Desde una línea de la tabla podemos borrar grados a un socio, añadir grados se hace desde la herramienta principal de actualización de grados o desde la ficha del socio" img="Grados2.png" type="image/png"></DocImg>
+            <DocImg alt="Editando cinturones" desc="Desde una línea de la tabla podemos editar grados a un socio" img="Grados2.png" type="image/png"></DocImg>
             <p>
                 Además, en la barra de navegación principal tendremos acceso a herramientas que nos permitirán gestionar los cinturones de manera masiva:
                 <DocImg alt="Herramientas para grados" desc="En la gestión global de grados podremos actualizarlos masivamente o descargar manualmente archivos para generar de diplomas" img="Grados3.png" type="image/png"></DocImg>
@@ -45,7 +51,9 @@
                         Esta herramienta nos servirá para descargar manualmente los datos necesarios para generar diplomas. Como hemos visto, durante el proceso de actualización de grados se descargará este fichero automáticamente pero siempre podemos necesitar descargarlo manualmente.
                     </p>
                     <p>
-                        El proceso consiste en la selección de los socios/as de los que necesitamos sus datos y una vez seleccionados usaremos el botón descargar para obtener el fichero.
+                        El proceso consiste en la selección de los socios/as de los que necesitamos sus datos y una vez seleccionados usaremos el botón descargar para obtener el fichero que nos servirá para generar los diplomas.
+                        <br>
+                        La selección de un socio implica que se descargarán los datos del último grado otorgado, si quisiéramos descargar otro o múltiples grados de un socio deberemos acceder al detalle de sus grados pulsando sobre el nombre de socio o el último grado y marcar los grados que queramos descargar.
                     </p>
                 </p>
             </p>
