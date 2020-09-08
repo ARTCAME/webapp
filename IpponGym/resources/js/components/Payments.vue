@@ -668,20 +668,19 @@
                     <template
                         #cell(iban)="row">
                         <!-- Input disabled when the row is not showing details wich means is not being edited -->
-                        <transition-group mode="out-in" name="liveFeedbacks-table">
+                        <transition-group mode="in-out" name="liveFeedbacks-table">
                             <span
                                 v-if="row.item.paymenttype == 'Domiciliación'"
                                 :key="'trans-iban-input-' + row.index">
-                                <!-- V-validate deshabilitado para pruebas  |iban' -->
                                 <b-form-input
-                                    v-validate.immediate="'required'"
+                                    v-validate.immediate="'required|iban'"
                                     :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('iban-row' + row.index) ? ' is-invalid' : '')"
                                     :disabled="!row.detailsShowing"
                                     :id="'iban-row' + row.index"
                                     :name="'iban-row' + row.index"
                                     :value="row.value"
                                     @input="updatePaymentField({ field: 'iban', newVal: $event, ...row.item })"></b-form-input>
-                                <transition mode="in-out" name="liveFeedbacks">
+                                <transition mode="out-in" name="liveFeedbacks-table">
                                     <b-form-invalid-feedback
                                         v-for="error in errors.collect('iban-row' + row.index)"
                                         :key="error">
@@ -707,14 +706,17 @@
                                 v-if="row.item.paymenttype == 'Domiciliación'"
                                 :key="'trans-ibanownername-input-' + row.index">
                                 <b-form-input
-                                    v-validate.immediate="'required'"
+                                    v-validate.immediate="'required|alpha_dash'"
                                     :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('ibanownername-row' + row.index) ? ' is-invalid' : '')"
                                     :disabled="!row.detailsShowing"
                                     :id="'ibanownername-row' + row.index"
                                     :name="'ibanownername-row' + row.index"
                                     :value="row.value"
-                                    @input="updatePaymentField({ field: 'ibanownername', newVal: $event, ...row.item })"></b-form-input>
-                                <transition mode="in-out" name="liveFeedbacks">
+                                    @input="updatePaymentField({ field: 'ibanownername', newVal: $event, ...row.item })"
+                                    @drop.prevent
+                                    @keypress="$isAlphaDash($event)"
+                                    @paste="row.value = $isAlphaDash($event)"></b-form-input>
+                                <transition mode="out-in" name="liveFeedbacks-table">
                                     <b-form-invalid-feedback
                                         v-for="error in errors.collect('ibanownername-row' + row.index)"
                                         :key="error">
@@ -739,16 +741,19 @@
                             <span
                                 v-if="row.item.paymenttype == 'Domiciliación'"
                                 :key="'trans-ibanownerdni-input-' + row.index">
-                                <!-- V-validate deshabilitado para pruebas  |dnie|lengthDnie' -->
                                 <b-form-input
-                                    v-validate.immediate="'required'"
+                                    v-validate.immediate="'required|dnie|lengthDnie'"
                                     :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('ibanownerdni-row' + row.index) ? ' is-invalid' : '')"
                                     :disabled="!row.detailsShowing"
                                     :id="'ibanownerdni-row' + row.index"
                                     :name="'ibanownerdni-row' + row.index"
                                     :value="row.value"
-                                    @input="updatePaymentField({ field: 'ibanownerdni', newVal: $event, ...row.item })"></b-form-input>
-                                <transition mode="in-out" name="liveFeedbacks">
+                                    @drop.prevent
+                                    @focusout="row.value ? (row.value = row.value.toUpperCase()) : ''"
+                                    @input="updatePaymentField({ field: 'ibanownerdni', newVal: $event, ...row.item })"
+                                    @keypress="$isAlphaNum($event)"
+                                    @paste="row.value = $isAlphaNum($event)"></b-form-input>
+                                <transition mode="out-in" name="liveFeedbacks-table">
                                     <b-form-invalid-feedback
                                         v-for="error in errors.collect('ibanownerdni-row' + row.index)"
                                         :key="error">
