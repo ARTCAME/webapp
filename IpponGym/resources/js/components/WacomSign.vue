@@ -47,8 +47,11 @@
                 {{ form.name == '' ? 'Falta nombre del socio' : form.dni == '' ? 'Falta dni del socio' : 'Capturar firma' }}
             </span>
         </b-button>
+        <!-- Is not infomation necessary to the user -->
+        <!-- <div
+            v-show="!signatureOk"> -->
         <div
-            v-show="!signatureOk">
+            v-show="false">
             <small
                 class="text-danger">
                 Ha ocurrido un error, <u v-b-toggle.logs><small>ver logs</small></u>
