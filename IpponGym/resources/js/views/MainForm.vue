@@ -245,7 +245,7 @@
                                 name="fechanac"
                                 type="date"
                                 v-model="dateofbirth"
-                                v-validate="'required|date_custom_rule'"
+                                v-validate="'date_custom_rule|required'"
                                 :class="'mr-1' + (errors.has('fechanac') ? ' is-invalid' : '')"
                                 :disabled="isDisabled"></b-form-input>
                             <transition mode="out-in" name="liveFeedbacks">
@@ -783,14 +783,14 @@
                 </b-card-body>
             </b-card>
             <b-row class="my-3" no-gutters>
-                <b-col cols="auto">
+                <!-- <b-col cols="auto">
                     <b-button
                         v-if="$route.name != 'customers.profile'"
                         @click="validateForm()">
                         <fa-icon class="d-inline-block mr-2" icon="check"></fa-icon>
                         Validar
                     </b-button>
-                </b-col>
+                </b-col> -->
                 <b-col>
                     <b-row align-h="end" no-gutters>
                         <transition-group name="slide-fade">
