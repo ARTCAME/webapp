@@ -235,7 +235,7 @@
                         <h6>&emsp;Forma de pago:</h6>
                         &emsp;- Escogeremos entre Tarjeta, Efectivo o Domiciliación
                         <br>
-                        &emsp;- Al escoger la forma de pago Domiciliación se hará obligatorio rellenar el IBAN
+                        &emsp;- Al escoger la forma de pago Domiciliación se hará obligatorio rellenar el IBAN y los datos del titular del mismo que podrán ser diferentes a los del socio
                         <br>
                         &emsp;- Es un campo obligatorio
                     </p>
@@ -256,6 +256,22 @@
                         &emsp;- El importe vendrá dado al escoger una tarifa del selector de tarifas
                         <br>
                         &emsp;- Podremos editar el importe de la cuota cuando la tarifa sea del tipo Personalizada
+                        <br>
+                        &emsp;- Es un campo obligatorio
+                    </p>
+                    <p>
+                        <h6>&emsp;Iban:</h6>
+                        &emsp;- Este campo se mostrará al seleccionar la forma de pago Domiciliación
+                        <br>
+                        &emsp;- Es un campo obligatorio
+                    </p>
+                    <p>
+                        <h6>&emsp;Nombre y dni del titular del iban:</h6>
+                        &emsp;- Estos campos se mostrarán al seleccionar la forma de pago Domiciliación
+                        <br>
+                        &emsp;- El nombre y dni del titular del iban pueden coincidir con el del socio o no (existe un botón para traspasar el nombre y dni del socio a los campos nombre y dni del titular)
+                        <br>
+                        &emsp;- Es importante cumplimentar correctamente estos datos ya que se usarán para generar los pagos periodicos en los socios, así, si tenemos varios socios con el mismo iban se creará solamente un pago sumando los importes de todos los recibos que debamos cobrar a este iban
                         <br>
                         &emsp;- Es un campo obligatorio
                     </p>
@@ -290,7 +306,7 @@
                     <br>
                     - Desde este apartado podremos consultar y editar los pagos del socio, el apartado de pagos dispone de filtros y buscador para que podamos navegar fácilmente por todos los pagos del socio
                     <br>
-                    - Más adelante explicaremos cómo gestionamos la edición de pagos
+                    - Más adelante explicaremos cómo gestionamos la edición de pagos en el apartado <a href="#doc-alta-pagos">pagos</a>
                 </p>
                 <p>
                     <h5>Firma:</h5>
@@ -360,6 +376,10 @@
                         <br>
                         &emsp;- Iban
                         <br>
+                        &emsp;- Nombre del titular del iban
+                        <br>
+                        &emsp;- Dni del titular del iban
+                        <br>
                         &emsp;- Importe
                         <br>
                         &emsp;- Estado
@@ -378,6 +398,8 @@
                         &emsp;- Tal como hemos visto en el proceso de alta, al cambiar la tarifa el importe de la cuota se modifica automáticamente según las tarifas establecidas, si seleccionamos una tarifa del tipo Personalizada podremos indicar un importe específico
                         <br>
                         &emsp;- Un pago en efectivo o tarjeta no podrá tener el estado Devuelto por lo que no podremos seleccionar esta opción; si estuviera seleccionada se vaciaría y para poder guardar deberemos seleccionar un nuevo estado
+                        <br>
+                        &emsp;- Los pagos domiciliados tendrán los datos del iban y su titularidad, si cambiamos un pago domiciliado a otra forma de pago esos datos se borrarán
                         <br>
                         &emsp;- Los pagos con estado Devuelto o Confirmado tienen fecha de confirmación que es la fecha en la que se estableció ese estado, si modificamos el estado a Pendiente la fecha de confirmación se eliminará automáticamente, esto sumado al punto anterior quiere decir que si tengo un pago domiciliado y devuelto que lo cambio a tarjeta, este cambio alterará el estado eliminando el estado Devuelto y esto a su vez quitará la fecha de confirmación
                     </p>
