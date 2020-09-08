@@ -158,7 +158,7 @@
                                 key="trans-btn-save-confirm"
                                 :disabled="rowsSelected.length == 0 || showingDetails || !manualDownload || csvDownloadManual"
                                 :variant="csvDownloadManual == false && (rowsSelected.length != 0 && !showingDetails && manualDownload) ? 'success' : 'outline-success'"
-                                @click="$tableToCsv([ '_id', 'customerNumber', 'dni', 'name', 'iban', 'interval', 'amount' ], rowsSelected, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_pagos_manual.csv', 'csvDownloadManual')">
+                                @click="paymentsToCsv()">
                                 <!-- Shown if the flag to control the download of the file is true -->
                                 <b-spinner
                                     small
@@ -1776,6 +1776,25 @@
                 }
             },
             /**
+             * Manage the payments data before send it to the plugin on will be csv printed
+             */
+            paymentsToCsv() {
+                /* Unify the same iban payments */
+                let csvPayments = [];
+                this.rowsSelected.forEach(row => {
+                    /* If the iban is used on other payment stored on the csv data sum the amount of this payment to the existing csv line of data */
+                    let exist = csvPayments.findIndex(cp => cp.iban == row.iban);
+                    if (exist !== -1) {
+                        let amount = parseFloat(csvPayments[exist]['amount']) + parseFloat(row.amount);
+                        csvPayments[exist]['amount'] = amount;
+                    /* If the iban isn't used on any payment stored on the csv data add the payment to the csv data */
+                    } else {
+                        csvPayments.push(row);
+                    }
+                });
+                this.$tableToCsv(['ibanownername', 'ibanownerdni', 'iban', 'amount', 'interval'], csvPayments, this.$moment().format('YYYY-MM-DD_HH.mm.ss') + '_pagos_manual.csv', 'csvDownloadManual');
+            },
+            /**
              * Function that unselect all the actived checkbox filters of the table and reload the data, this function will show all the existing payments on the database for every customer for the current year
              */
             resetFilters() {
@@ -1811,7 +1830,6 @@
              * @param {Boolean} ev: the state of the checkbox
              */
             rowSelect(row, newVal) {
-                console.log(row);
                 let index = this.rowsSelected.findIndex(el => el._id == row._id && el.interval == row.interval);
                 if (newVal && index == -1) {
                     this.rowsSelected.push(row);
@@ -1828,7 +1846,7 @@
                 this.$refs.paymentsTable.filteredItems.forEach(rowItem => {
                     if (checked == true && !this.rowsSelected.some(el => el._id == rowItem._id && el.interval == rowItem.interval)) {
                         /* Evaluate separetly to select the rows in every procedure actived (they cannot be active simultaneously), in some way this overload the conditions on rowSelect() */
-                        if ((this.confirming && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (this.manualDownload && rowItem.estado != 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (!this.confirming && !this.manualDownload)) {
+                        if ((this.confirming && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (this.manualDownload && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (!this.confirming && !this.manualDownload)) {
                             this.rowSelect(rowItem, true);
                         }
                     } else if (checked == false && this.rowsSelected.some(el => el._id == rowItem._id && el.interval == rowItem.interval)) {
