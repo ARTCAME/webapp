@@ -273,13 +273,13 @@
                             label="Dni"
                             label-for="dni">
                             <!-- v-if="form != null" -->
-                            <!-- Disabled for tests -> v-validate="(underage != true ? 'required' : '') + '|dnie|lengthDnie|dniFounded:' + getCustomerByField('dni', dni).length" -->
                             <b-form-input
                                 autocomplete="off"
                                 id="dni"
                                 name="dni"
                                 type="text"
                                 v-model="dni"
+                                v-validate="(underage != true ? 'required' : '') + '|dnie|lengthDnie|dniFounded:' + getCustomerByField('dni', dni).length"
                                 :class="{ 'is-invalid' : errors.has('dni') }"
                                 :disabled="isDisabled"
                                 @drop.prevent
@@ -427,12 +427,12 @@
                                     <b-form-group
                                         label="IBAN"
                                         label-for="iban">
-                                        <!-- Disabled for tests -> v-validate="'required|iban'" -->
                                         <b-form-input
                                             id="iban"
                                             name="iban"
                                             placeholder="ES00 0000 0000 0000 0000"
                                             v-model="iban"
+                                            v-validate="'required|iban'"
                                             :class="{ 'is-invalid' : errors.has('iban') }"
                                             :disabled="isDisabled || paymenttype != 'Domiciliación'"></b-form-input>
                                         <transition mode="out-in" name="liveFeedbacks">
@@ -477,9 +477,12 @@
                                             id="ibanownername"
                                             name="ibanownername"
                                             v-model="ibanownername"
-                                            v-validate="'required'"
+                                            v-validate="'required|alpha_dash'"
                                             :class="{ 'is-invalid' : errors.has('ibanownername') }"
-                                            :disabled="isDisabled || paymenttype != 'Domiciliación'"></b-form-input>
+                                            :disabled="isDisabled || paymenttype != 'Domiciliación'"
+                                            @drop.prevent
+                                            @keypress="$isAlphaDash($event)"
+                                            @paste="ibanownername = $isAlphaDash($event)"></b-form-input>
                                         <transition mode="out-in" name="liveFeedbacks">
                                             <b-form-invalid-feedback
                                                 v-for="error in errors.collect('ibanownername')"
