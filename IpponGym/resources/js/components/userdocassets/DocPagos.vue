@@ -18,6 +18,8 @@
                 <br>
                 &emsp;- Para los pagos generados automáticamente y que tengan forma de pago domiciliación recibiremos un archivo de remesa para enviar al banco, allí tendremos toda la información relevante para que el banco pueda gestionar el cobro al cliente/a
                 <br>
+                &emsp;- En el archivo de remesa de pagos domiciliados, los pagos se agruparán por IBAN, así, todos los pagos que compartan IBAN los veremos en una misma línea sumados. Esto no altererá el funcionamiento individual del pago ya que veremos en cada socio su pago generado y su estado lo deberemos actualizar a cada socio individualmente, eso sí, de cara al banco generaremos una única orden de pago
+                <br>
                 &emsp;- Podemos generar pagos manualmente desde la utilidad global de pagos siempre y cuando no se hayan generado ya automáticamente. El sistema tendrá en cuenta el periodo de pago para determinar si un pago ya existe, esto quiere decir que este pago generado manualmente no se generará automáticamente y en el caso de un pago generado automáticamente no podrá ser generado manualmente nunca
                 <br>
                 &emsp;- Todos los pagos generados automáticamente se establecen en el estado Pendiente y posteriormente desde la sección de pagos o desde la utilidad global de pagos deberemos confirmar su estado definitivo, esto es siempre así y para cada pago
@@ -42,11 +44,18 @@
                     <br>
                     &emsp;- Iban
                     <br>
+                    &emsp;- Nombre del titular del iban
+                    <br>
+                    &emsp;- Dni del titular del iban
+                    <br>
                     &emsp;- Importe
                     <br>
                     &emsp;- Estado
                     <br>
                     &emsp;- Fecha de confirmación
+                    <br>
+                    <br>
+                    <u>Importante: La visibilidad de algunos campos depende del estado de la edición de la tabla, por ejemplo, el nombre y dni del titular del iban no son visibles en consulta y solo serán visibles en edición.</u>
                 </p>
                 <p>
                     Para editar un pago iremos a la línea que lo contiene y pulsaremos en el botón que queda en el margen derecho para que se active la edición. Solamente podremos editar un pago a la vez por lo que este botón desaparecerá cuando estemos editando un pago.
@@ -55,11 +64,13 @@
                     La edición de un pago se cancela automáticamente al aplicar filtros a la tabla para evitar que ocultemos un pago que estemos editando.
                 </p>
                 <p>
-                    Vamos a recordar el comportamiento del formulario de edición de pagos (es el mismo comportamiento que hemos visto en la edición de un socio/a:
+                    Vamos a recordar el comportamiento del formulario de edición de pagos (es el mismo comportamiento que hemos visto en la edición de un socio/a):
                     <br>
                     &emsp;- Tal como hemos visto en el proceso de alta, al cambiar la tarifa el importe de la cuota se modifica automáticamente según las tarifas establecidas, si seleccionamos una tarifa del tipo Personalizada podremos indicar un importe específico
                     <br>
                     &emsp;- Un pago en efectivo o tarjeta no podrá tener el estado Devuelto por lo que no podremos seleccionar esta opción; si estuviera seleccionada se vaciaría y para poder guardar deberemos seleccionar un nuevo estado
+                    <br>
+                    &emsp;- Los pagos domiciliados tendrán los datos del iban y su titularidad, si cambiamos un pago domiciliado a otra forma de pago esos datos se borrarán
                     <br>
                     &emsp;- Los pagos con estado Devuelto o Confirmado tienen fecha de confirmación que es la fecha en la que se estableció ese estado, si modificamos el estado a Pendiente la fecha de confirmación se eliminará automáticamente, esto sumado al punto anterior quiere decir que si tengo un pago domiciliado y devuelto que lo cambio a tarjeta, este cambio alterará el estado eliminando el estado Devuelto y esto a su vez quitará la fecha de confirmación
                 </p>
