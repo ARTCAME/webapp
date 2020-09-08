@@ -10,10 +10,35 @@
              * @param {String} elAnimated: On the view we want a feedback to the user, it refers to the flag with shows a button feedback
              */
             Vue.prototype.$tableToCsv = function(arrKeys, arrData, fileName, elAnimated = null) {
+                /* Transform the mongo name of variants to user friendly names */
+                const COLUMN_NAMES = {
+                    'ibanownername': 'Nombre',
+                    'ibanownerdni': 'Dni',
+                    'iban': 'Iban',
+                    'amount': 'Importe',
+                    'interval': 'Intervalo',
+                    'customerNumber': 'Nº socio',
+                    'paymenttype': 'Forma de pago',
+                    'name': 'Nombre',
+                    'rate': 'Tarifa',
+                    'dateconfirmed': 'Fecha de confirmación',
+                };
+                let fileKeys = [];
+                arrKeys.forEach(key => {
+                    let cn = COLUMN_NAMES[key] || null;
+                    /* If the key is avaiable change its name */
+                    if (cn) {
+                        fileKeys.push(cn);
+                    /* Contemplate the residual possibility of a keys undeclared */
+                    } else {
+                        fileKeys.push(key);
+                    }
+                });
+                /* Add the data to the csv file */
                 let csvContent, keys;
                 keys = arrKeys;
                 csvContent = '';
-                csvContent += keys.join(';');
+                csvContent += fileKeys.join(';'); /* Add to the csv file the transformed column names */
                 csvContent += '\n';
                 arrData.forEach(item => {
                     keys.forEach(key => {
