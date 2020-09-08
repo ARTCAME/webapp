@@ -105,7 +105,7 @@
                 if (!data) {
                     return;
                 }
-                console.log('receiving ->' + data)
+                // console.log('receiving ->' + data)
                 if (ev.key == 'customer_updated') {
                     this.fetchCustomersEdited(data);
                     /* Algorithm
