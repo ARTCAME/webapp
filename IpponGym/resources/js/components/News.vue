@@ -22,8 +22,8 @@
             <br>&emsp;- Se ha mejorado la gestión de los archivos de remesa: ahora los pagos se agrupan por iban, así, en el fichero de remesa veremos una línea por iban, el titular del iban se deberá indicar al registrarlo en la ficha del socio
             <br>&emsp;- Se ha añadido el texto 'IVA incluído' a los recibos
             <br>&emsp;- Los documentos legales ya no se guardarán al registrar al socio y solo se podrán descargar manualmente, ahora la fecha de firma es la fecha en la que se indicó si aceptaba o no la protección de datos, derechos de imagen, etc
-            <br>&emsp;- <u>Se han añadido nuevos tests</u>
-            <br>&emsp;- <u>Se han aplicado mejoras y corrección de errores menores</u>
+            <br>&emsp;- Se han aplicado mejoras y corrección de errores menores
+            <br>&emsp;- Se han añadido nuevos tests
         </p>
         <!-- <p>
             <h5>Fallos conocidos que se solucionarán en próximas versiones:</h5>
