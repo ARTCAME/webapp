@@ -90,8 +90,9 @@ class PaymentsController extends Controller {
                         array_push($csvData, ['name' => $newPayment['ibanownername'], 'dni' => $newPayment['ibanownerdni'], 'iban' => $newPayment['iban'], 'amount' => $newPayment['amount'], 'interval' => $newPayment['interval']]);
                     /* If the iban exists on the current csv data, sum the amounts */
                     } else {
-                        /* Sum operation, use the dni on the newPayment and csvData to find the index */
-                        (float)$csvData[array_search($newPayment['ibanownerdni'], array_column($csvData, 'dni'))]['amount'] += (float)$auxPaymentData['amount'];
+                        /* Sum operation, use the iban on the newPayment and csvData to find the index */
+                        (float)$csvData[array_search($newPayment['iban'], array_column($csvData, 'iban'))]['amount'] += (float)$auxPaymentData['amount'];
+                        // (float)$csvData[array_search($newPayment['ibanownerdni'], array_column($csvData, 'dni'))]['amount'] += (float)$auxPaymentData['amount'];
                     }
                 /* If the payment isn't generated */
                 } else if (!$alreadyGenerated) {
@@ -102,8 +103,9 @@ class PaymentsController extends Controller {
                         /* If the iban exists on the current csv data, sum the amounts */
                         array_push($csvData, ['name' => $auxPaymentData['ibanownername'], 'dni' => $auxPaymentData['ibanownerdni'], 'iban' => $auxPaymentData['iban'], 'amount' => $auxPaymentData['amount'], 'interval' => $newPayment['interval']]);
                     } else {
-                        /* Sum operation, use the dni on the auxPaymentData (the payment data of the customer profile) and csvData to find the index */
-                        (float)$csvData[array_search($auxPaymentData['ibanownerdni'], array_column($csvData, 'dni'))]['amount'] += (float)$auxPaymentData['amount'];
+                        /* Sum operation, use the iban on the auxPaymentData (the payment data of the customer profile) and csvData to find the index */
+                        (float)$csvData[array_search($auxPaymentData['iban'], array_column($csvData, 'iban'))]['amount'] += (float)$auxPaymentData['amount'];
+                        // (float)$csvData[array_search($auxPaymentData['ibanownerdni'], array_column($csvData, 'dni'))]['amount'] += (float)$auxPaymentData['amount'];
                     }
 
                 }
