@@ -371,7 +371,7 @@
                                     </transition>
                                 </b-form-group>
                             </b-col>
-                            <b-col md="2">
+                            <b-col lg="2">
                                 <b-form-group label="Importe">
                                     <b-form-input
                                         name="importe"
@@ -910,11 +910,14 @@
                 printRightsProtect: false, /* Flag to improve userx on print */
                 printRightsUnderage: false, /* Flag to improve userx on print */
                 rates: [
-                    { value: 'Karate', text: 'Karate' }, /* 32 */
-                    { value: 'Dirigidas', text: 'Dirigidas' }, /* 40 */
-                    { value: 'Dirigidas + Karate', text: 'Dirigidas + Karate' }, /* 45 */
-                    { value: 'Personalizada', text: 'Personalizada' }, /* 0 */
+                    { value: 'Karate 1', text: 'Karate 1' }, /* 24 */
+                    { value: 'Karate 2', text: 'Karate 2' }, /* 34 */
+                    { value: 'Karate 3', text: 'Karate 3' }, /* 38 */
+                    { value: 'GYM 1', text: 'GYM 1' }, /* 24 */
+                    { value: 'GYM 2', text: 'GYM 2' }, /* 35 */
+                    { value: 'GYM Libre', text: 'GYM Libre' }, /* 40 */
                     { value: 'Personalizada + Karate', text: 'Personalizada + Karate' }, /* 0 */
+                    { value: 'Personalizada + GYM', text: 'Personalizada + GYM' }, /* 0 */
                 ], /* Options to the checkbox of the rate types */
                 selectedBelts: [], /* Grades selected to delete */
                 submitting: false, /* Flag to avoid alert the customer at the page leave */
@@ -1236,14 +1239,23 @@
              */
             selectAmount() {
                 switch(this.rate) {
-                    case 'Karate':
-                        this.amount = 32;
+                    case 'Karate 1':
+                        this.amount = 24;
                         break;
-                    case 'Dirigidas + Karate':
-                        this.amount = 45;
+                    case 'Karate 2':
+                        this.amount = 34;
                         break;
-                    case 'Dirigidas':
-                        this.amount = 50;
+                    case 'Karate 3':
+                        this.amount = 38;
+                        break;
+                    case 'GYM 1':
+                        this.amount = 24;
+                        break;
+                    case 'GYM 2':
+                        this.amount = 35;
+                        break;
+                    case 'GYM Libre':
+                        this.amount = 40;
                         break;
                     default:
                         this.amount = '';
@@ -1253,12 +1265,12 @@
              * Manages the stacking of the radio selectors
              */
             stackRadios() {
-                if (window.innerWidth < 650) {
+                if (window.innerWidth < 870) {
                     document.getElementById('tarifa').classList.add('btn-group-vertical');
                     document.getElementById('tipoPago').classList.add('btn-group-vertical');
                     document.getElementById('tarifa').classList.remove('btn-group');
                     document.getElementById('tipoPago').classList.remove('btn-group');
-                } else if (window.innerWidth >= 650 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
+                } else if (window.innerWidth >= 870 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
                     document.getElementById('tarifa').classList.remove('btn-group-vertical');
                     document.getElementById('tipoPago').classList.remove('btn-group-vertical');
                     document.getElementById('tarifa').classList.add('btn-group');
@@ -1510,6 +1522,11 @@
         },
     }
 </script>
+<style>
+    #tarifas-group label.btn {
+        padding: 0.375rem 0.5rem!important
+    }
+</style>
 <style scoped>
     .card-body {
         overflow: hidden;
