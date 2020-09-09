@@ -638,7 +638,7 @@
                         <b-form-input
                             type="number"
                             v-validate="'required|numeric|max_value:99|min_value:10'"
-                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : (row.item.rate != 'Personalizada' && row.item.rate != 'Personalizada + Karate') ? ' disabled' : '') + (errors.has('amount-row' + row.index) ? ' is-invalid' : '')"
+                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : (row.item.rate != 'Personalizada' && (row.item.rate != 'Personalizada + Karate' && row.item.rate != 'Personalizada + GYM')) ? ' disabled' : '') + (errors.has('amount-row' + row.index) ? ' is-invalid' : '')"
                             :disabled="!row.detailsShowing"
                             :id="'amount-row' + row.index"
                             :name="'amount-row' + row.index"
@@ -1132,7 +1132,8 @@
                     { value: 'Tarjeta', text: 'Tarjeta' },
                     { value: 'Efectivo', text: 'Efectivo' },
                 ], /* options for a b-select on the main b-table element */
-                rates: [ 'Karate', 'Dirigidas', 'Dirigidas + Karate', 'Personalizada', 'Personalizada + Karate' ], /* Options for a b-select on the main b-table element to select the fee when edit a row */
+
+                rates: ['Karate 1', 'Karate 2', 'Karate 3', 'GYM 1', 'GYM 2', 'GYM Libre', 'Personalizada + Karate', 'Personalizada + GYM',], /* Options for a b-select on the main b-table element to select the fee when edit a row */
                 rowsSelected: [], /* Stores the selected rows of the table to manage some conditional rendering and states */
                 states: [
                     { text: 'Confirmado', value: 'Confirmado' },
@@ -1868,14 +1869,23 @@
             selectImporte(row, ev) {
                 let newAmount = '';
                 switch(ev) {
-                    case 'Karate':
-                        newAmount = 32;
+                    case 'Karate 1':
+                        newAmount = 24;
                         break;
-                    case 'Dirigidas':
-                        newAmount = 45;
+                    case 'Karate 2':
+                        newAmount = 34;
                         break;
-                    case 'Dirigidas + Karate':
-                        newAmount = 50;
+                    case 'Karate 3':
+                        newAmount = 38;
+                        break;
+                    case 'GYM 1':
+                        newAmount = 24;
+                        break;
+                    case 'GYM 2':
+                        newAmount = 35;
+                        break;
+                    case 'GYM Libre':
+                        newAmount = 40;
                         break;
                 }
                 this.updatePaymentField({ field: 'amount', newVal: newAmount, ...row.item });
