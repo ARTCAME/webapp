@@ -142,15 +142,15 @@ class CustomersController extends Controller {
         $data = $request->all();
         $rules = [
             'name' => 'required',
-            // 'dni' => 'required',
-            // 'sign' => 'required',
+            'dni' => 'required',
+            // 'sign' => 'required', // the sign is no required for now to pevent fails
             'dateofbirth' => 'required|date',
             'paymentData.rate' => 'required',
             'paymentData.paymenttype' => 'required',
             'paymentData.amount' => 'required',
         ];
         if ($request->paymentData['paymenttype'] == 'Domiciliación') {
-            // $rules += ['paymentData.iban' => 'required'];
+            $rules += ['paymentData.iban' => 'required'];
         }
         if ($request->dateofbirth != null && date_diff(date_create(date('Y-m-d')), date_create($request->dateofbirth))->y < 18) {
             /* If the customer is underage his dni is not required */
@@ -160,7 +160,7 @@ class CustomersController extends Controller {
                 if ($key == '_id' && $value == null) {
                     $rules += [
                         'tutor.name' => 'required',
-                        // 'tutor.dni' => 'required',
+                        'tutor.dni' => 'required',
                     ];
                 }
             }
@@ -168,15 +168,15 @@ class CustomersController extends Controller {
         /* Build the error message */
         $messages = [
             'name.required' => 'El nombre es obligatorio',
-            // 'dni.required' => 'El dni es obligatorio',
+            'dni.required' => 'El dni es obligatorio',
             'dateofbirth.required'  => 'La fecha de nacimiento es obligatoria',
             // 'sign.required'  => 'La firma del socio es obligatoria',
             'tutor.name.required' => 'El nombre del tutor es obligatorio',
-            // 'tutor.dni.required' => 'El dni del tutor es obligatorio',
+            'tutor.dni.required' => 'El dni del tutor es obligatorio',
             'paymentData.rate.required' => 'Tienes que escoger una tarifa',
             'paymentData.paymenttype.required' => 'Tienes que escoger una forma de pago',
             'paymentData.amount.required' => 'Tienes que indicar un importe para la cuota',
-            // 'paymentData.iban.required' => 'Tienes que añadir el iban para el pago domiciliado',
+            'paymentData.iban.required' => 'Tienes que añadir el iban para el pago domiciliado',
         ];
         /* Validate the form */
         $v = Validator::make($data, $rules, $messages);
