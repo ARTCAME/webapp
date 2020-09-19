@@ -279,7 +279,7 @@
                                 name="dni"
                                 type="text"
                                 v-model="dni"
-                                v-validate="(underage != true ? 'required' : '') + '|dnie|lengthDnie|dniFounded:' + getCustomerByField('dni', dni).length"
+                                v-validate="(underage != true ? 'required' : '') + '|dnie|lengthDnie|dniFounded:' + ($route.name != 'customers.new' ? getCustomerByField('dni', dni).filter(el => el._id != form._id).length : getCustomerByField('dni', dni).length)"
                                 :class="{ 'is-invalid' : errors.has('dni') }"
                                 :disabled="isDisabled"
                                 @drop.prevent
