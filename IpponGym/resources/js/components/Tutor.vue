@@ -92,12 +92,12 @@
                             @chosen="$validator.resume()"></SearchBadge>
                     </b-form-group>
                     <b-form-group class="wrapper-for-badge col-lg-4" label="Dni del tutor">
-                        <!-- v-validate="(underage == true ? 'required' : '') + '|dnie|lengthDnie|dniTutorFounded:' + getCustomerByField('dni', dni).length" -->
                         <b-form-input
                             autocomplete="off"
                             name="tutor-dni"
                             type="text"
                             v-model="dni"
+                            v-validate="(underage == true ? 'required' : '') + '|dnie|lengthDnie|dniTutorFounded:' + ($route.name != 'customers.new' ? getCustomerByField('dni', dni).filter(el => el._id != form._id).length : getCustomerByField('dni', dni).length)"
                             :class="{ 'is-invalid' : errors.has('tutor-dni') }"
                             :disabled="!!_id || isDisabled"
                             @drop.prevent
