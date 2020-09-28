@@ -1,14 +1,14 @@
 /* **************************************************************************
   SigCaptX-SessionControl.js
-   
+
   This file contains functions which are used for controlling the starting and stopping
   of the wizard session. It also contains the calls to the pad and screen definition
-  functions in SigCaptX-Wizard-PadDefs.js 
-  
+  functions in SigCaptX-Wizard-PadDefs.js
+
   Copyright (c) 2018 Wacom Co. Ltd. All rights reserved.
-  
+
    v4.0
-  
+
 ***************************************************************************/
 
 /* wizardEventController is the main event handler for the wizard script */
@@ -19,10 +19,10 @@ var wizardEventController =
     clearTextBox();
     actionWhenRestarted();
   },
-  
+
   start_stop : function(numScreens)
   {
-    if( scriptIsRunning ) 
+    if( scriptIsRunning )
     {
       wizardEventController.stop();
     }
@@ -31,10 +31,10 @@ var wizardEventController =
       wizardStart(numScreens);
     }
   },
-  
+
   stop : function()
   {
-    if( !scriptIsRunning ) 
+    if( !scriptIsRunning )
     {
       print("Script not running");
     }
@@ -43,7 +43,7 @@ var wizardEventController =
       stopScript();
     }
   },
-  
+
   script_Completed : function(stopScriptNow)
   {
     print("Script completed");
@@ -56,7 +56,7 @@ var wizardEventController =
       showSignature();
     }
   },
-  
+
   script_Cancelled : function()
   {
     print("Script cancelled");
@@ -68,21 +68,21 @@ var wizardEventController =
  function wizardStart(numScreens)
 {
   numScreenDisplays = numScreens;
-  
+
   if(!wgssSignatureSDK.running)
   {
     print("Session error. Restarting the session.");
     actionWhenRestarted(window.WizardStart);
     return;
   }
-  
+
   if(null != wizCtl)
   {
     wizCtl.Close(onWizClose);
     return;
   }
   start_wizard();
-  
+
   function onWizClose(wizCtlV, status)
   {
     if(wgssSignatureSDK.ResponseStatus.INVALID_SESSION == status)
@@ -96,13 +96,13 @@ var wizardEventController =
       start_wizard();
     }
   }
-  
+
   function start_wizard()
   {
     scriptIsRunning = true;
     wizCtl = new wgssSignatureSDK.WizCtl(onWizCtlConstructor);
   }
-  
+
   function onWizCtlConstructor(wizCtlV, status)
   {
     if(wgssSignatureSDK.ResponseStatus.OK == status)
@@ -122,7 +122,7 @@ var wizardEventController =
       }
     }
   }
-  
+
   function onWizCtlPutLicence(sigCtlV, status)
   {
     if(callbackStatusOK("WizCtl PutLicence", status) == true)
@@ -132,7 +132,7 @@ var wizardEventController =
       wizCtl.PutVisibleWindow(visible, onPutVisibleWindow);
     }
   }
-	
+
   function onPutVisibleWindow(wizCtlV, status)
   {
     if(callbackStatusOK("WizCtl PutVisibleWindow", status) == true)
@@ -140,7 +140,7 @@ var wizardEventController =
       wizCtl.PadConnect(onPadConnect);
     }
   }
-  
+
   function onPadConnect(wizCtlV, connected, status)
   {
     if(wgssSignatureSDK.ResponseStatus.OK == status && connected)
@@ -153,12 +153,12 @@ var wizardEventController =
       wizCtl.Close(onErrorClose);
     }
   }
-  
-  function onErrorClose(wizCtlG, status) 
+
+  function onErrorClose(wizCtlG, status)
   {
     wizCtl = null;
   }
-  
+
   function onGetPadWidth(wizCtlV, padWidth, status)
   {
     if(callbackStatusOK("WizCtl GetPadWidth", status) == true)
@@ -167,20 +167,20 @@ var wizardEventController =
       wizCtl.GetPadHeight(onGetPadHeight);
     }
   }
-  
+
   function onGetPadHeight(wizCtlV, padHeight, status)
   {
     var buttonTextSource;
     var chkBoxSize;
 
     if(wgssSignatureSDK.ResponseStatus.OK == status)
-    { 
+    {
       height = padHeight;
 
       /* If the user wants a large check box pass this as a parameter to CPad_STU in SigCaptX-Wizard-PadDefs.js */
       /* Note that this code is also used by the PIN pad sample which doesn't have the user options so make sure
          the tags exist first */
-      
+
       if (document.getElementById("chkLargeCheckbox") != null)
       {
         if (document.getElementById("chkLargeCheckbox").checked)
@@ -192,12 +192,12 @@ var wizardEventController =
           chkBoxSize = checkSizeSelection.STANDARD;
         }
       }
-    
+
       pad = new CPad_STU(width, height, chkBoxSize);
-      
-      /* Decide what parameter to pass to Screen1() in SigCaptX-WizardCheckbox-PadDefs.js 
+
+      /* Decide what parameter to pass to Screen1() in SigCaptX-WizardCheckbox-PadDefs.js
          This depends on what the user has selected on the HTML form. Make sure the tags exist first */
-  
+
       if (document.getElementById("utf8") != null)
       {
         if (document.getElementById("utf8").checked)
@@ -245,7 +245,7 @@ var wizardEventController =
 
 
 /* This function is called if connection with the SigCaptX service has to be re-initiated because for whatever reason it has stopped or failed */
-function actionWhenRestarted(callback) 
+function actionWhenRestarted(callback)
 {
   wgssSignatureSDK = null;
   sigObj = null;
@@ -253,41 +253,41 @@ function actionWhenRestarted(callback)
   dynCapt = null;
   wizCtl = null;
   pad = null;
-  
+
   var wizCtlTest = null;
   var imageBox = document.getElementById("imageBox");
-  
+
   if(null != imageBox.firstChild)
   {
     imageBox.removeChild(imageBox.firstChild);
   }
   var timeout = setTimeout(timedDetect, TIMEOUT);
-  
+
   // pass the starting service port  number as configured in the registry
   wgssSignatureSDK = new WacomGSS_SignatureSDK(onDetectRunning, SERVICEPORT);
 
-  function timedDetect() 
+  function timedDetect()
   {
-    if (wgssSignatureSDK.running) 
+    if (wgssSignatureSDK.running)
     {
       print("Signature SDK Service detected.");
       start();
-    } 
-    else 
+    }
+    else
     {
       print("Signature SDK Service not detected.");
     }
   }
-  
+
   function onDetectRunning()
   {
-    if (wgssSignatureSDK.running) 
+    if (wgssSignatureSDK.running)
     {
       print("Signature SDK Service detected.");
       clearTimeout(timeout);
       start();
     }
-    else 
+    else
     {
       print("Signature SDK Service not detected.");
     }
@@ -295,12 +295,12 @@ function actionWhenRestarted(callback)
 
   function start()
   {
-    if (wgssSignatureSDK.running) 
+    if (wgssSignatureSDK.running)
     {
       print("Checking components ...");
       sigCtl = new wgssSignatureSDK.SigCtl(onSigCtlConstructor);
     }
-  }  
+  }
 
   function onSigCtlConstructor(sigCtlV, status)
   {
@@ -325,14 +325,14 @@ function actionWhenRestarted(callback)
       print("DynCapt constructor error: " + status);
     }
   }
-  
-  function onSigCtlPutLicence(sigCtlV, status) 
+
+  function onSigCtlPutLicence(sigCtlV, status)
   {
-    if (wgssSignatureSDK.ResponseStatus.OK == status) 
+    if (wgssSignatureSDK.ResponseStatus.OK == status)
     {
       dynCapt = new wgssSignatureSDK.DynamicCapture(onDynCaptConstructor);
     }
-    else 
+    else
     {
       print("SigCtl constructor error: " + status);
     }
@@ -367,7 +367,7 @@ function actionWhenRestarted(callback)
       sigCtl.GetProperty("Component_FileVersion", onSigCtlGetFileVersion);
     }
   }
-  
+
   function onSigCtlGetFileVersion(sigCtlV, property, status)
   {
     if(wgssSignatureSDK.ResponseStatus.OK == status)
@@ -398,7 +398,7 @@ function actionWhenRestarted(callback)
       print("DynCapt GetProperty error: " + status);
     }
   }
-  
+
   function onWizCtlGetProperty(wizCtlV, property, status)
   {
     if(callbackStatusOK("WizCtl GetProperty", status))
@@ -448,3 +448,5 @@ function stopScript()
     }
   }
 }
+
+
