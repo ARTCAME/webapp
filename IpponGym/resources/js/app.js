@@ -89,9 +89,9 @@ Vue.use(tableToCsv);
 /* Import all the components from ./components */
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
-const requireComponent = require.context(
+let requireComponent = require.context(
   './components',
-  false,
+  true,
   /[A-Z]\w+\.(vue|js)$/
 )
 requireComponent.keys().forEach(fileName => {
@@ -106,6 +106,10 @@ requireComponent.keys().forEach(fileName => {
     componentConfig.default || componentConfig
   );
 });
+import RightsProtect from './components/customerdoc/RightsProtect';
+Vue.component('RightsProtect',  RightsProtect);
+import RightsImage from './components/customerdoc/RightsImage';
+Vue.component('RightsImage',  RightsImage);
 import DocImg from './components/userdocassets/DocImg';
 Vue.component('DocImg',  DocImg);
 
