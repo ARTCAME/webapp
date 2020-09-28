@@ -168,9 +168,14 @@
         watch: {
             interval(newVal, oldVal) {
                 if (newVal != oldVal) {
-                    if (this.selectedMonth != null && (this.selectedYear != null || this.selectedAlterYear != null)) {
+                    if (this.$moment(this.interval, 'YYYY-MM', true).isValid()) {
                         this.$emit('input', this.interval)
+                    } else {
+                        this.$emit('input', null)
                     }
+                    // if (this.selectedMonth != null && (this.selectedYear != null || this.selectedAlterYear != null)) {
+                    //     this.$emit('input', this.interval)
+                    // }
                 }
             }
         }
