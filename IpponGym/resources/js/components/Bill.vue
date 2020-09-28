@@ -61,8 +61,8 @@
     </div> -->
 </template>
 <script>
-    import Footer from './printsassets/Footer'
-    import Header from './printsassets/Header'
+    import Footer from './customerdoc/printsassets/Footer'
+    import Header from './customerdoc/printsassets/Header'
     import { mapGetters } from 'vuex';
     export default {
         components: {
