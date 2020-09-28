@@ -351,7 +351,7 @@ html {
 }
 .printable-ctn {
     position: relative;
-    height: 240mm;
+    height: 260mm;
     width: 180mm;
 }
 /* This hides the element but left there in the page to allow to print it */
