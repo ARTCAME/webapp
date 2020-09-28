@@ -60,10 +60,6 @@ const DEFAULT_FORM = () => {
             RPaccept: null,
             date: null,
         },
-        rightsUnderage: {
-            RUaccept: null,
-            date: null,
-        },
         rightsImage: {
             RIaccept: null,
             date: null,
