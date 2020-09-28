@@ -192,13 +192,24 @@
                                 </b-row>
                             </b-list-group-item>
                             <b-list-group-item class="py-1">
-                                <b-row>
+                                <b-row
+                                    v-if="fileType == 1">
                                     <b-col cols="4">
                                         ACEPTA PROTECCIÓN DE DATOS:
                                     </b-col>
                                     <span
-                                        :class="customer.proctect == null ? 'text-danger' : 'text-success'">
-                                        {{ customer.protect == false ? 'No' : customer.proctect == null ? 'No indicado' : 'Sí' }}
+                                        :class="customer.rightsProtect.RPaccept == null ? 'text-danger' : 'text-success'">
+                                        {{ customer.rightsProtect.RPaccept == false ? 'No' : customer.rightsProtect.RPaccept == null ? 'No indicado' : 'Sí' }}
+                                    </span>
+                                </b-row>
+                                <b-row
+                                    v-else-if="fileType == 2">
+                                    <b-col cols="4">
+                                        ACEPTA CESIÓN DE IMAGEN:
+                                    </b-col>
+                                    <span
+                                        :class="customer.rightsImage.RIaccept == null ? 'text-danger' : 'text-success'">
+                                        {{ customer.rightsImage.RIaccept == false ? 'No' : customer.rightsImage.RIaccept == null ? 'No indicado' : 'Sí' }}
                                     </span>
                                 </b-row>
                             </b-list-group-item>
@@ -267,7 +278,7 @@
                             icon="file-download"
                             v-else></fa-icon>
                         <span class="d-inline-block ml-2">
-                            {{ downloading ? 'Descargando...' : isDownloadable == 1 ? 'Falta la firma' : isDownloadable == 2 ? 'Selecciona un intervalo' : isDownloadable == 3 ? 'No se puede imprimir, el socio no es menor' : isDownloadable == 4 ? 'No hay datos de tutor' : fileType == null ? 'Selecciona una opción' : 'Descargar ' + fileOptions[fileType + 1].text.toLowerCase() + ' para este socio' }}
+                            {{ downloading ? 'Descargando...' : isDownloadable == 1 ? 'Falta la firma' : isDownloadable == 2 ? 'Selecciona un intervalo' : isDownloadable == 3 ? 'El socio es menor y no existen datos de tutor' : fileType == null ? 'Selecciona una opción' : 'Descargar ' + fileOptions[fileType + 1].text.toLowerCase() + ' para este socio' }}
                         </span>
                     </b-button>
                 </div>
@@ -275,12 +286,18 @@
         </transition>
         <!-- Hided printable docs -->
         <div class="printable-wrp">
-            <div class="pr-1 printable-ctn" ref="printable">
-                <RightsUnderage
-                    v-if="fileType && (fileType != 0 && customer != null && customer.tutor != null)"
-                    :customer="customer"></RightsUnderage>
+            <div
+                class="pr-1 printable-ctn"
+                ref="printable"
+                v-if="customer != null && fileType != null">
+                <RightsProtect
+                    v-if="fileType == 1 && ((underage == true && customer.tutor != null) || underage == false)"
+                    :customer="customer"></RightsProtect>
+                <RightsImage
+                    v-else-if="fileType == 2 && ((underage == true && customer.tutor != null) || underage == false)"
+                    :customer="customer"></RightsImage>
                 <Bill
-                    v-else-if="(fileType == 0 && customer !=  null && interval != null)"
+                    v-else-if="fileType == 0 && customer != null && interval != null"
                     :customer="customer"
                     :interval="interval"></Bill>
             </div>
@@ -299,8 +316,9 @@
                     { text: 'Selecciona el tipo de documento', value: null },
                     { text: 'Recibo', value: 0 },
                     { text: 'Protección de datos', value: 1 },
-                    { text: 'Autorización de menor', value: 2 },
-                    { text: 'Derechos de imagen', value: 3 },
+                    { text: 'Derechos de imagen', value: 2 },
+                    // { text: 'Autorización de menor', value: 2 },
+                    // { text: 'Derechos de imagen', value: 3 },
                 ], /* Options for a select element */
                 fileType: null, /* v-model for the selected filte type */
                 interval: null, /* v-model with the payment interval */
@@ -338,14 +356,16 @@
              * @return {Integer} 0: Downloable => the customer and his sign aren't null; if a bill was required and there is interval or if a underage rights was required and the customer is underage and has the tutor data filled
              *                  No downloable =>
              *                      -1 => The customer is null or no file type was selected
-             *                      1 => The customer signatura doesn't exists
+             *                      1 => The customer signature doesn't exists
              *                      2 => A bill was requested and there isn't interval
+             *                      3 => A image rights is requested for a underage customer but no tutor data present
+             *
              *                      3 => A underage rigths was requested and the customer is not underage
-             *                      4 => A underage rights was requested ad the customer tutor data isn't filled
+             *                      4 => A underage rights was requested and the customer tutor data isn't filled
              */
             isDownloadable() {
-                /* Is downloadable if there is a customer and he has a sign check for every file type its required data */
-                if (this.customer != null && this.customer.sign != null && ((this.fileType == 0 && this.interval != null) || (this.fileType == 2 && this.getUnderage(this.customer._id) == true && this.customer.tutor != null))) {
+                /* Is downloadable if there is a customer and he has a sign check for every file type, if there is a underage customer check if a tutor data is present*/
+                if (this.customer != null && this.customer.sign != null && ((this.fileType == 0 && this.interval != null) || ((this.fileType == 1 || this.fileType == 2) && ((this.underage == false)) || (this.underage == true && this.customer.tutor != null)))) {
                     return 0;
                 }
                 if (this.customer != null && this.fileType != null) {
@@ -357,14 +377,22 @@
                     if (this.fileType == 0 && this.interval == null) {
                         return 2;
                     }
-                    /* For underage authorization and if the customer is not underage */
-                    if (this.fileType == 2 && this.getUnderage(this.customer._id) == false) {
-                        return 3;
+                    /* For the image/protect rights, check if the customer is underage and tutor data is present */
+                    if (this.fileType == 2 || this.fileType == 1) {
+                        if (this.underage == true) {
+                            if (this.customer.tutor == null) {
+                                return 3;
+                            }
+                        }
                     }
-                    /* For underage authorization and if the customer doesn't have tutor */
-                    if (this.fileType == 2 && this.customer.tutor == null) {
-                        return 4;
-                    }
+                    // /* For underage authorization and if the customer is not underage */
+                    // if (this.fileType == 2 && this.getUnderage(this.customer._id) == false) {
+                    //     return 3;
+                    // }
+                    // /* For underage authorization and if the customer doesn't have tutor */
+                    // if (this.fileType == 2 && this.customer.tutor == null) {
+                    //     return 4;
+                    // }
                 }
                 return -1;
             },
