@@ -702,85 +702,19 @@
                                         </span>
                                     </b-col>
                                 </b-row>
-                                <!-- Shown if the customer is underage -->
-                                <b-row
-                                    v-if="underage">
-                                    <b-col class="text-right" cols="7">
-                                        <label>
-                                            Autorización de menor
-                                        </label>
-                                    </b-col>
-                                    <b-col class="p-0">
-                                        <b-form-group
-                                            class="d-inline mr-3"
-                                            :disabled="isDisabled">
-                                            <b-form-radio-group
-                                                buttons
-                                                button-variant="outline-secondary"
-                                                class="radio-selector tiny-radio-selector"
-                                                id="rightsUnderage"
-                                                name="rightsUnderage"
-                                                size="sm"
-                                                v-validate="'required'"
-                                                :checked="RUaccept"
-                                                :class="{ 'is-invalid' : errors.has('rightsUnderage') && !isDisabled }"
-                                                :options="yesno"
-                                                :state="errors.has('rightsUnderage')"
-                                                @change="RUaccept = $event"></b-form-radio-group>
-                                            <transition mode="out-in" name="liveFeedbacks">
-                                                <b-form-invalid-feedback
-                                                    v-if="errors.has('rightsUnderage')">
-                                                    {{ errors.first('rightsUnderage') }}
-                                                </b-form-invalid-feedback>
-                                            </transition>
-                                        </b-form-group>
-                                        <span
-                                            class="d-inline-block"
-                                            v-b-tooltip.hover.noninteractive
-                                            :title="printRightsUnderage == true ? 'Descargando...' : 'Descargar'">
-                                            <b-button
-                                                class="btn-fa-tiny"
-                                                size="sm"
-                                                variant="outline-primary"
-                                                v-if="$route.name != 'customers.new'"
-                                                :disabled="printRightsUnderage"
-                                                @click="printFile('RU')">
-                                                <b-spinner
-                                                    small
-                                                    type="grow"
-                                                    v-if="printRightsUnderage == true"></b-spinner>
-                                                <fa-icon
-                                                    icon="file-download"
-                                                    v-else></fa-icon>
-                                            </b-button>
-                                        </span>
-                                    </b-col>
-                                </b-row>
                             </b-col>
                         </b-row>
                     </b-form-group>
-                    <!-- Test -->
-                    <div class="printable-wrp">
+                    <!-- Hided printable docs -->
+                    <div
+                        class="printable-wrp">
                         <div class="pr-1 printable-ctn" ref="printableMFRP">
-                            <RightsUnderage
-                                :customer="getCustomerById($route.params.id)"></RightsUnderage>
-                            <!-- MISSING THE REST OF FILE TYPES -->
+                            <RightsProtect
+                                :customer="getCustomerById($route.params.id)"></RightsProtect>
                         </div>
-                    </div>
-                    <!-- Test -->
-                    <div class="printable-wrp">
-                        <div class="pr-1 printable-ctn" ref="printableMFRU">
-                            <RightsUnderage
-                                :customer="getCustomerById($route.params.id)"></RightsUnderage>
-                            <!-- MISSING THE REST OF FILE TYPES -->
-                        </div>
-                    </div>
-                    <!-- Test -->
-                    <div class="printable-wrp">
                         <div class="pr-1 printable-ctn" ref="printableMFRI">
-                            <RightsUnderage
-                                :customer="getCustomerById($route.params.id)"></RightsUnderage>
-                            <!-- MISSING THE REST OF FILE TYPES -->
+                            <RightsImage
+                                :customer="getCustomerById($route.params.id)"></RightsImage>
                         </div>
                     </div>
                 </b-card-body>
@@ -1217,8 +1151,8 @@
              */
             printFile(file) {
                 return new Promise((resolve, reject) => {
-                    const filename = this.form.name.replace(/\s/g, '') + '__' + (file == 'RI' ? 'derechosdeimagen' : file == 'RU' ? 'autorizacióndemenor' : 'proteccióndedatos') + '__' + this.$moment().format('YYYY-MM-DD_HH_mm') + '.pdf';
-                    const variable = file == 'RI' ? 'printRightsImage' : file == 'RU' ? 'printRightsUnderage' : 'printRightsProtect';
+                    const filename = this.form.name.replace(/\s/g, '') + '__' + (file == 'RI' ? 'derechosdeimagen' : 'proteccióndedatos') + '__' + this.$moment().format('YYYY-MM-DD_HH_mm') + '.pdf';
+                    const variable = file == 'RI' ? 'printRightsImage' : 'printRightsProtect';
                     /* Active the flag to userx and disallow multiple downloads */
                     this[variable] = true;
                     this.$html2print(filename, this.$refs['printableMF' + file])
@@ -1311,9 +1245,6 @@
                                         /* NOT FOR NOW */
                                         // await this.printFile('RI');
                                         // await this.printFile('RP');
-                                        // if (this.underage) {
-                                            // await this.printFile('RU');
-                                        // }
                                         /* Trigger a modification on the localStorage to propagate the changes on other windows */
                                         localStorage.setItem('customer_updated', id);
                                         localStorage.removeItem('customer_updated');
