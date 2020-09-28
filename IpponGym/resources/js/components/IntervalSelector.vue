@@ -168,7 +168,9 @@
         watch: {
             interval(newVal, oldVal) {
                 if (newVal != oldVal) {
-                    this.$emit('input', this.interval)
+                    if (this.selectedMonth != null && (this.selectedYear != null || this.selectedAlterYear != null)) {
+                        this.$emit('input', this.interval)
+                    }
                 }
             }
         }
