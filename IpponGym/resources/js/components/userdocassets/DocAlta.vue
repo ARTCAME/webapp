@@ -318,9 +318,9 @@
                     <h5>Documentos:</h5>
                     - Al socio se le presentarán los documentos que va a firmar y se le pedirá que confirme que los acepta
                     <br>
-                    - Marcaremos lo que nos indique el socio para cada caso concreto y una vez guardado el socio se nos descargarán los documentos firmados que deberemos conservar por cuestiones legales
+                    - Marcaremos lo que nos indique el socio para cada tipo de documento y una vez guardado el socio podremos descargar los documentos legales para conservarlos o entregárselos al socio
                     <br>
-                    - Podremos imprimir una copia para el socio si así lo pidiera
+                    - En los documentos se incluye la fecha de aceptación del mismo, esta fecha está basada en el momento en el que se indicó que el socio aceptaba el documento
                 </p>
             </p>
             <p>
