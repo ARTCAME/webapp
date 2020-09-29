@@ -569,8 +569,7 @@
                             show
                             variant="danger"
                             v-if="$route.name == 'customers.new'">
-                            Tanto si el socio acepta como si no alguna de las condiciones legales deberá firmar para que así conste.<br>
-                            Los documentos firmados se descargarán al guardar la ficha.
+                            La firma del socio es imprescindible para facturas y documentos, <u>inclúyela siempre</u>
                             <span
                                 v-if="underage">
                                 <br><br>
@@ -579,7 +578,7 @@
                             <span
                                 v-else>
                                 <br><br>
-                                <u>Atención: Recuerda rellenar correctamente el nombre, apellidos y dni del socio</u>
+                                <u>Atención: Recuerda rellenar correctamente el nombre, apellidos y dni del socio relacionados con la firma</u>
                             </span>
                         </b-alert>
                         <b-alert
@@ -601,7 +600,7 @@
                                 <b-row>
                                     <b-col class="text-right" cols="7">
                                         <label>
-                                            Acepta la política de privacidad
+                                            Acepta consentimiento expreso
                                         </label>
                                     </b-col>
                                     <b-col class="p-0">
@@ -631,13 +630,13 @@
                                         <span
                                             class="d-inline-block"
                                             v-b-tooltip.hover.noninteractive
-                                            :title="printRightsProtect == true ? 'Descargando...' : 'Descargar'">
+                                            :title="RPaccept == false ? 'El socio no ha dado su consentimiento' : printRightsProtect == true ? 'Descargando...' : 'Descargar'">
                                             <b-button
                                                 class="btn-fa-tiny"
                                                 size="sm"
                                                 variant="outline-primary"
                                                 v-if="$route.name != 'customers.new'"
-                                                :disabled="printRightsProtect"
+                                                :disabled="printRightsProtect || RPaccept == false"
                                                 @click="printFile('RP')">
                                                 <b-spinner
                                                     small
@@ -683,13 +682,13 @@
                                         <span
                                             class="d-inline-block"
                                             v-b-tooltip.hover.noninteractive
-                                            :title="printRightsImage == true ? 'Descargando...' : 'Descargar'">
+                                            :title="RIaccept == false ? 'El socio no ha dado su consentimiento' : printRightsImage == true ? 'Descargando...' : 'Descargar'">
                                             <b-button
                                                 class="btn-fa-tiny"
                                                 size="sm"
                                                 variant="outline-primary"
                                                 v-if="$route.name != 'customers.new'"
-                                                :disabled="printRightsImage"
+                                                :disabled="printRightsImage || RIaccept == false"
                                                 @click="printFile('RI')">
                                                 <b-spinner
                                                     small
