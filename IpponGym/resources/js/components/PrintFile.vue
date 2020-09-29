@@ -195,7 +195,7 @@
                                 <b-row
                                     v-if="fileType == 1">
                                     <b-col cols="4">
-                                        ACEPTA PROTECCIÓN DE DATOS:
+                                        ACEPTA CONSENTIMIENTO EXPRESO:
                                     </b-col>
                                     <span
                                         :class="customer.rightsProtect.RPaccept == null ? 'text-danger' : 'text-success'">
@@ -312,14 +312,6 @@
             return {
                 customer: null, /* Stores the data of the customer selected */
                 downloading: false, /* Userx flag to show */
-                fileOptions: [
-                    { text: 'Selecciona el tipo de documento', value: null },
-                    { text: 'Recibo', value: 0 },
-                    { text: 'Protección de datos', value: 1 },
-                    { text: 'Derechos de imagen', value: 2 },
-                    // { text: 'Autorización de menor', value: 2 },
-                    // { text: 'Derechos de imagen', value: 3 },
-                ], /* Options for a select element */
                 fileType: null, /* v-model for the selected filte type */
                 interval: null, /* v-model with the payment interval */
                 tableFields: [
@@ -349,6 +341,19 @@
              */
             filename() {
                 return this.customer.name.replace(/\s/g, '') + '__' + this.fileOptions[this.fileType + 1].text.toLowerCase().replace(/\s/g, '') + '__' + this.$moment().format('YYYY-MM-DD_HH_mm') + '.pdf';
+            },
+            /**
+             * options to a Select element wich need to be computed with this.customer data
+             *
+             * @return {Array} Array of objects to a b-select element
+             */
+            fileOptions() {
+                return [
+                    { text: 'Selecciona el tipo de documento', value: null },
+                    { text: 'Recibo', value: 0 },
+                    { text: 'Consentimiento expreso', value: 1, disabled: this.customer.rightsProtect.RPaccept == false },
+                    { text: 'Derechos de imagen', value: 2, disabled: this.customer.rightsImage.RIaccept == false },
+                ]; /* Options for a select element */
             },
             /**
              * Evaluates if will be able to download the document to disable/unable the button and changes the userx
