@@ -62,8 +62,10 @@ class CustomersController extends Controller {
      */
     public function index() {
         try {
-            return DB::collection('customers')->get();
-            // return Socios::all();
+            return DB::collection('customers')
+                        ->project(['sign' => false, 'image' => false]) /* On the mass customers download, doesn't require the images */
+                        ->get();
+            // return DB::collection('customers')->get();
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Error al obtener los socios de la base de datos. Código de error BeCuCo@In',
