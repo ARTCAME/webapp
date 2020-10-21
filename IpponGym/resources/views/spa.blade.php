@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <!-- Fonts -->
     {{-- <link rel="prefetch" as="font" href="../fonts/Myriad_Pro_Bold_Condensed_Italic.ttf" type="font/ttf" crossorigin="anonymous"> --}}
