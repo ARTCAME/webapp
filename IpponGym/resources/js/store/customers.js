@@ -2,6 +2,7 @@ import auth from './modules/auth'
 import navbar from './modules/navbar'
 import { http } from '../utils/http';
 import moment from 'moment';
+import NProgress from 'nprogress';
 import router from '../router/router';
 import Vue from 'vue';
 import Vuex from 'vuex'
@@ -35,12 +36,13 @@ const DEFAULT_FORM = () => {
         tutor: null,
         contacts: [],
         paymentData: {
-            rate: '',
             amount: '',
-            paymenttype: '',
             iban: '',
             ibanownerdni: '',
             ibanownername: '',
+            paymenttype: '',
+            rate: '',
+            type: '',
         },
         payments: [],
         belts: [
@@ -95,6 +97,27 @@ function manageSpecialCharacters(value) {
         result += SPECIAL_CHARACTERS[value.charAt(i)] || value.charAt(i);
     }
     return result;
+}
+
+/**
+ * Check if the value passed exists and has coincidences with the filter applied
+ *
+ * @param {String} value: data to be converted to string and to lower case then to check if has coincidences
+ * @param {String} filter: filter typed by the user
+ */
+function checkCoincidence(value, filter) {
+    if (value) {
+        return manageSpecialCharacters(value.toString().toLowerCase()).includes(filter);
+    }
+    return false;
+}
+/**
+ * Clean the object|array stringify chars and the object keys knowed to avoid dirty results
+ *
+ * @param {String} fieldValue: the value of the customer[key] to compare with the data typed by the users
+ */
+function cleanData(fieldValue) {
+    return fieldValue.replace(/[\'\"\]\[\(\)\,\:\{\}]|\bnull|\bphone|\bnotes|\biban|\bibanownername|\bibanownerdni|\brate|\bamount|\bpaymenttype+/g, '')
 }
 export default new Vuex.Store({
     actions: {
@@ -290,29 +313,38 @@ export default new Vuex.Store({
          *
          * @param {String} id: identifies the customer to use at the form
          */
-        fetchEditForm({ commit, dispatch, getters }, id) {
-            /* Use a deep copy of the customer NO linked to the state */
-            const customer = JSON.parse(JSON.stringify({ ...getters.getCustomerById(id) }));
-            if (Object.keys(customer).length === 0) {
-                // return router.push('/404');
+        async fetchEditForm({ commit, dispatch, }, id) {
+            /* Use a clean customer from the db to fetch all the data (images are not loaded at the initial mass load) */
+            NProgress.start();
+            const response = await http.get('/api/customer/' + id);
+            const customer = response.data;
+            if (!customer || Object.keys(customer).length === 0) {
+                NProgress.done(true);
+                return router.push('/404');
             }
-            commit('FETCH_FORM', { customer: customer, form: 'editform' });
+            await commit('FETCH_FORM', { customer: customer, form: 'editform' });
             /* Set the tutor and contact data, if there are customers too extract its data form the state */
-            dispatch('fetchFormDependencies', customer);
+            await dispatch('fetchFormDependencies', customer);
+            setTimeout(() => NProgress.done(true), 500);
         },
         /**
          * Fetch the form with the customer identified by the id received via param
          *
          * @param {String} id: identifies the customer to use at the form
          */
-        fetchForm({ commit, dispatch, getters }, id) {
-            const customer = getters.getCustomerById(id);
-            if (!customer) {
-                // return router.push('/404');
+        async fetchForm({ commit, dispatch }, id) {
+            /* Use a clean customer from the db to fetch all the data (images are not loaded at the initial mass load) */
+            NProgress.start();
+            const response = await http.get('/api/customer/' + id);
+            const customer = response.data;
+            if (!customer || Object.keys(customer).length === 0) {
+                NProgress.done(true);
+                return router.push('/404');
             }
-            commit('FETCH_FORM', { customer: customer, form: 'form' });
+            await commit('FETCH_FORM', { customer: customer, form: 'form' });
             /* Set the tutor and contact data, if there are customers too extract its data form the state */
-            dispatch('fetchFormDependencies', customer);
+            await dispatch('fetchFormDependencies', customer);
+            setTimeout(() => NProgress.done(true), 500);
         },
         /**
          * Fetch the contacts and tutor data, if they are customers to, his data is getted from the state, if not, the data comes in
@@ -581,61 +613,16 @@ export default new Vuex.Store({
             }
             let customers = [];
             let filter = manageSpecialCharacters(value.toString().toLowerCase());
-            let coincident = false;
+
             /* Iterate over the state customers */
             state.customers.forEach(customer => {
-                /* Manage every customer as no coincident at the beginning */
-                coincident = false;
-                /* All the conditions on the tree check if the customer had previous coincidences to add the customer to the coincidents when only 1 condition exists. Also discard possible null values */
-                /* Special treatment to the Object id that always will be equal */
-                if (coincident == false && key == '_id') {
-                    // if (customer._id.$oid == value) {
-                    if (customer[key] == value) {
-                        coincident = true;
-                    }
-                /* Check if the field is an array */
-                } else if (coincident == false && customer[key] instanceof Array) {
-                    customer[key].forEach((field, idx) => {
-                        /* Check if inside the array there is/are object/s and iterate it */
-                        if (customer[key][field] instanceof Object) {
-                            Object.keys(customer[key][field]).forEach(lastfield =>{
-                                /* Check the coincidences inside the every field of the object */
-                                if (coincident == false && checkCoincidence(customer[key][idx][lastfield])) {
-                                    coincident = true;
-                                }
-                            })
-                        /* If the content of the array is text then check coincidences */
-                        } else if (coincident == false && checkCoincidence(customer[key][field])) {
-                            coincident = true;
-                        }
-                    });
-                /* Check the coincidences inside the every field of the object */
-                } else if (coincident == false && customer[key] instanceof Object) {
-                    Object.keys(customer[key]).forEach(lastfield =>{
-                        if (coincident == false && checkCoincidence(customer[key][lastfield])) {
-                            coincident = true;
-                        }
-                    })
-                /* If the field is directly text check the coincidences */
-                } else if (coincident == false && checkCoincidence(customer[key])) {
-                    coincident = true;
+                /* The search by phones, paymentData or emails IS NOT TESTED because is not used! */
+                if (['phones', 'paymentData', 'emails'].includes(key)) {
+                    (checkCoincidence(cleanData(JSON.stringify(customer[key])), filter) && customers.push(customer))
+                } else {
+                    (checkCoincidence(customer[key], filter) && customers.push(customer))
                 }
-                /* Add to the result the customer if it had coincidences */
-                if (coincident) {
-                    customers.push(customer);
-                }
-            });
-             /**
-             * Check if the value passed exists and has coincidences with the filter applied
-             *
-             * @param {String} value: data to be converted to string and to lower case then to check if has coincidences
-             */
-            function checkCoincidence(value) {
-                if (value) {
-                    return manageSpecialCharacters(value.toString().toLowerCase()).includes(filter);
-                }
-                return false;
-            }
+            })
             return customers;
         },
         /**
@@ -669,69 +656,15 @@ export default new Vuex.Store({
             }
             let customers = [];
             let filter = manageSpecialCharacters(value.toString().toLowerCase());
-            /* Search in a relevan fields */
-            let fields = ['_id', 'customerNumber', 'name', 'address', 'dni', 'emails', 'phones', 'paymentData' ];
-            let coincident = false;
             /* Iterate over the state customers */
             state.customers.forEach(customer => {
-                /* Check if the the customer is also added to the coincidents */
-                if (!JSON.stringify(customers).includes(customer._id)) {
-                    /* Treat every customer as no coincident at the beginning */
-                    coincident = false;
-                    /* Iterate over the posssible search fields */
-                    fields.forEach(field => {
-                        /* All the conditions on the tree check if the customer had previous coincidences to add the customer to the coincidents when only 1 condition exists. Also discard possible null values */
-                        /* Special treatment to the Object id that always will be equal */
-                        if (coincident == false && field == '_id') {
-                            // if (customer._id.$oid == value) {
-                            if (customer[field] == value) {
-                                coincident = true;
-                            }
-                        /* Check if the field is an array */
-                        } else if (coincident == false && customer[field] instanceof Array) {
-                            customer[field].forEach((subfield, idx) => {
-                                /* Check if inside the array there is/are object/s and iterate it */
-                                if (subfield instanceof Object) {
-                                    Object.keys(subfield).forEach(lastfield => {
-                                        /* Check the coincidences inside the every field of the object */
-                                        if (coincident == false && checkCoincidence(customer[field][idx][lastfield])) {
-                                            coincident = true;
-                                        }
-                                    })
-                                /* If the content of the array is text then check coincidences */
-                                } else if (coincident == false && checkCoincidence(subfield)) {
-                                    coincident = true;
-                                }
-                            });
-                        /* Check the coincidences inside the every field of the object */
-                        } else if (coincident == false && customer[field] instanceof Object) {
-                            Object.keys(customer[field]).forEach(subfield => {
-                                if (coincident == false && checkCoincidence(customer[field][subfield])) {
-                                    coincident = true;
-                                }
-                            });
-                        /* If the field is directly text check the coincidences */
-                        } else if (coincident == false && checkCoincidence(customer[field])) {
-                            coincident = true;
-                        }
-                    });
-                }
-                /* Add to the result the customer if it had coincidences */
-                if (coincident) {
-                    customers.push(customer);
-                }
-            });
-            /**
-             * Check if the value of the field passed exists and has coincidences with the filter applied
-             *
-             * @param {String} fieldValue: data to be converted to string and to lower case then to check if has coincidences
-             */
-            function checkCoincidence(fieldValue) {
-                if (fieldValue) {
-                    return manageSpecialCharacters(fieldValue.toString().toLowerCase()).includes(filter);
-                }
-                return false;
-            }
+                (checkCoincidence(customer['name'], filter) && customers.push(customer)) ||
+                (checkCoincidence(customer['dni'], filter) && customers.push(customer)) ||
+                (checkCoincidence(customer['address'], filter) && customers.push(customer)) ||
+                (checkCoincidence(customer['_id'], filter) && customers.push(customer)) ||
+                (checkCoincidence(cleanData(JSON.stringify(customer['phones'])), filter) && customers.push(customer)) ||
+                (checkCoincidence(cleanData(JSON.stringify(customer['emails'])), filter) && customers.push(customer));
+            })
             return customers;
         },
 
@@ -817,6 +750,9 @@ export default new Vuex.Store({
          */
         getPaymentData: (state, getters) => (_id, interval) => {
             const customer = getters.getCustomerById(_id);
+            if (interval == null) {
+                return undefined;
+            }
             return customer.payments.find(payment => payment.interval == interval);
         },
         /**
