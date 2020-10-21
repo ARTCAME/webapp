@@ -1,5 +1,5 @@
 <template>
-    <b-form-row align-h="between" class="px-1">
+    <b-form-row align-h="between" class="px-2" no-gutters>
         <!-- Year selector -->
         <b-form-group
             class="my-0 py-0"
