@@ -90,10 +90,7 @@ export default {
          * @return {Array} Array of objects with the list of valid customers to use
          */
         searchResult() {
-            if (this.idDiscard.length > 0) {
-                return this.getCustomerByField(this.searchField, this.searchValue).filter(customer => !this.idDiscard.includes(customer._id));
-            }
-            return this.getCustomerByField(this.searchField, this.searchValue);
+            return this.idDiscard && this.idDiscard.length > 0 ? this.getCustomerByField(this.searchField, this.searchValue).filter(customer => !this.idDiscard.includes(customer._id)) : this.getCustomerByField(this.searchField, this.searchValue)
         }
     },
     methods: {
