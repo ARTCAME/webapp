@@ -38,7 +38,7 @@
         computed: {
             ...mapGetters(['getCustomerByField', 'searchCustomer']),
             /**
-             * Provides the result of the search by the fields _id, name, address, dni, emails, phones, paymentData on the customers state
+             * Provides the result of the search by the fields _id, name, address, dni, emails, phones on the customers state
              *
              * @return {Array} Array of objects with the items for the table results
              */
