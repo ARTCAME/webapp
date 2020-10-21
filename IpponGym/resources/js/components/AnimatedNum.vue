@@ -3,7 +3,7 @@
         class="animated-number"
         :duration="300"
         :round="true"
-        :value="this.numFounded"/>
+        :value="numFounded"/>
 </template>
 <script>
     import AnimatedNumber from "animated-number-vue";
@@ -17,6 +17,4 @@
         ],
     };
 </script>
-<style scoped>
-</style>
 
