@@ -132,7 +132,7 @@ router.beforeEach(async (to, from, next) => {
         http.post('/api/updateSession', { id: id });
     }
     /* Start the route progress bar out of the documentation page */
-    if (!to.hash.includes('#doc-')) {
+    if (!to.hash.includes('#doc-') && to.name != '404') {
         NProgress.start();
     }
     /* Check if the role and the user are valid */
