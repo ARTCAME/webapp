@@ -34,7 +34,7 @@
                 </h5>
                 <b-row class="mb-2" no-gutters>
                     <b-form-input
-                        class="col col-12 col-sm-4 mr-1 mb-1 px-2"
+                        class="col col-12 col-md-3 mr-1 mb-1 px-2"
                         data-v-step="wzd-cinturones-update-2"
                         id="date-cinturones"
                         key="trans-datepicker"
@@ -42,7 +42,7 @@
                         type="date"
                         v-model="beltsNewDate"></b-form-input>
                     <span
-                        class="col col-12 col-sm-auto d-inline-block mb-1"
+                        class="col col-12 col-md-auto d-inline-block mb-1"
                         data-v-step="wzd-cinturones-update-3"
                         key="trans-btns-update"
                         tabindex="0"
@@ -69,17 +69,17 @@
                             </span>
                         </b-button>
                     </span>
-                    <!-- Shown whe the process to update grades is actived and some grade was selected -->
+                    <!-- Shown whe the process to update grades is actived and some grade are selected -->
                     <transition name="slide-fade">
                         <span
-                            class="d-inline-block ig-inline-text ml-3 my-auto"
+                            class="d-inline-block ig-inline-text ml-md-3 my-auto"
                             key="trans-text-info-update"
                             v-if="rowsSelected.length > 0">
-                            Vas a actualizar {{ rowsSelected.length }} socio/s
+                            Vas a actualizar {{ rowsSelected.length + (rowsSelected.length > 1 ? ' socios' : ' socio') }}
                         </span>
                     </transition>
                     <b-button
-                        class="ml-auto"
+                        class="mb-1 ml-auto"
                         size="sm"
                         title="Finaliza el proceso, los cambios no guardados se perderán"
                         variant="outline-danger"
@@ -100,7 +100,9 @@
                     <br>
                     <br>
                     <u>Importante:</u>
+                    <br>
                     - En la columna 'Siguiente grado' verás el grado que vas a otorgar. Pulsa sobre cualquier otro grado no otorgado para cambiar el grado a otorgar.
+                    <br>
                     - Si el grado actual es negro no podrás seleccionar a ese socio, si tiene algún grado pendiente deberás marcarlo como siguiente grado para poder actualizarlo.
                 </b-alert>
             </b-collapse>
@@ -112,44 +114,42 @@
                     Descarga manual de archivo para diplomas
                 </h5>
                 <b-row class="mb-2" no-gutters>
-                    <!-- <b-col cols="auto"> -->
-                        <span
-                            class="col col-12 col-sm-auto d-inline-block mb-1"
-                            data-v-step="wzd-cinturones-download-2"
-                            tabindex="0"
-                            v-b-tooltip.hover.noninteractive.top
-                            :title="updateInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
-                            <!-- Disabled when no grades are selected or if a row has an edit open or if the process to download the grades has been started -->
-                            <b-button
-                                class="w-100"
-                                size="sm"
-                                :disabled="rowsSelected.length == 0 || updateInCourse || downloadCsvManual"
-                                :variant="rowsSelected.length == 0 || updateInCourse  ? 'outline-success' : 'success'"
-                                @click="$tableToCsv([ 'name', 'grade', 'date' ], beltsSelectedDownload, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')">
-                                <!-- @click="$tableToCsv([ 'name', 'grade', 'date' ], rowsSelected, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')"> -->
-                                <!-- Shown during the download of the file -->
-                                <b-spinner
-                                    small
-                                    type="grow"
-                                    v-if="downloadCsvManual == true"></b-spinner>
-                                <!-- If no download is being processed, shown this -->
-                                <fa-icon
-                                    icon="file-download"
-                                    v-else></fa-icon>
-                                <span class="d-inline-block save-csv">
-                                    &ensp;Descargar fichero de diplomas
-                                </span>
-                            </b-button>
-                        </span>
-                        <!-- Shown when some grade was selected -->
-                        <transition name="slide-fade">
-                            <span
-                                class="d-inline-block ig-inline-text ml-3 my-auto"
-                                v-if="rowsSelected.length > 0">
-                                Vas a descargar un archivo con {{ rowsSelected.length }} socio/s
+                    <span
+                        class="col col-12 col-sm-auto d-inline-block mb-1"
+                        data-v-step="wzd-cinturones-download-2"
+                        tabindex="0"
+                        v-b-tooltip.hover.noninteractive.top
+                        :title="updateInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
+                        <!-- Disabled when no grades are selected or if a row has an edit open or if the process to download the grades has been started -->
+                        <b-button
+                            class="w-100"
+                            size="sm"
+                            :disabled="rowsSelected.length == 0 || updateInCourse || downloadCsvManual"
+                            :variant="rowsSelected.length == 0 || updateInCourse  ? 'outline-success' : 'success'"
+                            @click="$tableToCsv([ 'name', 'grade', 'date' ], beltsSelectedDownload, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')">
+                            <!-- @click="$tableToCsv([ 'name', 'grade', 'date' ], rowsSelected, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')"> -->
+                            <!-- Shown during the download of the file -->
+                            <b-spinner
+                                small
+                                type="grow"
+                                v-if="downloadCsvManual == true"></b-spinner>
+                            <!-- If no download is being processed, shown this -->
+                            <fa-icon
+                                icon="file-download"
+                                v-else></fa-icon>
+                            <span class="d-inline-block save-csv">
+                                &ensp;Descargar fichero de diplomas
                             </span>
-                        </transition>
-                    <!-- </b-col> -->
+                        </b-button>
+                    </span>
+                    <!-- Shown when some grade was selected -->
+                    <transition name="slide-fade">
+                        <span
+                            class="d-inline-block ig-inline-text ml-3 my-auto"
+                            v-if="rowsSelected.length > 0">
+                            Vas a descargar un archivo con {{ rowsSelected.length }} socio/s
+                        </span>
+                    </transition>
                     <b-button
                         class="ml-auto"
                         size="sm"
@@ -166,32 +166,35 @@
                     variant="info">
                     1 - Busca y selecciona en la tabla los socios de los quieres que se añadan al archivo de diplomas a descargar.
                     <br>
-                    2 - Por defecto se añadirá el último grado otorgado, si quieres cambiarlo pulsa sobre el grado o grados que quieras descargar.
+                    2 - Por defecto se añadirá el último grado otorgado, el que aparece en la columna 'Grado actual', si quieres cambiarlo pulsa sobre el grado o grados que quieras descargar.
                     <br>
                     3 - Para finalizar el proceso y descargar el fichero, pulsa sobre el botón 'Descargar'.
                 </b-alert>
             </b-collapse>
-            <transition appear name="fade-height">
-                <!-- Shown when the confirmation process has been started and some of the selected items has been hided for the filters applied to the table -->
-                <b-alert
-                    class="mb-2"
-                    show
-                    variant="warning"
+            <TransitionExpand>
+                <div
                     v-if="selectedHided">
-                    Tienes seleccionadas filas que están ocultas debido a los filtros aplicados a la tabla. Pulsa en este botón para mostrar solo las filas seleccionadas:
-                    <span
-                        class="d-inline-block ml-1"
-                        key="trans-btn-show-all"
-                        tabindex="0">
-                        <b-button
-                            size="sm"
-                            variant="dark"
-                            @click="filterSelected()">
-                            Solo seleccionadas
-                        </b-button>
-                    </span>
-                </b-alert>
-            </transition>
+                    <!-- Shown when the confirmation process has been started and some of the selected items has been hided for the filters applied to the table -->
+                    <b-alert
+                        class="mb-2"
+                        show
+                        variant="warning"
+                        v-if="selectedHided">
+                        Tienes seleccionadas filas que están ocultas debido a los filtros aplicados a la tabla. Pulsa en este botón para mostrar solo las filas seleccionadas:
+                        <span
+                            class="d-inline-block ml-1"
+                            key="trans-btn-show-all"
+                            tabindex="0">
+                            <b-button
+                                size="sm"
+                                variant="dark"
+                                @click="filterSelected()">
+                                Solo seleccionadas
+                            </b-button>
+                        </span>
+                    </b-alert>
+                </div>
+            </TransitionExpand>
             <!-- Row with the tags -->
             <b-row align-v="end" class="mb-2" no-gutters>
                 <b-col>
@@ -240,7 +243,7 @@
             </b-row>
             <!-- Row with the filters, history and download data table -->
             <b-row class="row-busqueda-table mb-2" data-v-step="wzd-main-cinturones-1" no-gutters>
-                <b-col class="mt-1 px-0" cols="md-4">
+                <b-col class="mr-1 mt-1 px-0" cols="12" lg>
                     <b-form-input
                         id="table-cinturones-search"
                         placeholder="Buscar en la tabla..."
@@ -248,9 +251,9 @@
                         type="search"
                         v-model="beltsSearch"></b-form-input>
                 </b-col>
-                <b-col cols="md-8">
+                <b-col cols="12" lg>
                     <b-row align-h="end" no-gutters>
-                        <b-col class="col-12 col-sm d-flex flex-nowrap justify-content-end">
+                        <b-col class="d-flex flex-nowrap justify-content-end">
                             <b-row no-gutters>
                                 <!-- Button to show only the selected items -->
                                 <span
@@ -273,10 +276,19 @@
                                 <!-- Filter by current grade -->
                                 <b-dropdown
                                     class="ig-dropdown mr-1 mt-1 px-0"
+                                    no-caret
                                     size="sm"
-                                    split
-                                    text="Grado"
-                                    variant="secondary">
+                                    variant="outline-primary">
+                                    <template #button-content>
+                                        <b-row class="flex-nowrap" no-gutters>
+                                            <b-col>
+                                                Grado
+                                            </b-col>
+                                            <b-col class="ml-2" cols="2">
+                                                <fa-icon icon="caret-down"></fa-icon>
+                                            </b-col>
+                                        </b-row>
+                                    </template>
                                     <b-dropdown-form>
                                         <b-form-checkbox-group
                                             buttons
@@ -298,11 +310,11 @@
                                 <b-button
                                     class="btn-fa-tiny mt-1"
                                     size="sm"
-                                    title="Quitar todos los filtros"
+                                    title="Restablecer los filtros"
                                     variant="outline-warning"
                                     v-b-tooltip.hover.noninteractive
                                     @click="resetFilters()">
-                                    <fa-icon icon="backspace"></fa-icon>
+                                    <fa-icon icon="sync-alt"></fa-icon>
                                 </b-button>
                             </b-row>
                         </b-col>
@@ -312,15 +324,15 @@
                                 class="mr-1"
                                 tabindex="0"
                                 v-b-tooltip.hover.noninteractive
-                                :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Mostrar detalles en cada socio'">
+                                :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Mostrar detalles en todas las filas'">
                                 <!-- Disabled when the table hasn't content or if all the existing rows are showing their details -->
                                 <b-button
                                     class="btn-fa-tiny"
                                     size="sm"
-                                    :disabled="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetails.length == beltsTableItems.length"
-                                    :variant="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetails.length == beltsTableItems.length ? 'outline-info' : 'info'"
+                                    :disabled="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetailsItems.length == beltsTableItems.length"
+                                    :variant="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetailsItems.length == beltsTableItems.length ? 'outline-info' : 'info'"
                                     @click="detailsExpandAll()">
-                                    <fa-icon icon="plus"></fa-icon>
+                                    <fa-icon icon="angle-double-down"></fa-icon>
                                 </b-button>
                             </span>
                             <!-- Hide all row details button -->
@@ -328,15 +340,15 @@
                                 class="mr-3"
                                 tabindex="0"
                                 v-b-tooltip.hover.noninteractive
-                                :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Ocultar detalles en cada socio'">
+                                :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Ocultar detalles de todas las filas'">
                                 <!-- Disabled when the table hasn't content or if all the existing rows aren't showing their details -->
                                 <b-button
                                     class="btn-fa-tiny"
                                     size="sm"
-                                    :disabled="showingDetails.length == 0 || ($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0)"
-                                    :variant="showingDetails.length == 0 ? 'outline-secondary' : 'secondary'"
+                                    :disabled="showingDetailsItems.length == 0 || ($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0)"
+                                    :variant="showingDetailsItems.length == 0 ? 'outline-secondary' : 'secondary'"
                                     @click="detailsCollapseAll()">
-                                    <fa-icon icon="minus"></fa-icon>
+                                    <fa-icon icon="angle-double-up"></fa-icon>
                                 </b-button>
                             </span>
                             <!-- Download table data button -->
@@ -418,24 +430,17 @@
                         </span>
                     </template>
                     <template
-                        #cell(customerNumber)="row">
+                        #cell(name)="row">
                         <b-link
+                            class="d-block table-text-overflowed text-nowrap"
                             positioning="top"
                             target="_blank"
                             title="Abre la ficha del socio"
-                            v-b-tooltip.hover.noninteractive
-                            v-html="row.value"
-                            :to="{ name: 'customers.profile', params: { id: row.item._id } }"></b-link>
-                    </template>
-                    <template
-                        #cell(name)="row">
-                        <b-link
-                            class="unformated-link"
-                            positioning="top"
-                            title="Muestra/Oculta los cinturones del socio"
-                            v-b-tooltip.hover.noninteractive
-                            v-html="row.item.name"
-                            @click="detailsSet(row.item, !row.item._showDetails)"></b-link>
+                            v-b-tooltip.hover.right.noninteractive
+                            :to="{ name: 'customers.profile', params: { id: row.item._id } }">
+                            {{ row.value }}
+                            <small class="ml-1"><fa-icon icon="external-link-alt"></fa-icon></small>
+                        </b-link>
                     </template>
                     <template
                         #cell(grade)="row">
@@ -456,12 +461,34 @@
                             @click="detailsSet(row.item, !row.item._showDetails)"></b-button>
                     </template>
                     <template
+                        #cell(editRow)="row">
+                        <b-button
+                            class="ig-small-btn"
+                            size="sm"
+                            v-b-tooltip.hover.noninteractive
+                            :title="!row.item._showDetails ? 'Mostrar detalles' : 'Ocultar detalles'"
+                            :variant="!row.item._showDetails ? 'outline-info' : 'info'"
+                            @click="detailsSet(row.item, !row.item._showDetails)">
+                            <fa-icon
+                                :icon="!row.item._showDetails ? 'angle-double-down' : 'angle-double-up'"></fa-icon>
+                        </b-button>
+                    </template>
+                    <template
                         #row-details="row">
+                        <TransitionExpand>
+                            <b-row
+                                no-gutters
+                                v-if="!isUpdating(row.item)">
+                                <small
+                                    class="text-muted">
+                                    Cuando actualices grados masivamente, recuerda que puedes cambiar el valor de la columna 'Siguiente grado' pulsando sobre el grado que quieras
+                                </small>
+                            </b-row>
+                        </TransitionExpand>
                         <b-row no-gutters>
                             <b-col class="ml-0 mr-auto">
                                 <BeltsRow
                                     :ref="'beltsRow' + row.index"
-                                    :belts="row.item.belts"
                                     :customer="getCustomerById(row.item._id)"
                                     :downloadGrades="downloadGrades"
                                     :isBeltSelectedToDelete="isBeltSelectedToDelete"
@@ -482,7 +509,7 @@
                                         class="btn-edit-cinturones"
                                         size="sm"
                                         :disabled="updating || downloadGrades"
-                                        :variant="!isUpdating(row.item) ? 'outline-info' : 'danger'"
+                                        :variant="!isUpdating(row.item) ? 'outline-secondary' : 'danger'"
                                         @click="activateUpdate(row.item)">
                                         <fa-icon
                                             icon="edit"
@@ -520,7 +547,7 @@
                         <col
                             v-for="field in scope.fields"
                             :key="field.key"
-                            :style="{ width: field.key == 'grade' || field.key == 'nextGrade' ? '120px' : field.key == 'selected' || field.key == 'active' ? '30px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                            :style="{ width: field.key == 'grade' || field.key == 'nextGrade' ? '120px' : field.key == 'editRow' || field.key == 'selected' || field.key == 'active' ? '30px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
                     </template>
                     <template
                         #table-busy>
@@ -563,12 +590,13 @@
                 beltsSelectedDownload: [], /* Selected grades on a row when a download action is actived */
                 beltsTableFields: [
                     { key: 'selected', label: '', },
-                    { key: 'active', label: 'Activo', sortable: true, class: 'text-center', },
+                    { key: 'active', label: 'Activo', sortable: true, class: 'text-right', },
                     // { key: 'id', label: 'ID', sortable: true, },
                     { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', thAttr: { 'data-v-step': 'wzd-main-cinturones-3' } },
                     { key: 'name', label: 'Socio', sortable: true, thAttr: { 'data-v-step': 'wzd-main-cinturones-4' } },
                     { key: 'grade', label: 'Grado actual', sortable: true, class: 'text-center', },
                     { key: 'nextGrade', label: 'Siguiente grado', sortable: true, class: 'text-center', },
+                    { key: 'editRow', label: 'Detalles', class: 'tableEditRow text-center'},
                 ], /* Fields of the table beltsTable, some conditional showed fields are not included by default and it will be included in some function */
                 beltsUpdated: [], /* Array with the updated rows of the table during a update of grade */
                 deletingRow: false, /* Flag to activate/deactivate the delete grades button */
@@ -576,7 +604,7 @@
                 downloadCsvManual: false, /* Flag to conditional render an spinner or icon on a print button */
                 filterTags: [], /* v-model that contains the filters applied on the table */
                 getSelectedGrade: [], /* v-model with the grade filter applied to the table */
-                grades: [ /* 'blbl',  */'blam', 'amam', 'amna', 'nana', 'nave', 'veve', 'veaz', 'azaz', 'azma', 'mama', 'nene', ], /* Code of grades */
+                grades: [ 'blbl', 'blam', 'amam', 'amna', 'nana', 'nave', 'veve', 'veaz', 'azaz', 'azma', 'mama', 'nene', ], /* Code of grades */
                 inactives: false,
                 onUpdateRow: {},  /* Store the on delete row wich will be useful to manage the states of the elements allowed and disallowed at the delete of a row */
                 rowsSelected: [], /* Selected rows from beltsTable, its elements will be pushed on events at every row */
@@ -733,6 +761,8 @@
             }
         },
         created() {
+            /* Force the update of the component to recalculate the directive that adds the title to the name on every row */
+            window.addEventListener('resize', () => { this.$forceUpdate() });
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
             /* Initialize the wizard steps data */
@@ -743,6 +773,7 @@
         destroyed() {
             /* Destroy de listeners */
             window.removeEventListener('beforeunload', this.beforeUnload);
+            window.removeEventListener('resize', () => { this.$forceUpdate() });
         },
         methods: {
             ...mapActions(['deleteBelts']),
@@ -891,11 +922,9 @@
                 this.beltsTableItems.forEach(belt => {
                     // this.detailsSet(belt, true);
                     this.$set(belt, '_showDetails', true);
-                    if (this.showingDetailsItems.length > 0) {
-                        const index = this.showingDetailsItems.findIndex(sdi => sdi._id == belt._id);
-                        if (index == -1) {
-                            this.showingDetailsItems = [ ...this.showingDetailsItems, { ...belt } ];
-                        }
+                    const index = this.showingDetailsItems.findIndex(sdi => sdi._id == belt._id);
+                    if (index == -1) {
+                        this.showingDetailsItems = [ ...this.showingDetailsItems, { ...belt } ];
                     }
                 });
             },
