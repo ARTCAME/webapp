@@ -23,7 +23,7 @@ class PaymentsController extends Controller {
                 return $payment['payment_id'] == $item['payment_id'];
             });
             if (sizeof($payment) == 1) {
-                // $customer->pull('payments', $payment);
+                $customer->pull('payments', $payment);
                 return [
                     'status' => 'success',
                     'message' => 'El pago se ha borrado',
@@ -259,7 +259,7 @@ class PaymentsController extends Controller {
                 $newPayment['dategenerated'] = $newDate;
                 $newPayment['status'] = $item['status'];
                 $newPayment['dateconfirmed'] = $newPayment['status'] != 'Pendiente' ? new \MongoDB\BSON\UTCDateTime(new \DateTime($item['dateconfirmed'])) : null;
-                // $customer->push('payments', $newPayment);
+                $customer->push('payments', $newPayment);
                 return $newPayment;
             } else if (!$manual && $existsPeriodicPayment) {
                 return response()->json([
@@ -312,7 +312,7 @@ class PaymentsController extends Controller {
                             // $payment['dateconfirmed'] = $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
                             $payment['dateconfirmed'] = $el['status'] == 'Pendiente' ? '' : $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
                             $customer['payments.' . $idx] = $payment;
-                            // $customer->save();
+                            $customer->save();
                             /* Add the id of the customer for the front end process */
                             $payment['_id'] = $customer['_id'];
                             array_push($arr_updated, $payment);
@@ -336,7 +336,7 @@ class PaymentsController extends Controller {
                             $payment['status'] = ucFirst($request->action);
                             $payment['dateconfirmed'] = $newDateConfirmed;
                             $customer['payments.' . $idx] = $payment;
-                            // $customer->save();
+                            $customer->save();
                             /* Add the id of the customer for the front end process */
                             $payment['_id'] = $customer['_id'];
                             array_push($arr_updated, $payment);
