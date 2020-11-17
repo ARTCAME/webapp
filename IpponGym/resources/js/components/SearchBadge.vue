@@ -20,11 +20,28 @@
                 :target="id"
                 :title="'Coinciden con el ' + field + ' introducido'">
                 <TableResults
-                    :customer="customer"
                     :fields="tableFields"
                     :items="searchResult"
-                    :lite="true"
-                    @choose="chooseAction(...arguments)"></TableResults>
+                    :lite="true">
+                    <template
+                        #actions="row">
+                        <b-link
+                            class="btn btn-outline-secondary btn-sm ig-small-btn unformated-link"
+                            target="_blank"
+                            title="Consulta la ficha del socio en una ventana nueva"
+                            v-b-tooltip.top.hover.noninteractive
+                            :to="{ name: 'customers.profile', params: { id: row.row.item._id } }">
+                            <span class="text text-secondary">Abrir</span>
+                        </b-link>
+                    </template>
+                    <template
+                        #col="fields">
+                        <col
+                            v-for="field in fields.fields"
+                            :key="field.key"
+                            :style="{ width: field.key == 'active' ? '40px' : field.key == 'actions' ? '50px' : 'auto' }">
+                    </template>
+                </TableResults>
                 <b-form-text class="text-center">
                     Solo se muestran los cinco primeros resultados
                 </b-form-text>
@@ -40,8 +57,9 @@ export default {
             tableFields: [
                 { key: 'active', label: '', },
                 { key: 'name', label: '', },
-                { key: 'use', label: '', },
-                { key: 'see', label: '', },
+                { key: 'actions', label: '', },
+                // { key: 'use', label: '', },
+                // { key: 'see', label: '', },
             ], /* Table fields for the TableResults child */
         }
     },
@@ -75,7 +93,7 @@ export default {
                 ids.push(this.form.tutor._id);
             }
             /* If exists any contact and any of their is customer too store his _id */
-            if (this.form.contacts.length > 0) {
+            if (this.form.contacts && this.form.contacts.length > 0) {
                 this.form.contacts.forEach(contact => {
                     if (contact._id) {
                         ids.push(contact._id);
@@ -90,7 +108,12 @@ export default {
          * @return {Array} Array of objects with the list of valid customers to use
          */
         searchResult() {
-            return this.idDiscard && this.idDiscard.length > 0 ? this.getCustomerByField(this.searchField, this.searchValue).filter(customer => !this.idDiscard.includes(customer._id)) : this.getCustomerByField(this.searchField, this.searchValue)
+            let result = this.idDiscard && this.idDiscard.length > 0 ? this.getCustomerByField(this.searchField, this.searchValue).filter(customer => !this.idDiscard.includes(customer._id)) : this.getCustomerByField(this.searchField, this.searchValue);
+            /* If the parent is a tutor search only the no underage customers */
+            if (this.tutor == true) {
+                return result.filter(customer => this.$moment().diff(this.$moment(customer.dateofbirth, 'YYYY-MM-DD'), 'years') >= 18);
+            }
+            return result;
         }
     },
     methods: {
