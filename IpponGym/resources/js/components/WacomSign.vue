@@ -19,7 +19,7 @@
             </small>
         </transition>
         <b-button
-            class="d-block my-2"
+            class="d-block ml-md-0 mx-auto my-2"
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
@@ -243,8 +243,7 @@
         width: 100%;
     }
     #capture-btn {
-        max-width: 342px;
-        width: 100%;
+        width: 342px;
     }
     #capture-btn * {
         font-size: 0.875rem!important
