@@ -1,7 +1,7 @@
 <template>
     <b-container
         class="ctn-construct"
-        v-if="this.$route.name == 'underConstruct'">
+        v-if="this.$route.name == 'maintenance'">
         <h1 id="ttl-construct">
             Estamos aplicando algunos cambios, vuelve pasados unos minutos.
         </h1>
