@@ -396,7 +396,7 @@
                         </b-form-row>
                     </div>
                 </TransitionExpand>
-                <b-row class="mt-4 mx-1 pt-4" no-gutters>
+                <b-row class="mx-1 pt-4" no-gutters>
                     <b-col cols="auto">
                         <transition mode="out-in" name="liveFeedbacks">
                             <b-button

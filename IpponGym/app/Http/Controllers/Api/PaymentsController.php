@@ -171,9 +171,12 @@ class PaymentsController extends Controller {
                 $newPayment['rate'] = $auxPaymentData['rate'];
                 $newPayment['amount'] = $auxPaymentData['amount'];
                 $newPayment['paymenttype'] = $auxPaymentData['paymenttype'];
-                $newPayment['iban'] = $auxPaymentData['iban'];
-                $newPayment['ibanownername'] = $auxPaymentData['ibanownername'];
-                $newPayment['ibanownerdni'] = $auxPaymentData['ibanownerdni'];
+                /* The bank data keys are only added if a value exists */
+                if ($auxPaymentData['paymenttype'] == 'Domiciliación') {
+                    $newPayment['iban'] = $auxPaymentData['iban'];
+                    $newPayment['ibanownername'] = $auxPaymentData['ibanownername'];
+                    $newPayment['ibanownerdni'] = $auxPaymentData['ibanownerdni'];
+                }
                 $newPayment['interval'] = date('Y-m');
                 $newPayment['status'] = 'Pendiente';
                 $newPayment['dategenerated'] = $date;
@@ -252,10 +255,15 @@ class PaymentsController extends Controller {
                 $newPayment['rate'] = $item['rate'];
                 $newPayment['amount'] = $item['amount'];
                 $newPayment['paymenttype'] = $item['paymenttype'];
-                $newPayment['interval'] = $item['interval'];
-                $newPayment['iban'] = $item['paymenttype'] == 'Domiciliación' ? $item['iban'] : null;
-                $newPayment['ibanownerdni'] = $item['paymenttype'] == 'Domiciliación' ? $item['ibanownerdni'] : null;
-                $newPayment['ibanownername'] = $item['paymenttype'] == 'Domiciliación' ? $item['ibanownername'] : null;
+                if ($item['interval'] != null) {
+                    $newPayment['interval'] = $item['interval'];
+                }
+                /* The bank data keys are only added if a value exists */
+                if ($item['paymenttype'] == 'Domiciliación') {
+                    $newPayment['iban'] = $item['iban'];
+                    $newPayment['ibanownerdni'] = $item['ibanownerdni'];
+                    $newPayment['ibanownername'] = $item['ibanownername'];
+                }
                 $newPayment['dategenerated'] = $newDate;
                 $newPayment['status'] = $item['status'];
                 $newPayment['dateconfirmed'] = $newPayment['status'] != 'Pendiente' ? new \MongoDB\BSON\UTCDateTime(new \DateTime($item['dateconfirmed'])) : null;

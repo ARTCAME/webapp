@@ -235,3 +235,12 @@
         },
     }
 </script>
+<style>
+    @media screen and (max-width: 992px) {
+        #previous-pending-modal.modal .modal-dialog {
+            max-width: 90%!important;
+            min-width: 90%!important;
+            width: 90%!important;
+        }
+    }
+</style>
