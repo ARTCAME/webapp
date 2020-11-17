@@ -1,5 +1,6 @@
 <template>
     <div
+        class="printable-ctn"
         v-if="customer != null">
         <Header></Header>
         <h4 class="mt-3">Consentimiento expreso</h4>
@@ -28,14 +29,14 @@
             :class="{ 'mb-0' : customer.tutor }">
             Nombre y apellidos del cliente: <u>  {{ customer.name }}  </u>
             <br>
-            Dni del cliente: <u>  {{ customer.dni }}  </u>
+            Dni del cliente: <u>  {{ customer.dni ? customer.dni : 'Dni no disponible' }}  </u>
         </p>
         <p
             class="mb-0"
             v-if="customer.tutor">
-            Nombre y apellidos del tutor: <u>  {{ customer.tutor.name }}  </u>
+            Nombre y apellidos del tutor: <u>  {{ customer.tutor.name ? customer.tutor.name : 'Nombre del tutor no disponible' }}  </u>
             <br>
-            Dni del tutor: <u>  {{ customer.tutor.dni }}  </u>
+            Dni del tutor: <u>  {{ customer.tutor.dni ? customer.tutor.dni : 'Dni del tutor no disponible' }}  </u>
         </p>
         <Footer
             id="sign-row-RP"
