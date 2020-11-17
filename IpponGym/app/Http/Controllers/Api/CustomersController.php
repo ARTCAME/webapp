@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CustomersController extends Controller {
     /**
-     * Stores the update of a customer, auto discard the changes on _id and customerNumber (never will be modified) or payments that are modified in other way
+     * Stores the update of a customer, auto discard the changes on _id and customerNumber (never will be modified), creation and update dates or payments that are modified in other way. The function wil add the new keys and remove the unexisting
      *
      * @param String $id: the id of the customer to update
      * @param Request $request: the form with the data to update
@@ -22,12 +22,25 @@ class CustomersController extends Controller {
     public function edit($id, Request $request) {
         $valid = $this->validData($request);
         $updated = false;
+        /* If the validations has been passed */
         if ($valid) {
             try {
-                $socio = Socios::find($id);
+                $customer = Socios::find($id);
+                /* Assign the new values */
                 foreach ($request->all() as $req_field => $req_value) {
-                    if ($req_field != 'updated_at' && $req_field != 'created_at' && $req_field != '_id' && $req_field != 'customerNumber' && $req_field != 'payments' && $socio->$req_field != $req_value) {
-                        $socio->$req_field = $req_value;
+                    /* Only treat the updatable fields */
+                    if ($req_field != 'updated_at' && $req_field != 'created_at' && $req_field != '_id' && $req_field != 'customerNumber' && $req_field != 'payments') {
+                        /* If the field comes with a different value than the customer or the field doen't exists on the customer store it */
+                        if (!isset($customer->$req_field) || $customer->$req_field != $req_value) {
+                            $customer->$req_field = $req_value;
+                            $updated = true;
+                        }
+                    }
+                }
+                /* Delete on the customer the deleted fields on the view */
+                foreach ($customer->getAttributes() as $customer_field => $customer_value) {
+                    if ($customer_field != 'updated_at' && $customer_field != 'created_at' && $customer_field != '_id' && $customer_field != 'customerNumber' && $customer_field != 'payments' && !array_key_exists($customer_field, $request->all())) {
+                        $customer->unset($customer_field);
                         $updated = true;
                     }
                 }
@@ -38,7 +51,7 @@ class CustomersController extends Controller {
                         'title' => 'Edición de socio',
                     ];
                 } else {
-                $socio->save();
+                    $customer->save();
                     return [
                         'message' => 'Socio actualizado correctamente.',
                         'status' => 'success',
@@ -120,6 +133,30 @@ class CustomersController extends Controller {
         }
     }
     /**
+     * Returns the customer images requested, can be the image avatar or the signature or both
+     *
+     * @param String $id: The id of the customer to search
+     * @param Boolean sign: Flag to determine if is requested
+     * @param Boolean image: Flag to determine if is requested
+     *
+     * @return Object with the requested data
+     */
+    public function getImages($id, Request $request) {
+        $fields = [];
+        if ($request->sign == true) {
+            array_push($fields, 'sign');
+        }
+        if ($request->image == true) {
+            array_push($fields, 'image');
+        }
+        $customerImages = Socios::select($fields)->find($id);
+        /* If the customer is not founded return 404 */
+        if ($customerImages == null) {
+            return '404';
+        }
+        return $customerImages;
+    }
+    /**
      * Find a customer by id
      *
      * @param String $id: The id of the customer to search
@@ -127,11 +164,11 @@ class CustomersController extends Controller {
      * @return Socio|Null when everything was correct return the customer data, if not, returns a flag to navigate to a 404 page
      */
     public function show($id) {
-        $socio = Socios::find($id);
-        if ($socio == null) {
+        $customer = Socios::find($id);
+        if ($customer == null) {
             return '404';
         }
-        return $socio;
+        return $customer;
     }
     /**
      * Validates the customer form on saves or updates
