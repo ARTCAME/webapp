@@ -13,7 +13,10 @@ import store from './store/customers';
 import validations from './validator/validator';
 import Vue from 'vue';
 
-Vue.config.devtools = false
+/* Import directives */
+import './directives/TextOverflown.js';
+
+// Vue.config.devtools = false
 
 import BootstrapVue from 'bootstrap-vue'; /* https://www.npmjs.com/package/bootstrap-vue */
 import 'bootstrap/dist/css/bootstrap.css';
@@ -59,6 +62,12 @@ Vue.use(VueTour);
 require('vue-tour/dist/vue-tour.css');
 
 /* Plugins */
+/* Change the innerText of elements */
+import changeText from './plugins/ChangeText';
+Vue.use(changeText);
+/* Adds a class to focus elements */
+import giveShortFocus from './plugins/giveShortFocus';
+Vue.use(giveShortFocus);
 /* Using html2canvas and jsPdf, saves a document */
 import html2print from './plugins/html2print';
 Vue.use(html2print);
@@ -95,23 +104,29 @@ let requireComponent = require.context(
   /[A-Z]\w+\.(vue|js)$/
 )
 requireComponent.keys().forEach(fileName => {
-  const componentConfig = requireComponent(fileName);
-  const componentName = upperFirst(
-    camelCase(
-      fileName.replace(/^\.\/(.*)\.\w+$/, '$1')
-    )
-  );
-  Vue.component(
-    componentName,
-    componentConfig.default || componentConfig
-  );
+    const componentConfig = requireComponent(fileName);
+    /* Manage subfolder fileName */
+    fileName = fileName.slice(fileName.lastIndexOf('/'), fileName.length);
+    const componentName = upperFirst(
+        camelCase(
+            fileName.replace(/^\.?\/?(.*)\.\w+$/, '$1')
+            // fileName.replace(/^\.\/(.*)\.\w+$/, '$1')
+        )
+    );
+    Vue.component(
+        componentName,
+        componentConfig.default || componentConfig
+    );
 });
-import RightsProtect from './components/customerdoc/RightsProtect';
-Vue.component('RightsProtect',  RightsProtect);
-import RightsImage from './components/customerdoc/RightsImage';
-Vue.component('RightsImage',  RightsImage);
-import DocImg from './components/userdocassets/DocImg';
-Vue.component('DocImg',  DocImg);
+
+// import RightsProtect from './components/customerdoc/RightsProtect';
+// Vue.component('RightsProtect',  RightsProtect);
+// import RightsImage from './components/customerdoc/RightsImage';
+// Vue.component('RightsImage',  RightsImage);
+// import Bill from './components/customerdoc/Bill';
+// Vue.component('Bill',  Bill);
+// import DocImg from './components/userdocassets/DocImg';
+// Vue.component('DocImg',  DocImg);
 
 // import '../css/styles.css'; // Las fuentes están en app.css en public
 import App from './views/App'; /* Contain the css main styles */
@@ -126,7 +141,14 @@ if (token) {
     http.defaults.headers['Authorization'] = token;
 }
 
-/* Before load the app is necessary to get all the customers data and fetch it to vuex but this will happen only if a valid user ir logged in*/
+/* Before load the app is necessary to get all the customers data and pass it to vuex but this will happen only if a valid user ir logged in*/
+
+/* UNDER CONSTRUCTION */
+maintenance();
+function maintenance() {
+    store.dispatch('auth/logout');
+    router.push({ name: 'maintenance' });
+}
 if (store.getters['auth/isLoggedIn']) {
     store.dispatch('getCustomers')
         .then(() => {
@@ -136,15 +158,10 @@ if (store.getters['auth/isLoggedIn']) {
     createVue();
 }
 function createVue() {
-    new Vue({
+    const app = new Vue({
         beforeCreate() {
-            /* Fetch the customers data at the vuex store */
-            // if (store.getters['auth/isLoggedIn']) {
-                // store.dispatch('getCustomers');
-            // }
         },
         created() {
-/* Avoiding to fake tokens on localStorage */
             /* Auto login when a user exists on localStorage */
             if (localStorage.getItem('user')) {
                 /* Auto login old? */
@@ -179,6 +196,7 @@ function createVue() {
         validations,
         render: h => h(App)
     }).$mount('#app')
+    store.$app = app; /* Pass to the store the this instance to use as this.$app and provide a method to call this.$bvModal or similar */
 }
 //         })
 // //         // .catch(error => {
