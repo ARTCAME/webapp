@@ -25,6 +25,7 @@ class Socios extends Model {
         'payments',
         'paymentdata',
         'belts',
+        'notes',
         'rightsProtect',
         'rightsImage',
         'rightsUnderage',
