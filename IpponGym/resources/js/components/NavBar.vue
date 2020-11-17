@@ -1,11 +1,12 @@
 <template>
-    <div>
+    <div id="navs-container">
+        <!-- This nav will be used as the main top sticky nav bar on some pages and as a nav item on the home page. To manage this behaviors the in-home class is added based on the route name -->
         <b-navbar
             id="ig-main-navbar"
             fixed="top"
-            :class="this.$route.name == 'home' || this.$route.name == '404' ? 'in-home' : ''"
+            :class="'d-block pb-0' + (this.$route.name == 'home' || this.$route.name == '404' ? ' in-home' : '')"
             :toggleable="this.$route.name == 'home' || this.$route.name == '404' ? false : 'md'">
-            <span class="nav-container">
+            <span id="main-nav-container" class="nav-container">
                 <b-navbar-brand class="ippon-title" href="/" id="ctn-ippongym">
                     <router-link
                         id="ippon-link"
@@ -25,17 +26,18 @@
                         </router-link>
                     </b-nav-text>
                 </b-navbar-nav>
-                <b-navbar-toggle target="nav-collapse">
-                    <template #default>
-                        <fa-icon icon="bars"></fa-icon>
-                    </template>
-                </b-navbar-toggle>
+                <button
+                    :class="'navbar-toggler' + (collapsed ? ' not-collapsed' : ' collapsed')"
+                    @click="collapsed = !collapsed">
+                    <fa-icon icon="bars"></fa-icon>
+                </button>
                 <b-collapse
                     id="nav-collapse"
                     is-nav
+                    v-model="collapsed"
                     @hide="navExpand('ig-main-navbar')"
                     @show="navExpand('ig-main-navbar')">
-                    <b-navbar-nav class="ml-auto">
+                    <b-navbar-nav id="main-navbar-nav" class="ml-auto">
                         <b-navbar-nav
                             v-if="authenticatedRole == 'user'">
                             <b-nav-item
@@ -106,7 +108,7 @@
                                 v-if="isLoggedIn">
                                 <a
                                     href="#"
-                                    class="text-secondary"
+                                    class="text-muted"
                                     @click.prevent="inLogout()">
                                     CERRAR SESIÓN
                                 </a>
@@ -115,135 +117,141 @@
                     </b-navbar-nav>
                 </b-collapse>
             </span>
-        </b-navbar>
-        <b-navbar
-            id="ig-tools-navbar"
-            fixed="top"
-            :data-v-step="$route.name == 'payments.index' ? 'wzd-main-pagos-5' : $route.name == 'belts.index' ? 'wzd-main-cinturones-6' : ''"
-            :toggleable="$route.name == 'payments.index' || $route.name == 'belts.index' ? 'sm' : false">
-            <b-row align-h="between" align-v="start" class="nav-container" no-gutters>
-                <b-col class="col-12 col-sm-8" style="box-sizing: border-box; border: 1px solid transparent;">
-                    <b-navbar-toggle
-                        id="tools-toggler"
-                        target="nav-tools-collapse"
-                        v-if="$route.name == 'payments.index' || $route.name == 'belts.index'">
-                        <template
-                            #default>
-                            <fa-icon
-                                icon="caret-down"></fa-icon>
-                        </template>
-                    </b-navbar-toggle>
-                    <b-collapse
-                        id="nav-tools-collapse"
-                        is-nav
-                        @hide="navExpand('ig-tools-navbar')"
-                        @show="navExpand('ig-tools-navbar')">
-                        <transition appear mode="out-in" name="slide-fade">
+            <b-navbar
+                id="ig-tools-navbar"
+                :data-v-step="$route.name == 'payments.index' ? 'wzd-main-pagos-5' : $route.name == 'belts.index' ? 'wzd-main-cinturones-6' : ''"
+                :toggleable="$route.name == 'payments.index' || $route.name == 'belts.index' ? 'sm' : false">
+                <b-row align-h="between" align-v="start" class="nav-container" no-gutters>
+                    <b-col class="my-auto" id="col-tools">
+                        <transition appear mode="out-in" name="left-slide-fade">
+                            <b-alert
+                                class="d-inline-block mb-0 py-2"
+                                id="edit-alert"
+                                key="alert-editform-tools"
+                                show
+                                variant="warning"
+                                v-if="$route.name == 'customers.edit'">
+                                Recuerda guardar los cambios
+                            </b-alert>
                             <span
+                                class="d-block"
                                 key="belts-tools"
                                 v-if="$route.name == 'belts.index'">
                                 <b-row align-h="start" class="nav-btn-wrp" no-gutters>
                                     <b-navbar-nav
                                         id="nav-belts-update"
-                                        :class="'col-12 col-sm-auto ig-tools-nav onpage' + (getProcedureState('beltsUpdating') ? ' actived' : '')">
+                                        :class="'ig-tools-nav mr-1 onpage' + (getProcedureState('beltsUpdating') ? ' actived' : '')">
                                         <b-nav-item
                                             class="ig-tools-item onpage"
-                                            @click="setProcedureState({ procedure: 'beltsUpdating' })">
-                                            <b-row no-gutters>
-                                                <fa-icon icon="graduation-cap"></fa-icon>
+                                            @click="collapsed = false; setProcedureState({ procedure: 'beltsUpdating' })">
+                                            <div>
+                                                <fa-icon
+                                                    class="tools-icon"
+                                                    :icon="getProcedureState('beltsUpdating') ? 'times' : 'graduation-cap'"></fa-icon>
                                                 <span class="nav-text">
-                                                    Actualiza los grados
+                                                    Actualiza grados
                                                 </span>
-                                            </b-row>
-                                            <p class="nav-desc-tools">
-                                                {{ getProcedureState('beltsUpdating') ? 'Finalizar' : 'Actualiza los grados' }}
-                                            </p>
+                                            </div>
                                         </b-nav-item>
+                                        <p class="nav-desc-tools">
+                                            {{ getProcedureState('beltsUpdating') ? 'Finalizar' : 'Actualiza los grados' }}
+                                        </p>
                                     </b-navbar-nav>
                                     <b-navbar-nav
                                         id="nav-belts-print"
-                                        :class="'col-12 col-sm-auto ig-tools-nav onpage' + (getProcedureState('beltsPrinting') ? ' actived' : '')">
+                                        :class="'ig-tools-nav onpage' + (getProcedureState('beltsPrinting') ? ' actived' : '')">
                                         <b-nav-item
                                             class="ig-tools-item onpage"
-                                            @click="setProcedureState({ procedure: 'beltsPrinting' })">
-                                            <b-row no-gutters>
-                                                <fa-icon icon="id-card-alt"></fa-icon>
+                                            @click="collapsed = false; setProcedureState({ procedure: 'beltsPrinting' })">
+                                            <div>
+                                                <fa-icon
+                                                    class="tools-icon"
+                                                    :icon="getProcedureState('beltsPrinting') ? 'times' : 'id-card-alt'"></fa-icon>
                                                 <span class="nav-text">
                                                     Descarga el archivo de diplomas
                                                 </span>
-                                            </b-row>
-                                            <p class="nav-desc-tools">
-                                                {{ getProcedureState('beltsPrinting') ? 'Finalizar' : 'Descarga el archivo de diplomas' }}
-                                            </p>
+                                            </div>
                                         </b-nav-item>
+                                        <p class="nav-desc-tools">
+                                            {{ getProcedureState('beltsPrinting') ? 'Finalizar' : 'Descarga el archivo de diplomas' }}
+                                        </p>
                                     </b-navbar-nav>
                                 </b-row>
                             </span>
                             <span
+                                class="d-block"
                                 key="payments-tools"
                                 v-if="$route.name == 'payments.index'">
                                 <b-row align-h="start" class="nav-btn-wrp" no-gutters>
                                     <b-navbar-nav
                                         id="nav-payments-update"
-                                        :class="'col-12 col-sm-auto ig-tools-nav onpage' + (getProcedureState('paymentsConfirming') ? ' actived' : '')">
+                                        :class="'ig-tools-nav mr-1 onpage' + (getProcedureState('paymentsConfirming') ? ' actived' : '')">
                                         <b-nav-item
                                             :class="'ig-tools-item onpage'"
-                                            @click="setProcedureState({ procedure: 'paymentsConfirming' })">
-                                            <b-row no-gutters>
-                                                <fa-icon icon="landmark"></fa-icon>
+                                            @click="collapsed = false; setProcedureState({ procedure: 'paymentsConfirming' })">
+                                            <div>
+                                                <fa-icon
+                                                    class="tools-icon"
+                                                    :icon="getProcedureState('paymentsConfirming') ? 'times' : 'landmark'"></fa-icon>
                                                 <span class="nav-text">
                                                     Confirma pagos
                                                 </span>
-                                            </b-row>
-                                            <p class="nav-desc-tools">
-                                                {{ getProcedureState('paymentsConfirming') ? 'Finalizar' : 'Confirma los pagos' }}
-                                            </p>
+                                            </div>
                                         </b-nav-item>
+                                        <p class="nav-desc-tools">
+                                            {{ getProcedureState('paymentsConfirming') ? 'Finalizar' : 'Confirma pagos' }}
+                                        </p>
                                     </b-navbar-nav>
                                     <b-navbar-nav
                                         id="nav-payments-print"
-                                        :class="'col-12 col-sm-auto ig-tools-nav onpage' + (getProcedureState('paymentsPrinting') ? ' actived' : '')">
+                                        :class="'ig-tools-nav onpage' + (getProcedureState('paymentsPrinting') ? ' actived' : '')">
                                         <b-nav-item
                                             class="ig-tools-item onpage"
-                                            @click="setProcedureState({ procedure: 'paymentsPrinting' })">
-                                            <b-row no-gutters class="px-1">
-                                                <fa-icon icon="file-invoice"></fa-icon>
+                                            @click="collapsed = false; setProcedureState({ procedure: 'paymentsPrinting' })">
+                                            <div>
+                                                <fa-icon
+                                                    class="tools-icon"
+                                                    :icon="getProcedureState('paymentsPrinting') ? 'times' : 'file-invoice'"></fa-icon>
                                                 <span class="nav-text">
                                                     Descarga archivos de remesa
                                                 </span>
-                                            </b-row>
-                                            <p class="nav-desc-tools">
-                                                {{ getProcedureState('paymentsPrinting') ? 'Finalizar' : 'Descarga archivos de remesa' }}
-                                            </p>
+                                            </div>
                                         </b-nav-item>
+                                        <p class="nav-desc-tools variant">
+                                            {{ getProcedureState('paymentsPrinting') ? 'Finalizar' : 'Descarga archivos de remesa' }}
+                                        </p>
                                     </b-navbar-nav>
-                                    <b-navbar-nav
+                                    <!-- <b-navbar-nav
                                         id="nav-payments-charts"
-                                        :class="'col-12 col-sm-auto ig-tools-nav onpage' + (getProcedureState('paymentsCharts') ? ' actived' : '')">
+                                        :class="'ig-tools-nav ml-1 onpage' + (getProcedureState('paymentsCharts') ? ' actived' : '')">
                                         <b-nav-item
                                             class="ig-tools-item onpage"
-                                            @click="setProcedureState({ procedure: 'paymentsCharts' })">
+                                            @click="collapsed = false; setProcedureState({ procedure: 'paymentsCharts' })">
                                             <b-row no-gutters>
-                                                <fa-icon icon="chart-bar"></fa-icon>
+                                                <fa-icon
+                                                    class="tools-icon"
+                                                    :icon="getProcedureState('paymentsCharts') ? 'times' : 'chart-bar'"></fa-icon>
                                                 <span class="nav-text">
                                                     {{ getProcedureState('paymentsCharts') ? 'Oculta gráficos' : 'Mostrar gráficos' }}
                                                 </span>
                                             </b-row>
-                                            <p class="nav-desc-tools">
-                                                {{ getProcedureState('paymentsCharts') ? 'Oculta gráficos' : 'Ver gráficos' }}
-                                            </p>
                                         </b-nav-item>
-                                    </b-navbar-nav>
+                                        <p class="nav-desc-tools">
+                                            {{ getProcedureState('paymentsCharts') ? 'Oculta gráficos' : 'Ver gráficos' }}
+                                        </p>
+                                    </b-navbar-nav> -->
                                 </b-row>
                             </span>
                         </transition>
-                    </b-collapse>
-                </b-col>
-            <!-- Global options -->
-                <b-col id="col-assets" cols="auto">
-                    <NavAssets></NavAssets>
-                </b-col>
-            </b-row>
+                    </b-col>
+                    <!-- Global options -->
+                    <b-col cols="auto" id="col-assets">
+                        <transition appear name="slide-fade">
+                            <NavAssets></NavAssets>
+                        </transition>
+                    </b-col>
+                </b-row>
+            </b-navbar>
         </b-navbar>
     </div>
 </template>
@@ -252,14 +260,17 @@
     export default {
         data() {
             return {
-                alta: { name: 'ALTA', path: 'customers.new' },
-                cinturones: { name: 'CINTURONES', path: 'belts.index' },
-                lastScroll: 0,
-                pagos: { name: 'PAGOS', path: 'payments.index' },
-                routes: {},
-                tests: { name: 'TESTS', path: 'tests.index' },
-                testsRoot: { name: 'TESTS', path: 'testsRoot' },
-                usuario: { name: 'GESTIÓN DE USUARIOS', path: 'users.index' },
+                alta: { name: 'ALTA', path: 'customers.new' }, /* router link */
+                biggerScroll: 0, /* Stores the biggest scroll to manage the reapear of the navbar on scroll up */
+                cinturones: { name: 'CINTURONES', path: 'belts.index' }, /* router link */
+                collapsed: false, /* V-model for the main nav */
+                lastScroll: 0, /* Stores the last scroll to reveal if the user scrolls up or down */
+                pagos: { name: 'PAGOS', path: 'payments.index' }, /* router link */
+                routes: {}, /* Will be composed by the router links depending on the user authenticated */
+                smallerScroll: 0, /* Stores the smaller scroll to manage the hiding of the navbar on scroll down */
+                tests: { name: 'TESTS', path: 'tests.index' }, /* router link */
+                testsRoot: { name: 'TESTS', path: 'testsRoot' }, /* router link */
+                usuario: { name: 'GESTIÓN DE USUARIOS & LABS', path: 'users.index' }, /* router link */
             }
         },
         computed: {
@@ -301,111 +312,90 @@
                         if (this.$router.currentRoute.path != '/') {
                             /* Reload the page the reset vuex */
                             location.reload()
-                            //     .then(() => {
-                            //         this.$router.push('/');
-                            //     });
                         }
                     });
             },
             /**
-             * Uix improves for the expanded navs
+             * Uix improvements for the expanded navs
              *
              * @param {String} nav: identifies the nav to manage
              */
             navExpand(nav) {
                 const elem = document.getElementById(nav);
-                elem.classList.toggle("nav-expanded")
+                elem.classList.toggle('nav-expanded');
             },
             /**
              * Manage the behaviour of the navbars
              */
             scroll() {
-                const toolsNav = document.getElementById('ig-tools-navbar');
                 const mainNav = document.getElementById('ig-main-navbar');
-                const editAlert = document.getElementById('edit-alert') || null; /* Selects a MainForm alert element */
+                const editAlert = document.getElementById('edit-alert') || null;
                 /* Add class with the box-shadow behaviour */
-                document.getElementsByTagName('html')[0].scrollTop > 0 ? toolsNav.classList.add('scrolling') : toolsNav.classList.remove('scrolling');
+                document.getElementsByTagName('html')[0].scrollTop > 0 ? mainNav.classList.add('scrolling') : mainNav.classList.remove('scrolling');
                 /* Hide/Unhide the navbar based on the scroll position */
                 const scrollY = window.scrollY;
-                var currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                this.biggerScroll = this.biggerScroll < scrollY ? scrollY : this.biggerScroll;
+                this.smallerScroll = this.smallerScroll > scrollY ? scrollY : this.smallerScroll;
                 if (scrollY > 350) {
-                    /* If is scrolling up */
-                    if (currentScroll < (this.lastScroll - 250)) {
-                        toolsNav.style.transform = 'unset';
+                    /* If is scrolling up and the scroll has a minium up movement */
+                    if (currentScroll < this.lastScroll && (currentScroll <= this.biggerScroll - 350)) {
+                        this.biggerScroll -= 350;
                         mainNav.style.transform = 'unset';
                         if (editAlert) {
                             editAlert.style.boxShadow = 'unset';
+                            editAlert.style.top = '0'
                         }
-                    } else {
-                        toolsNav.style.transform = 'translateY(-150px)';
-                        mainNav.style.transform = 'translateY(-100px)';
+                    // } else if (currentScroll > this.lastScroll) {
+                    } else if (currentScroll > this.lastScroll && (currentScroll >= this.smallerScroll + 350)) {
+                        this.smallerScroll += 350;
+                        mainNav.style.transform = 'translateY(-150px)';
+                        /* Shrink the nav when is expanded */
+                        if (this.collapsed) {
+                            this.collapsed = false;
+                        }
+                        /* Manage the edit form alert to sticky it at top */
                         if (editAlert) {
                             editAlert.style.boxShadow = '0px 0px 4px 0 rgba(133, 100, 4, 1)';
+                            editAlert.style.top = '100px'
                         }
                     }
                 } else if (scrollY <= 350) {
-                    toolsNav.style.transform = 'unset';
+                    this.biggerScroll = 0;
                     mainNav.style.transform = 'unset';
                     if (editAlert) {
                         editAlert.style.boxShadow = 'unset';
+                        editAlert.style.top = '0'
                     }
                 }
-                this.lastScroll = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
+                /* For mobile or negative scrolling set the minimum at 0 */
+                this.lastScroll = currentScroll <= 0 ? 0 : currentScroll;
             },
         },
         mounted() {
             this.lastScroll = window.pageYOffset || document.documentElement.scrollTop;
-            /* Generate random gradient to the main title */
+            /* Generate random gradient for the main title */
             this.$randomGradient(document.getElementById('ippon-ttl'));
         }
     }
 </script>
 <style>
+    /* Custom toggler styles */
+    .navbar-toggler {
+        border: 0;
+        color: rgba(0, 131, 81, 1)!important;
+    }
+    .navbar-toggler.collapsed {
+        transform: rotate(0deg);
+        transition: transform .3s ease-in-out;
+    }
+    .navbar-toggler.not-collapsed {
+        transform: rotate(-90deg);
+        transition: transform .3s ease-in-out;
+    }
 </style>
 <style scoped>
-    .ig-tools-item {
-        height: 100%;
-        padding: 0;
-        transition: all .15s ease-in-out;
-        width: 100%;
-    }
-    .ig-tools-item * {
-        color: rgba(0, 131, 81, 1);
-    }
-    .ig-tools-item svg {
-        height: 100%;
-        margin: auto auto;
-        transition: all .15s ease-in-out;
-    }
-    .ig-tools-item.onpage svg {
-        color: rgba(0, 131, 81, 1);
-    }
-    .ig-tools-item .nav-link {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-    }
-    .ig-tools-nav {
-        border-radius: .25rem;
-        box-sizing: border-box;
-        height: 40px;
-        margin: 0 1px;
-        padding: 0;
-        position: relative;
-        text-align: center;
-        transition: box-shadow .15s ease-in-out;
-        white-space: nowrap;
-        width: 40px;
-    }
-    .ig-tools-nav.onpage {
-        padding: 0 .5rem;
-        width: auto;
-    }
-    .ig-tools-nav.onpage:hover,
-    .ig-tools-nav.onpage.actived {
-        box-shadow: 0 0 0 1px rgba(0, 131, 81, 1) inset, 0 0 0 3px rgba(0, 131, 81, .2) inset;
-    }
+    /* Styles when are in home page, the rest are for the nav style */
     .in-home {
         display: flex 1 1;
         flex-direction: column;
@@ -425,6 +415,63 @@
     .in-home #nav-user * {
         width: 100%;
     }
+
+    /* Standard top sticky navbar styles */
+    /* Nested nav on main nav */
+    .nav-expanded nav {
+        box-shadow: 0 -2px 2px 0 rgba(180, 180, 180, 1)!important;
+    }
+    .ig-tools-item {
+        display: block;
+        height: 40px;
+        padding: 0;
+        transition: all .15s ease-in-out;
+        min-width: 40px;
+        width: 100%;
+    }
+    .ig-tools-item svg {
+        height: 100%;
+        margin: auto;
+        transition: color .15s ease-in-out;
+    }
+    .ig-tools-item .nav-link {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+    .ig-tools-item .nav-text,
+    .ig-tools-item.onpage svg {
+        color: rgba(0, 131, 81, 1);
+    }
+    .ig-tools-nav.onpage:hover .ig-tools-item.onpage *,
+    .ig-tools-nav.onpage.actived .ig-tools-item.onpage * {
+        /* color: rgba(159, 209, 189, 1); */
+        color: rgba(255, 255, 255, 1);
+    }
+    .ig-tools-nav {
+        border-radius: .25rem;
+        box-sizing: border-box;
+        height: 40px;
+        padding: 0;
+        position: relative;
+        text-align: center;
+        white-space: nowrap;
+        width: 40px;
+    }
+    .ig-tools-nav.onpage {
+        transition: background-color .15s ease-in-out, color .15s ease-in-out;
+    }
+    .ig-tools-nav.onpage {
+        padding: 0 .5rem;
+        width: auto;
+    }
+    .ig-tools-nav.onpage:hover,
+    .ig-tools-nav.onpage.actived {
+        background-color: rgba(0, 131, 81, 1);
+        /* color: rgba(159, 209, 189, 1)!important; */
+        color: rgba(255, 255, 255, 1)!important;
+    }
     .nav-btn-wrp {
         line-height: 38px; /* Vertical alignment correction of the nav content */
     }
@@ -435,35 +482,33 @@
         flex-wrap: wrap;
         justify-content: space-between;
         margin: 0 auto;
+        position: relative;
         width: 88%;
+    }
+    #ig-main-navbar.nav-expanded #main-nav-container.nav-container {
+        padding-bottom: 65px!important; /* Giving visibility to nested absolute positioned nav */
     }
     .nav-desc-tools {
         border-radius: .25rem;
+        color: rgba(0, 131, 81, 1);
+        display: none;
         height: 20px!important;
-        opacity: 0;
+        letter-spacing: -.04em;
         line-height: 9px;
         margin-top: 18px;
+        opacity: 0;
         padding: 5px;
         position: absolute;
+        pointer-events: none;
         right: 50%;
         transition: all .3s ease-in-out;
-        transform: translate(50%, 20px);
+        transform: translate(50%, -38px);
         user-select: none;
         visibility: hidden;
     }
-    .scrolling .nav-desc-tools {
-        background: rgba(255,255,255.1);
-    }
-    .nav-expanded {
-        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important;
-        transition: box-shadow 3s;
-    }
-    .nav-desc-tools {
-        display: none;
-    }
     .ig-tools-nav:hover .nav-desc-tools {
-        text-shadow: 1px 0 10px rgba(255, 255, 255, 1);
-        transform: translate(50%, 3px);
+        transform: translate(50%, -41px);
+        padding-bottom: 1rem;
         opacity: 1;
         visibility: visible;
     }
@@ -471,18 +516,17 @@
         letter-spacing: -.04em;
     }
     .nav-text {
-        padding: 0 .5rem;
+        padding: 0 0 0 .5rem;
     }
     .navbar-light .navbar-toggler {
         border-color: transparent; /* Delete the icon border */
         height: 40px!important
     }
     .navbar {
-        box-shadow: 0 0 0 0 grey;
         border-radius: 0.25rem;
+        box-shadow: 0 0 0 0 rgba(180, 180, 180, 1);
         box-sizing: border-box;
         margin: 15px;
-        /* overflow: hidden; */
         transition: box-shadow .15s ease-in-out;
     }
     .navbar-collapse .nav-link {
@@ -492,36 +536,60 @@
         color: rgba(0, 131, 81, 1)!important;
         text-decoration: underline!important;
     }
-    .scrolling {
-        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important
+    .tools-icon {
+        max-height: 17px;
+        min-width: 22px;
     }
     #ctn-ippongym {
         border: 1px solid transparent; /* Avoding the small jump on hambur open */
     }
+    /* Correcting the misalignment */
+    #col-tools {
+        box-sizing: border-box;
+        border: 2px solid transparent;
+    }
+    /* Alert used on the main form, when a edit is proceding */
+    #edit-alert {
+        height: 40px;
+        max-height: 40px;
+        opacity: 75%;
+        transition: .15s ease-in-out;
+        position: relative;
+        z-index: 999;
+    }
     #ig-main-navbar,
     #ig-tools-navbar {
-        transition: box-shadow .25s, transform .15s;
+        transition: box-shadow .15s ease-in-out, transform .15s ease-in-out;
         width: 100vw; /* Resolving jumps on appear scrollbar */
     }
     #ig-main-navbar {
-        border: 1px solid transparent; /* Avoding the small jump on hambur open */
         border-radius: 0;
         background-color: rgba(255, 255, 255, 1);
         margin: 0;
-        min-height: 70px;
-        /* transition: .2s; */
-        z-index: 999; /* Above tools nav */
+        min-height: 123px;
+        z-index: 999; /* In front of tools nav */
+    }
+    /* When the main nav is expanded */
+    #ig-main-navbar.nav-expanded {
+        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important;
+    }
+    #ig-main-navbar #main-navbar-nav {
+        padding-top: 10px;
+    }
+    /* Shadow added when scroll down is produced */
+    #ig-main-navbar.scrolling {
+        box-shadow: 0 2px 2px 0 rgba(180, 180, 180, 1)!important;
     }
     #ig-tools-navbar {
-        /* border: 1px solid blue; */
         background-color: rgba(255, 255, 255, 1);
         border-radius: 0;
-        /* height: 40px; */
+        bottom: 0;
+        left: 0;
         margin: 0;
-        min-height: 45px;
+        min-height: 40px;
         padding: 0;
-        top: 70px;
-        z-index: 998; /* Above tools nav */
+        position: absolute;
+        z-index: 998; /* Behind tools nav */
     }
     #ippon-link:hover{
         text-decoration: none!important;
@@ -544,8 +612,9 @@
         margin-left: .5rem;
         margin-top: auto;
     }
+    /* Prevent jumps on open modals */
     .modal-open #ig-main-navbar button {
-        margin-right: unset!important; /* Prevent jummp on modal open */
+        margin-right: unset!important;
     }
     .modal-open #ig-main-navbar {
         padding-right: 17px!important;
@@ -556,36 +625,40 @@
     .modal-open.neutral-scroll #ig-tools-navbar {
         padding-right: 0!important;
     }
-    @media screen and (max-width: 575.98px) {
-        .ig-tools-item svg {
-            margin: auto 0;
+
+    @media screen and (max-width: 880px) {
+        .ig-tools-nav.onpage:hover,
+        .ig-tools-nav.onpage.actived {
+            background-color: rgba(0, 131, 81, 1);
         }
-        .in-home .navbar-nav {
-            display: flex 1 1;
-            flex-direction: column;
-            text-align: center;
+        .ig-tools-nav.onpage:hover .ig-tools-item.onpage .nav-text,
+        .ig-tools-nav.onpage.actived .ig-tools-item.onpage .nav-text {
+            color: rgba(0, 131, 81, 1);
         }
-        #col-assets {
-            position: absolute;
-            padding-top: 1px;
-            right: 8%;
-            top: 0;
+        .ig-tools-nav.onpage:hover .ig-tools-item.onpage svg,
+        .ig-tools-nav.onpage.actived .ig-tools-item.onpage svg {
+            /* color: rgba(159, 209, 189, 1); */
+            color: rgba(255, 255, 255, 1);
         }
-        /* .modal-open #col-assets {
-            padding-right: 14px!important; Prevent jumps on modal open
-        } */
-    }
-    @media screen and (max-width: 880px) and (min-width: 576px) {
         .ig-tools-nav.onpage {
-            padding: .6rem; /* Mantain the vertical alignment without the text */
-            /* overflow: hidden; Hide the text */
-            width: 40px; /* Modifiy the width to hide the text, only will be visible the icon */
+            padding: 0; /* Remove the padding because on this breakpoint the tools nav are only composed by a svg and it manage its bounds */
         }
         .ig-tools-nav.onpage .nav-text {
             display: none; /* Hide the text */
         }
         .nav-desc-tools {
             display: block; /* Show the hover desc */
+        }
+    }
+    @media (min-width: 768px) {
+        #ig-main-navbar #main-navbar-nav {
+            padding-top: 0;
+        }
+    }
+    @media screen and (max-width: 480px) {
+        #edit-alert {
+            font-size: 14px;
+            line-height: 2;
         }
     }
 </style>
