@@ -1,5 +1,5 @@
 * {
-    font-family: myriad, sans-serif;
+    font-family: 'myriad', sans-serif;
     font-size: 17px;
     font-weight: 100;
 }
@@ -32,7 +32,7 @@ a.unformated-link:hover {
 }
 body {
     margin-bottom: 100px;
-    padding-top: 135px; /* Gap of the navbars */
+    padding-top: 132px; /* Gap of the navbars */
     transition: padding-top .3s;
 }
 body.nav-wzd {
@@ -201,7 +201,8 @@ html {
     height: 100%;
     width: 100%;
 }
-.modal.ig-custom-modal button.close {
+/* .modal.ig-custom-modal button.close { */
+.modal.ig-custom-modal header.modal-header button.close {
     font-size: 45px!important;
     padding: 1rem 2rem;
 }
@@ -213,8 +214,8 @@ html {
     /* padding-bottom: 60px; */
 }
 .modal.ig-custom-modal .modal-content {
-    /* background: rgba(250, 250, 250, 1); */
-    background: linear-gradient(-25deg, rgba(250, 250, 250, .8) 0%, rgba(250, 250, 250, 1) 70%);
+    background: rgba(250, 250, 250, 1);
+    /* background: linear-gradient(-25deg, rgba(250, 250, 250, .8) 0%, rgba(250, 250, 250, 1) 70%); */
     border-radius: 0;
     border: 0;
     height: auto;
@@ -240,8 +241,14 @@ html {
     transform: scale(1)!important;
     transition: filter .35s ease-in, opacity .3s .05s ease-in, transform .2s ease-in!important;
 }
+.modal-asset-container {
+    margin: 0 auto;
+    max-width: 900px;
+    width: 100%;
+}
 
-/* RADIO INVALIDS */
+/* CUSTOM INVALIDS */
+.ig-dropdown.is-invalid button,
 .radio-selector.is-invalid label {
     color: rgba(220, 53, 69, 1)!important;
     border-color: rgba(220, 53, 69, 1)!important;
@@ -278,6 +285,24 @@ html {
 .filter-form-tags span.filter-tag {
     padding: .2rem;
 }
+.ig-dropdown-horizontal .dropdown-menu {
+    max-width: 725px;
+    width: 300%;
+}
+.ig-dropdown-horizontal label,
+.radiocheckgroup-spaced label {
+    border-radius: .2rem!important;
+    margin: 0 5px 5px 0!important;
+    max-width: 200px;
+}
+.ig-dropdown-horizontal label:nth-child(1),
+.radiocheckgroup-spaced label  {
+    margin-left: 0!important;
+}
+.ig-dropdown-horizontal li {
+    display: block;
+    margin: 5px;
+}
 .ig-dropdown .dropdown-grado {
     height: 25px;
     line-height: 1;
@@ -289,16 +314,18 @@ html {
 .ig-dropdown .filters-button-group {
     margin: .2rem 1rem!important;
 }
-.ig-dropdown .ig-dropdown-item {
+.ig-dropdown:not(.ig-dropdown-horizontal) .ig-dropdown-item {
     text-align: left;
     width: 140px!important;
 }
-.ig-dropdown .ig-dropdown-item * {
+.ig-dropdown * {
     font-size: 0.875rem!important;
 }
 .ig-dropdown li {
-    display: list-item;
     padding: 0!important;
+}
+.ig-dropdown:not(.ig-dropdown-horizontal) li {
+    display: list-item;
     width: 140px;
 }
 .ig-dropdown .b-dropdown-form {
@@ -313,46 +340,30 @@ html {
     max-width: 32.5px;
     width: 32.5px;
 }
-.navbar-toggler {
-    color: rgba(0, 131, 81, 1)!important;
-}
-.navbar-toggler.collapsed,
-#tools-toggler.collapsed {
-    transform: rotate(0deg);
-    transition: .3s ease-in-out;
-}
-.navbar-toggler.not-collapsed {
-    transform: rotate(-90deg);
-    transition: .3s ease-in-out;
-}
-#tools-toggler.not-collapsed {
-    transform: rotate(-180deg);
-    transition: .3s ease-in-out;
-}
 /* Correcting the misalignment */
 .row-busqueda-table {
     margin-right: 1px!important;
+}
+.sm-radio-group * {
+    font-size: 0.875rem!important
 }
 .tag-cinturones-item {
     color: transparent!important;
     width: 45px;
 }
 .tag-ninguno .b-form-tag-content {
-    padding: 0!important;
+    padding: 0 3px!important;
 }
 
 /* DOCUMENT PRINT */
-.doc-ippon-data {
-    font-size: 17px;
-    text-align: right;
-}
-.doc-logo img {
-    width: 180px;
-}
-.printable-ctn {
+.printable-ctn,
+.printable-ctn-preview {
     position: relative;
     height: 260mm;
     width: 180mm;
+}
+.printable-ctn-preview {
+    height: auto;
 }
 /* This hides the element but left there in the page to allow to print it */
 .printable-wrp {
@@ -364,15 +375,17 @@ html {
     width: 0;
     z-index: -1;
 }
-.sign-ctn {
-    text-align: end;
-}
-.sign-img-doc {
-    height: 105px;
-    width: auto;
-}
 
 /* GENERIC - GLOBAL */
+.align-unlabeled {
+    margin-top: calc(26px + .5rem);
+}
+/* Align unlabeled element with labeled elements */
+@media screen and (min-width: 990px) {
+    .align-unlabeled-lg {
+        margin-top: calc(25px + .5rem); /* Vertical align with the labeled elements */
+    }
+}
 /* Square buttons with width and height like sm input */
 .btn-fa-tiny {
     box-sizing: border-box;
@@ -416,7 +429,7 @@ input.form-control {
     text-indent: 0.2rem!important;
 }
 .form-group {
-    margin-bottom: 1.5rem;
+    /* margin-bottom: 1.5rem; */
 }
 /* Custom correction on the alignment of text and fa icon */
 .ig-fa-inlinetext {
@@ -434,20 +447,29 @@ input.form-control {
     font-size: 0.875rem!important;
     position: fixed;
     right: 5rem;
-    top: 2.1rem;
+    top: 1.9rem;
 }
-.ig-modal-return-btn,
 .ig-modal-table-btn {
     height: 18px;
     line-height: 1;
     padding: 0 8px;
 }
 /* Custom button style */
+.ig-modal-return-btn,
 .ig-small-btn {
     font-size: 0.875rem!important;
     height: 22px;
     line-height: 1;
+    min-width: 35px;
     padding: 0 8px;
+}
+.ig-small-btn .text {
+    font-size: 0.875rem
+}
+/* Dropdown custom disabled element */
+.ig-select-disabled {
+    background-color: rgba(240, 240, 240, 1);
+    color: #6c757d;
 }
 /* Fake checkbox styles for the tables on the app */
 .ig-table-checkbox {
@@ -505,6 +527,11 @@ input.form-control {
     width: auto;
     z-index: 1;
 }
+.label-input-length {
+    position: absolute;
+    right: 0;
+    top: -1.2rem;
+}
 /* Generic class to elements that aren't danger or warning */
 .needs-attention {
     border-color: rgba(0, 129, 131, 1);
@@ -518,6 +545,11 @@ input.form-control {
     /* position: absolute; */
     font-size: 80%;
 }
+.needs-attention-message-danger {
+    color:rgba(255, 60, 60, 1)!important;
+    /* position: absolute; */
+    font-size: 80%;
+}
 /* Pagination */
 li.page-item {
     padding: 0;
@@ -526,12 +558,17 @@ li.page-item {
 .save-csv {
     font-size: 0.875rem;
 }
+.short-focus {
+    animation: 1s short-focus ease;
+}
 /* Custom title text with big format */
 .subtitle {
     color: rgba(0, 0, 0, .2);
     font-size: calc(40px + (70 - 40) * ((100vw - 300px) / (1600 - 300))); /* minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
+    /* height: calc(20px + (70 - 40) * ((100vw - 300px) / (1600 - 300))); minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
     letter-spacing: -.04em;
-    line-height: 40px /* 50px */;
+    line-height: calc(40px + (70 - 40) * ((100vw - 300px) / (1600 - 300))); /* 40px 50px */;
+    /* line-height: 1; */
     margin-bottom: 1rem;
     user-select: none;
 }
@@ -540,11 +577,15 @@ li.page-item {
     font-size: calc(25px + (40 - 25) * ((100vw - 300px) / (1600 - 300))); /* minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
     line-height: 30px /* 50px */;
 }
+.table-text-overflowed {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .tabs li {
     padding: 5px 5px 0!important;
 }
 .tooltip {
-    z-index: 950!important;
+    /* z-index: 950!important; */
 }
 /* Sets the tooltips text */
 .tooltip > .tooltip-inner,
@@ -594,6 +635,17 @@ li.page-item {
         transform: translateX(0rem);
     }
 }
+@keyframes short-focus {
+    0% {
+        box-shadow: 0px 0px 0px 0px rgba(0, 131, 81, .6), 0px 0px 0px 0px rgba(0, 131, 81, .6),  0px 0px 0px 0px rgba(0, 131, 81, .6),  0px 0px 0px 0px rgba(0, 131, 81, .6);
+    }
+    50% {
+        box-shadow: 1px -1px 1px 2px rgba(0, 131, 81, .4), 1px 1px 1px 2px rgba(0, 131, 81, .4), -1px 1px 1px 2px rgba(0, 131, 81, .4), -1px -1px 1px 2px rgba(0, 131, 81, .4)
+    }
+    100% {
+        box-shadow: 0px 0px 0px 0px rgba(0, 131, 81, .6), 0px 0px 0px 0px rgba(0, 131, 81, .6),  0px 0px 0px 0px rgba(0, 131, 81, .6),  0px 0px 0px 0px rgba(0, 131, 81, .6);
+    }
+}
 
 /* MEDIA QUERIES */
 @media screen and (max-width: 768px) {
@@ -626,9 +678,7 @@ li.page-item {
     box-shadow: 0 0 0 0 grey;
     transition: box-shadow .2s ease-out;
 } */
-/* .ig-select-disabled {
-    background-color: rgba(240, 240, 240, 1);
-} */
+
 /* .ig-background {
     background-color: rgba(0, 131, 81, 0.15)!important;
 }
