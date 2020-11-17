@@ -1,168 +1,111 @@
 <template>
-    <transition appear name="fade-height">
-        <div class="wrapper-dismissible">
-            <div class="form-agrupation">
-                <!-- Shown when the form is being edited  -->
-                <b-btn-close
-                    tabindex="-1"
-                    v-if="!isDisabled"
-                    @click="delFormElement({ _id: form._id, field: 'contacts', index: index })"></b-btn-close>
-                <b-form-group>
-                    <h5 md="4" class="subtitle">Persona de contacto</h5>
-                </b-form-group>
-                <!-- Shown when the form is being edited  -->
-                <SearchAtForm
-                    field="contacto"
-                    v-if="!isDisabled"
-                    :contactIndex="index"></SearchAtForm>
-                <!-- Shown when the form is being edited and the contact is a customer too -->
-                <b-button
-                    size="sm"
-                    title="Doble click para restablecer los datos"
-                    v-b-tooltip.hover.noninteractive
-                    v-if="_id && !isDisabled"
-                    @dblclick="resetContact()">Restablecer</b-button>
-                <!-- Shown when the contact is a customer too -->
-                <b-form-group
-                    v-if="_id">
-                    <b-alert class="py-2" show variant="secondary">
-                        Si quieres editar los datos del socio seleccionado
-                        <b-link
-                            target="_blank"
-                            :to="{ name: 'customers.profile', params: { id: _id } }">
-                            visita su ficha
-                            <fa-icon class="ig-fa-inlinetext" icon="external-link-alt"></fa-icon>
-                        </b-link>
-                    </b-alert>
-                    <b-form-row>
-                        <b-col cols="6">
-                            <small class="text-muted">
-                                Número de socio:
-                            </small>
-                            <b-form-input
-                                class="ig-background"
-                                disabled
-                                size="sm"
-                                v-model="customerNumber"></b-form-input>
-                        </b-col>
-                        <b-col cols="6">
-                            <small class="text-muted">
-                                Identificador del socio:
-                            </small>
-                            <b-form-input
-                                class="ig-background"
-                                disabled
-                                size="sm"
-                                v-model="_id"></b-form-input>
-                        </b-col>
-                    </b-form-row>
-                </b-form-group>
-                <b-form-group class="wrapper-for-badge col-lg p-0" label="Nombre y apellidos del contacto">
-                    <b-form-input
-                        autocomplete="off"
-                        type="text"
-                        v-model="name"
-                        v-validate="(!_id && !isDisabled) ? 'alpha_spaces|required' : ''"
-                        :class="{ 'is-invalid' : errors.has('contacts-' + index + '-name') && (!_id && !isDisabled) }"
-                        :disabled="!!_id || isDisabled"
-                        :name="'contacts-' + index + '-name'"></b-form-input>
-                    <transition mode="out-in" name="liveFeedbacks">
-                        <b-form-invalid-feedback
-                            v-if="errors.has('contacts-' + index + '-name')">
-                            {{ errors.first('contacts-' + index + '-name') }}
-                        </b-form-invalid-feedback>
-                    </transition>
-                    <!-- Shown when the form is being edited -->
-                    <SearchBadge
-                        class="label-badge"
-                        searchField="name"
-                        field="nombre"
-                        v-if="!_id && !isDisabled"
-                        :contact="true"
-                        :contactIndex="index"
-                        :id="'sb-contacto-name-' + index"
-                        :searchValue="name"
-                        @choosing="$validator.pause()"
-                        @chosen="$validator.resume()"></SearchBadge>
-                </b-form-group>
-                <b-collapse
-                    :visible="!contact.phones || contact.phones.length == 0">
-                    <b-alert
-                        class="py-2"
-                        show
-                        variant="info">
-                        No has añadido ningún teléfono y es muy recomendable que el contacto tenga por lo menos uno.
-                    </b-alert>
-                </b-collapse>
-                <PhoneBase
-                    target="contacts"
-                    v-for="(phone, phoneIndex) in contact.phones"
+    <div class="wrapper-dismissible">
+        <div class="form-agrupation">
+            <!-- Shown when the form is being edited  -->
+            <b-btn-close
+                tabindex="-1"
+                v-if="!isDisabled"
+                @click="delFormElement({ _id: form._id, entity: 'customer', field: 'contacts', index: index })"></b-btn-close>
+            <b-form-group>
+                <h5 md="4" class="subtitle">Persona de contacto</h5>
+            </b-form-group>
+            <!-- Shown when the form is being edited  -->
+            <SearchAtForm
+                field="contacto"
+                v-if="!isDisabled"
+                :contactIndex="index"></SearchAtForm>
+            <!-- Shown when the form is being edited and the contact is a customer too -->
+            <b-button
+                class="mb-2"
+                size="sm"
+                title="Doble click para restablecer los datos"
+                v-b-tooltip.hover.noninteractive
+                v-if="_id && !isDisabled"
+                @dblclick="resetContact()">Restablecer</b-button>
+            <!-- Shown when the contact is a customer too -->
+            <b-form-group
+                v-if="_id">
+                <b-alert class="py-1" show variant="secondary">
+                    Si quieres editar los datos del socio seleccionado
+                    <b-link
+                        target="_blank"
+                        :to="{ name: 'customers.profile', params: { id: _id } }">
+                        visita su ficha
+                        <fa-icon class="ig-fa-inlinetext" icon="external-link-alt"></fa-icon>
+                    </b-link>
+                </b-alert>
+                <b-form-row>
+                    <b-col cols="6">
+                        <small class="text-muted">
+                            Número de socio:
+                        </small>
+                        <b-form-input
+                            class="ig-background"
+                            disabled
+                            size="sm"
+                            v-model="customerNumber"></b-form-input>
+                    </b-col>
+                    <b-col cols="6">
+                        <small class="text-muted">
+                            Identificador del socio:
+                        </small>
+                        <b-form-input
+                            class="ig-background"
+                            disabled
+                            size="sm"
+                            v-model="_id"></b-form-input>
+                    </b-col>
+                </b-form-row>
+            </b-form-group>
+            <b-form-group class="wrapper-for-badge col-lg p-0" label="Nombre y apellidos del contacto">
+                <b-form-input
+                    autocomplete="off"
+                    debounce="500"
+                    type="text"
+                    v-model="name"
+                    v-validate="(!_id && !isDisabled) ? 'alpha_spaces|required' : ''"
+                    :class="{ 'is-invalid' : errors.has('contacts-' + index + '-name') && (!_id && !isDisabled) }"
+                    :disabled="!!_id || isDisabled"
+                    :name="'contacts-' + index + '-name'"></b-form-input>
+                <transition mode="out-in" name="liveFeedbacks">
+                    <b-form-invalid-feedback
+                        v-if="errors.has('contacts-' + index + '-name')">
+                        {{ errors.first('contacts-' + index + '-name') }}
+                    </b-form-invalid-feedback>
+                </transition>
+                <!-- Shown when the form is being edited -->
+                <SearchBadge
+                    class="label-badge"
+                    searchField="name"
+                    field="nombre"
+                    v-if="!_id && !isDisabled"
+                    :contact="true"
                     :contactIndex="index"
-                    :isDisabled="!!_id || isDisabled"
-                    :inPhone="phone"
-                    :key="'contact_phone_' + phoneIndex"
-                    :phoneIndex="phoneIndex"
-                    @input="setContactFields({ _id: form._id, field: 'phones', fieldIndex: phoneIndex, contactIndex: index, newVal: $event })"></PhoneBase>
-                <!-- Shown when the form is being edited and the contact is not a customer too -->
-                <b-row
-                    class="mb-4"
-                    no-gutters
-                    v-if="!_id && !isDisabled">
-                    <b-button
-                        class="ml-auto"
-                        size="sm"
-                        variant="ig-gradient"
-                        @click="addNewElement({ _id: form._id, element: 'phones', entity: 'contacts', entityIndex : index })">
-                        <fa-icon class="mr-2" icon="plus"></fa-icon>
-                        Añadir teléfono
-                    </b-button>
-                </b-row>
-                <b-collapse
-                    :visible="!contact.emails || contact.emails.length == 0">
-                    <b-alert
-                        class="py-2"
-                        show
-                        variant="info">
-                        No has añadido ningún email y es muy recomendable que el contacto tenga por lo menos uno.
-                    </b-alert>
-                </b-collapse>
-                <EmailBase
-                    target="contacts"
-                    v-for="(email, emailIndex) in contact.emails"
-                    :contactIndex="index"
-                    :emailIndex="emailIndex"
-                    :inEmail="email"
-                    :isDisabled="!!_id || isDisabled"
-                    :key="'contact_email_' + emailIndex"
-                    @input="setContactFields({ _id: form._id, field: 'emails', fieldIndex: emailIndex, contactIndex: index, newVal: $event })"></EmailBase>
-                <!-- Shown when the form is being edited and the contact is not a customer too -->
-                <b-row
-                    class="mb-4"
-                    no-gutters
-                    v-if="!_id && !isDisabled">
-                    <b-button
-                        class="ml-auto"
-                        size="sm"
-                        variant="ig-gradient"
-                        @click="addNewElement({ _id: form._id, element: 'emails', entity: 'contacts', entityIndex : index })">
-                        <fa-icon class="mr-2" icon="plus"></fa-icon>
-                        Añadir email
-                    </b-button>
-                </b-row>
-                <b-form-group label="Notas" label-for="notas-contacto">
-                    <b-form-textarea
-                        autocomplete="off"
-                        class="col-lg"
-                        no-resize
-                        rows="2"
-                        type="textarea"
-                        v-model="notes"
-                        :disabled="isDisabled"
-                        :id="'notas-contacto-' + index "></b-form-textarea>
-                </b-form-group>
-            </div>
+                    :id="'sb-contacto-name-' + index"
+                    :searchValue="name"
+                    @choosing="$validator.pause()"
+                    @chosen="$validator.resume()"></SearchBadge>
+            </b-form-group>
+            <PhoneBase
+                target="contacts"
+                :inPhones="contact.phones"
+                :isDisabled="!!_id || isDisabled"
+                :targetIndex="index"
+                @input="setContactFields({ _id: form._id, field: 'phones', fieldIndex: $event.arrayIndex, contactIndex: $event.targetIndex, newVal: $event.newVal })"></PhoneBase>
+            <EmailBase
+                target="contacts"
+                :inEmails="contact.emails"
+                :isDisabled="!!_id || isDisabled"
+                :targetIndex="index"
+                @input="setContactFields({ _id: form._id, field: 'emails', fieldIndex: $event.emailIndex, contactIndex: $event.contactIndex, newVal: $event.email })"></EmailBase>
+            <NotesBase
+                target="contacts"
+                :_id="form._id"
+                :inNotes="contact.notes"
+                :isDisabled="isDisabled"
+                :targetIndex="index"></NotesBase>
         </div>
-    </transition>
+    </div>
 </template>
 <script>
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
@@ -181,6 +124,9 @@ function computeBaseFields(keys) {
                 return this.contact[key];
             },
             set(value) {
+                if (key == 'name') {
+                    value = value.toUpperCase();
+                }
                 this.setContactFields({ _id: this.form._id, field: key, contactIndex: this.index, newVal: value });
             }
         }
@@ -188,8 +134,13 @@ function computeBaseFields(keys) {
     return result;
 };
 export default {
+    data() {
+        return {
+            newNote: '',
+        }
+    },
     computed: {
-        ...computeBaseFields(['_id', 'customerNumber', 'name', 'notes']),
+        ...computeBaseFields(['_id', 'customerNumber', 'name']),
         ...mapGetters(['getDefaultState']),
         ...mapState({
             newCustomerForm: state => state.form,
