@@ -148,7 +148,7 @@ import Axios from 'axios';
                 alta: { name: 'Dar de ALTA un socio', path: 'customers.new' },
                 cinturones: { name: 'Actualizar y ver los CINTURONES', path: 'belts.index' },
                 logging: false, /* Flag to apply visual modifications when logging in/out */
-                maintenance: true,
+                maintenance: false, /* Flag to unable certain functionalities during the maintenances */
                 numUserFounded: '', /* Number of users coincidents at the db. Used on typing the user name to show error  */
                 pagos: { name: 'Gestionar y consultar los PAGOS existentes', path: 'payments.index' },
                 password: '', /* v-model */
