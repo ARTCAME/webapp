@@ -5,23 +5,36 @@
                 Genera y descarga documentos de socio
             </h1>
             <p>
-                Desde esta utilidad podremos descargar manualmente documentos para entregar a nuestro socio/a o simplemente generarlos para guardarlos. Esta documentación se descargará por el proceso habitual que lo genere de manera automática pero cuando necesitemos hacerlo de manera manual usaremos esta opción.
+                Desde esta utilidad podremos descargar manualmente documentos para entregar a nuestro socio/a o simplemente para guardarlos.
             </p>
             <p>
-                Los documentos que descarguemos se vinculan a un socio y se generarán con los datos necesarios de nuestro socio/a seleccionado.
+                Com veremos, estos documentos se podrán descargar desde otros apartados de la aplicación pero aquí se da un acceso unificado a todos los documentos descargables.
             </p>
             <DocImg alt="Ubicación del generador de documentos en home" desc="Ubicación del generador de documentos en la página de bienvenida" img="Documentos1.png" type="image/png"></DocImg>
             <DocImg alt="Ubicación del generador de documentos en barra de navegación" desc="Ubicación del generador de documentos en la barra de navegación" img="Documentos2.png" type="image/png"></DocImg>
             <p>
-                Los documentos base que vamos a poder generar serán recibos y autorizaciones de menor. En cualquier caso, el primer paso siempre será buscar el socio y seleccionarlo para posteriormente seleccionar el tipo de documento de entre los disponibles.
+                Los documentos que vamos a poder descargar son:
+                <br>
+                &emsp;- Recibo: Podremos escoger de entre los pagos que tenga un socio confirmados
+                <br>
+                &emsp;- Consentimiento expreso: Es el consentimiento al tratamiento de datos del socio. Si el socio es menor se reflejará en el documento junto con los datos del tutor incluidos en la ficha del socio
+                <br>
+                &emsp;- Cesión de imagen: Es la confirmación de si el socio nos permite o no usar su imagen en diferentes medios. Si el socio es menor se reflejará en el documento junto con los datos del tutor incluidos en la ficha del socio
+                <br>
             </p>
             <p>
-                En la siguiente captura vemos el paso previo a descargar un recibo. Para poder proceder a la descarga, en el caso de los recibos, deberemos seleccionar el periodo de cobro del recibo, el sistema nos dejará escoger solamente entre la combinación mes/año cuando haya un pago realizado:
+                Estos documentos no siempre estarán habilitados y deberemos tener en cuenta ciertas consideraciones:
+                <br>
+                &emsp;- Si un socio no tiene ningún pago con el estado 'Confirmado' no se podrá generar ningún recibo, no se pueden generar recibos en estado 'Pendiente' o 'Devuelto'
+                <br>
+                &emsp;- Si un socio no ha aceptado las políticas legales de IPPONGYM no podremos imprimir estos documentos y las opciones nos aparecerán deshabilitadas
+                <br>
             </p>
-            <DocImg alt="Generando un recibo" desc="Página de confirmación de los datos para generar un recibo" img="Documentos3.png" type="image/png"></DocImg>
+            <DocImg alt="Selector de documentos y buscador de pagos" desc="Selector de documentos y buscador de pagos" img="Documentos3.png" type="image/png"></DocImg>
             <p>
-                Para el resto de documentos, durante el proceso de generarlos, la aplicación nos asistirá para determinar si tenemos todos los datos para poder generarlo e incluso tendremos acceso a tutoriales para que nos explique en detalle el proceso y los datos necesarios.
+                Una vez confirmado el tipo de documento a descargar podremos ver el resumen de datos que lo compondrán y si nos falta alguno de ellos seremos advertidos aunque esto no evitará que podamos descargar el documento aunque esté incompleto.
             </p>
+            <DocImg alt="Resumen de datos para el documento" desc="Resumen de datos para el documento" img="Documentos4.png" type="image/png"></DocImg>
         </b-form-group>
     </div>
 </template>
