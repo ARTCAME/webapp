@@ -83,7 +83,8 @@
 .btn-ig-outline-green:not(.disabled):hover {
     background-color: rgba(0, 131, 81, 1);
     background-position: 100%;
-    color: rgba(159, 209, 189, 1)!important;
+    /* color: rgba(159, 209, 189, 1)!important; */
+    color: rgba(255, 255, 255, 1)!important;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, color 0.15s ease-in-out;
 }
 /* Buttons solids */
