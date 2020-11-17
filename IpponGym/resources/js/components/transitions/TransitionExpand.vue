@@ -57,12 +57,11 @@
                     element.style.opacity = '1';
                     element.style.transform = 'scale(1)';
                     element.style.overflow = null;
-                    // element.style.transform = null;
                 });
             },
             leave(element) {
-                const width = getComputedStyle(element).width;
-                element.style.width = width;
+                // const width = getComputedStyle(element).width;
+                // element.style.width = width;
                 element.style.overflow = 'hidden';
                 const height = getComputedStyle(element).height;
                 element.style.height = height;

@@ -123,6 +123,9 @@
     }
 </script>
 <style>
+    #payments-nav-modal .modal-body {
+        overflow-x: hidden!important;
+    }
     #payments-nav-modal.ig-custom-modal .modal-header,
     #print-nav-modal.ig-custom-modal .modal-header,
     #search-nav-modal.ig-custom-modal .modal-header {
