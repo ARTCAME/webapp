@@ -1,12 +1,11 @@
 <template>
     <span>
         <b-form-row
-            :class="'mx-0' + ($route.name != 'belts.index' ? ' my-4' : '')"
-            id="btn-group-cinturones"
+            :class="'mx-0' + ($route.name != 'belts.index' ? ' mb-2 mt-4' : '')"
             no-gutters>
             <span
                 v-b-tooltip.hover.noninteractive
-                v-for="belt in belts"
+                v-for="belt in customer.belts"
                 :key="belt.grade"
                 :title="$route.name == 'belts.index' ? evaluateGradesTooltipTitle(row.item, belt) : ''">
                 <b-button
@@ -18,41 +17,43 @@
                 </b-button>
             </span>
         </b-form-row>
-        <b-collapse
-            :visible="$route.name == 'belts.index' ? isUpdating(row.item) : true">
-            <small
-                class="text-muted"
-                v-if="!isDisabled">
-                Puedes seleccionar grados y aplicarles una nueva fecha o seleccionar grados y borra la fecha que tengan
-            </small>
-            <b-form-row
-                no-gutters
-                v-if="!isDisabled"
-                :class="'ml-0' + ($route.name == 'belts.index' ? ' belts-table-edit' : '')">
-                <b-form-input
-                    class="col-3"
-                    type="date"
-                    v-model="beltsNewDate"></b-form-input>
-                <span
-                    v-b-tooltip.hover.noninteractive
-                    :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : beltsNewDate == '' ? 'Selecciona una fecha' : 'Guarda la fecha seleccionado en los grados seleccionados'">
-                    <b-button
-                        class="ml-3"
-                        variant="outline-primary"
-                        :disabled="selectedBelts.length == 0 || beltsNewDate == ''"
-                        @click="beltsUpdate()">Aplicar nueva fecha</b-button>
-                </span>
-                <span
-                    v-b-tooltip.hover.noninteractive
-                    :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : 'Borra la fecha de los grados seleccionados'">
-                    <b-button
-                        class="ml-4"
-                        variant="outline-danger"
-                        :disabled="selectedBelts.length == 0 || selectedBelts.every(sb => sb.date == null || sb.date == '')"
-                        @click="beltsDelete()">Borrar fecha</b-button>
-                </span>
-            </b-form-row>
-        </b-collapse>
+        <TransitionExpand>
+            <div
+                v-if="$route.name == 'belts.index' ? isUpdating(row.item) : true">
+                <small
+                    class="text-muted"
+                    v-if="!isDisabled">
+                    Puedes seleccionar grados y aplicarles una nueva fecha o borrarles la fecha que tengan
+                </small>
+                <b-form-row
+                    no-gutters
+                    v-if="!isDisabled"
+                    :class="'pb-1 ml-0' + ($route.name == 'belts.index' ? ' belts-table-edit' : '')">
+                    <b-form-input
+                        class="col-3"
+                        type="date"
+                        v-model="beltsNewDate"></b-form-input>
+                    <span
+                        v-b-tooltip.hover.noninteractive
+                        :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : beltsNewDate == '' ? 'Selecciona una fecha' : 'Guarda la fecha seleccionado en los grados seleccionados'">
+                        <b-button
+                            class="ml-2"
+                            variant="outline-primary"
+                            :disabled="selectedBelts.length == 0 || beltsNewDate == ''"
+                            @click="beltsUpdate()">Aplicar nueva fecha</b-button>
+                    </span>
+                    <span
+                        v-b-tooltip.hover.noninteractive
+                        :title="selectedBelts.length == 0 ? 'Selecciona algún grado' : 'Borra la fecha de los grados seleccionados'">
+                        <b-button
+                            class="ml-2"
+                            variant="outline-danger"
+                            :disabled="selectedBelts.length == 0 || selectedBelts.every(sb => !sb.date)"
+                            @click="beltsDelete()">Borrar fecha</b-button>
+                    </span>
+                </b-form-row>
+            </div>
+        </TransitionExpand>
     </span>
 </template>
 
@@ -68,18 +69,22 @@
         },
         methods: {
             /* Mapping vuex */
-            ...mapActions(['deleteBelts', 'updateBelts']),
+            ...mapActions(['deleteBelts', 'updateBelts', 'updateFormBelts']),
             ...mapMutations(['UPDATE_FIELD']),
             /**
-             * On delete belts (set its date as null) commit it at db via vuex
+             * On delete belts (set its date as null) commit it at db via vuex. Depending on the route the changes are stored at the db (main.belts) or are vuex's only (rest)
              */
             async beltsDelete() {
-                try {
-                    const response = await this.deleteBelts({ id: this.customer._id, selectedBelts: this.selectedBelts});
-                    this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
-                } catch(error) {
-                    this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoFo@BeDe', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
+                if (this.$route.name == 'belts.index') {
+                    try {
+                        const response = await this.deleteBelts({ id: this.customer._id, selectedBelts: this.selectedBelts});
+                        this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
+                    } catch(error) {
+                        this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoFo@BeDe', 'Ha ocurrido un error')
+                        console.error(error.response ? error.response.data : error);
+                    }
+                } else {
+                    this.updateFormBelts({ id: this.customer._id, selectedBelts: this.selectedBelts });
                 }
                 /* Reset the inputs and selectors involved */
                 this.beltsResetFields();
@@ -94,15 +99,19 @@
                 this.beltsNewDate = '';
             },
             /**
-             * Commit the new date selected on db via vuex for the belts selecteds
+             * Commit the new date selected on db via vuex for the belts selecteds. Depending on the route the changes are stored at the db (main.belts) or are vuex's only (rest)
              */
             async beltsUpdate() {
-                try {
-                    const response = await this.updateBelts({ id: this.customer._id, selectedBelts: this.selectedBelts, date: this.$moment(this.beltsNewDate).format('DD-MM-YYYY') });
-                    this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
-                } catch(error) {
-                    this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoFo@BeUp', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
+                if (this.$route.name == 'belts.index') {
+                    try {
+                        const response = await this.updateBelts({ id: this.customer._id, selectedBelts: this.selectedBelts, date: this.$moment(this.beltsNewDate).format('DD-MM-YYYY') });
+                        this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
+                    } catch(error) {
+                        this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoFo@BeUp', 'Ha ocurrido un error')
+                        console.error(error.response ? error.response.data : error);
+                    }
+                } else {
+                    this.updateFormBelts({ id: this.customer._id, selectedBelts: this.selectedBelts, newVal: this.$moment(this.beltsNewDate).format('DD-MM-YYYY') });
                 }
                 /* Reset the inputs and selectors involved */
                 this.beltsResetFields();
@@ -200,7 +209,7 @@
         },
         props: [
             'belts', /* The array of belts of a customer */
-            'customer', /* The customer entire data */
+            'customer', /* The customer entire data of a row on the table of main belts or a customer loaded at a form*/
             'downloadGrades', /* From MainBelts, the status of the procedure */
             'isBeltSelectedToDownload', /* Function from MainBelts to determine if a belt of a row is selected to download */
             'isUpdating', /* Function from MainBelts to determine if a belt of a row has an updating actived */
