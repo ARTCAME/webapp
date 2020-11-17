@@ -164,7 +164,7 @@ router.beforeEach(async (to, from, next) => {
             next();
         }
     } else {
-        next('/mantenimiento')
+        router.push({ name: 'maintenance' });
     }
 })
 router.afterEach(() => {
