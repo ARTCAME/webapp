@@ -1,8 +1,9 @@
 
 <template>
     <div>
+        <!-- Show only in main payments and when a no other parent exists -->
         <span
-            v-if="$route.name == 'payments.index'">
+            v-if="$route.name == 'payments.index' && !parentId && !parentItems">
             <Wizard
                 name="wzd-pagos-confirming"
                 v-show="confirming"
@@ -16,171 +17,88 @@
                 v-show="!confirming && !manualDownload"
                 :steps=wmpSteps></Wizard>
         </span>
-            <b-collapse
-                :visible="$route.name == 'payments.index' && rowsSelected.length > 200">
+        <TransitionExpand>
+            <div
+                v-if="$route.name == 'payments.index' && rowsSelected.length > 200">
                 <b-alert
+                    class="py-1"
                     show
                     variant="danger">
                     Has seleccionado más de 200 filas, asegúrate que hayas escogido las filas correctas antes de guardar los cambios.
                 </b-alert>
-            </b-collapse>
-            <!-- Content for the confirmation process -->
-            <b-collapse
-                id="collapse-information-confirm"
-                :visible="confirming">
-                <h5 data-v-step="wzd-pagos-confirming-0" class="subtitle subtitle-sub" md="4">
-                    Confirmación de estado de pagos domiciliados
-                </h5>
-                <b-row align-h="start" class="mb-2" no-gutters>
-                    <b-col cols="sm-12 auto">
+            </div>
+        </TransitionExpand>
+        <!-- Content for the confirmation process -->
+        <b-collapse
+            id="collapse-information-confirm"
+            :visible="confirming">
+            <h5 data-v-step="wzd-pagos-confirming-0" class="subtitle subtitle-sub" md="4">
+                Confirmación de estado de pagos domiciliados
+            </h5>
+            <b-row align-h="start" class="mb-2" no-gutters>
+                <b-col cols="12" md="auto">
+                    <b-row class="mx-0" no-gutters>
+                        <!-- It will be disabled when the confirmation of payments process has not been started -->
+                        <b-form-radio-group
+                            buttons
+                            button-variant="outline-secondary"
+                            class="col col-12 col-sm mb-1 mr-1 px-0 "
+                            data-v-step="wzd-pagos-confirming-2"
+                            key="trans-radio-new-state"
+                            size="sm"
+                            v-model="newStateSelected"
+                            :disabled="!confirming">
+                            <b-form-radio
+                                name="radio-stats"
+                                value="confirmado">
+                                Confirmado
+                            </b-form-radio>
+                            <b-form-radio
+                                name="radio-stats"
+                                value="devuelto">
+                                Devuelto
+                            </b-form-radio>
+                        </b-form-radio-group>
                         <!-- It is shown conditionally when the confirmation of payments has been started -->
-                        <b-row no-gutters>
-                            <span
-                                class="col col-12 col-sm-auto mb-1 mr-1"
-                                id="wrp-tlt-stats"
-                                key="trans-radio-new-state"
-                                tabindex="0"
-                                v-b-tooltip.hover.noninteractive
-                                :title="showingDetails ? 'No puedes confirmar pagos mientras editas una línea de la tabla' : ''">
-                                <!-- It will be disabled when a row in the table is being edited or if the confirmation of payments process has not been started -->
-                                <b-form-radio-group
-                                    buttons
-                                    button-variant="outline-secondary"
-                                    class="w-100"
-                                    data-v-step="wzd-pagos-confirming-2"
-                                    size="sm"
-                                    v-model="newStateSelected"
-                                    :disabled="showingDetails || !confirming">
-                                    <b-form-radio
-                                        name="radio-stats"
-                                        value="confirmado">
-                                        Confirmado
-                                    </b-form-radio>
-                                    <b-form-radio
-                                        name="radio-stats"
-                                        value="devuelto">
-                                        Devuelto
-                                    </b-form-radio>
-                                </b-form-radio-group>
-                            </span>
-                            <!-- It is shown conditionally when the confirmation of payments has been started -->
-                            <span
-                                class="col col-12 col-sm-auto d-inline-block mb-1"
-                                id="save-confirmation"
-                                key="trans-btn-save-confirm"
-                                tabindex="0"
-                                v-b-tooltip.hover.noninteractive
-                                :title="showingDetails ? 'No puedes confirmar pagos mientras editas una línea de la tabla' : newStateSelected == false && rowsSelected.length == 0 ? 'Selecciona un estado y algún pago de la tabla' : newStateSelected == false ? 'Selecciona un estado' : rowsSelected.length == 0 ?  'Selecciona algún pago de la tabla' : csvDownloadConfirmation ? 'Descargando...' : ''">
-                                <!-- It will be disabled when the user hasn't selected a new state for the payment or if he hasn't select a row in the table or if a row in the table is being edited or if the flag wich controls the download of the file is actived -->
-                                <b-button
-                                    class="w-100"
-                                    data-v-step="wzd-pagos-confirming-3"
-                                    size="sm"
-                                    :disabled="!newStateSelected || rowsSelected.length == 0 || showingDetails || csvDownloadConfirmation"
-                                    :variant="csvDownloadConfirmation == false && (newStateSelected && rowsSelected.length > 0 && !showingDetails) ? 'success' : 'outline-success'"
-                                    @click="confirmingState()">
-                                    <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
-                                    <b-spinner
-                                        small
-                                        type="grow"
-                                        v-if="csvDownloadConfirmation == true"></b-spinner>
-                                    <fa-icon
-                                        icon="check-double"
-                                        v-else></fa-icon>
-                                    &ensp;Confirmar estado
-                                </b-button>
-                            </span>
-                            <!-- It will be shown when the confimation of payments has started and has been selected some rows -->
-                            <transition name="slide-fade">
-                                <span
-                                    class="d-inline-block ig-inline-text ml-3"
-                                    key="trans-confirm-text"
-                                    v-if="confirming && rowsSelected.length > 0">
-                                    Vas a confirmar {{ rowsSelected.length }} pago/s
-                                </span>
-                            </transition>
-                        </b-row>
-                    </b-col>
-                    <b-button
-                        class="ml-auto"
-                        size="sm"
-                        title="Finaliza el proceso, los cambios no guardados se perderán"
-                        variant="outline-danger"
-                        v-b-tooltip.hover.noninteractive
-                        @click="endProcedures()">
-                        Finalizar
-                    </b-button>
-                </b-row>
-                <!-- It will be shown when the confirmation process has been started -->
-                <b-alert
-                    class="mb-2"
-                    show
-                    variant="info">
-                    1 - Busca y selecciona los pagos que quieres cambiar de estado. En este proceso solo podrás seleccionar los que estén 'Pendientes' y tengan forma de pago 'Domiciliación'.
-                    <br>
-                    2 - Selecciona el estado que quieres aplicar: 'Confirmado' o 'Devuelto'.
-                    <br>
-                    3 - Para acabar, confirma los cambios.
-                    <br>
-                    <br>
-                    <u>Importante:</u>
-                    <br>
-                    - Fíjate que el periodo de pago y la forma de pago de los pagos que selecciones sean los correctos.
-                    <br>
-                    - Si lo necesitas, puedes editar ciertos datos en la tabla o ir a la ficha del usuario y modificar lo que necesites.
-                    <br>
-                    - Los pagos que no sean domiciliados se gestionan desde la herramienta para pagos de la barra de navegación.
-                    <br>
-                    - Si hubieras seleccionado un pago no compatible se desmarcará automáticamente (los que no sean domiciliados o los que lo sean y no estén pendientes).
-                </b-alert>
-            </b-collapse>
-            <!-- Content for the manual download of payments process -->
-            <b-collapse
-                id="collapse-information-manual"
-                :visible="manualDownload">
-                <h5 class="subtitle subtitle-sub" data-v-step="wzd-pagos-download-0" md="4">
-                    Descarga manual de fichero de remesa para los pagos pendientes
-                </h5>
-                <b-row class="mb-2" no-gutters>
-                    <!-- <b-col cols="auto"> -->
-                        <!-- It will be shown when the manual download -->
                         <span
-                            class="col col-12 col-sm-auto d-inline-block mb-1"
-                            key="trans-btn-download"
+                            class="col col-12 col-sm d-inline-block mb-1 px-0"
+                            id="save-confirmation"
+                            key="trans-btn-save-confirm"
                             tabindex="0"
                             v-b-tooltip.hover.noninteractive
-                            :title="rowsSelected.length == 0 ? 'Selecciona algún pago de la tabla' : showingDetails ? 'No puedes generar el archivo de pagos mientras editas una línea de la tabla' : csvDownloadManual ? 'Descargando...' : ''">
-                            <!-- Disabled when any row on the table has been selected or if the edition of some row is actived or if the process of manual download hasn't been started of if the flag wich controls the download of the file is true -->
+                            :title="newStateSelected == false && rowsSelected.length == 0 ? 'Selecciona un estado y algún pago de la tabla' : newStateSelected == false ? 'Selecciona un estado' : rowsSelected.length == 0 ?  'Selecciona algún pago de la tabla' : csvDownloadConfirmation ? 'Descargando...' : ''">
+                            <!-- It will be disabled when the user hasn't selected a new state for the payment or if he hasn't select a row in the table or if a row in the table is being edited or if the flag wich controls the download of the file is actived -->
                             <b-button
                                 class="w-100"
-                                data-v-step="wzd-pagos-download-2"
+                                data-v-step="wzd-pagos-confirming-3"
                                 size="sm"
-                                key="trans-btn-save-confirm"
-                                :disabled="rowsSelected.length == 0 || showingDetails || !manualDownload || csvDownloadManual"
-                                :variant="csvDownloadManual == false && (rowsSelected.length != 0 && !showingDetails && manualDownload) ? 'success' : 'outline-success'"
-                                @click="paymentsToCsv()">
-                                <!-- Shown if the flag to control the download of the file is true -->
+                                :disabled="!newStateSelected || rowsSelected.length == 0 || csvDownloadConfirmation"
+                                :variant="csvDownloadConfirmation == false && (newStateSelected && rowsSelected.length > 0) ? 'success' : 'outline-success'"
+                                @click="confirmingState()">
+                                <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
                                 <b-spinner
                                     small
                                     type="grow"
-                                    v-if="csvDownloadManual == true"></b-spinner>
+                                    v-if="csvDownloadConfirmation == true"></b-spinner>
                                 <fa-icon
-                                    icon="file-download"
+                                    icon="check-double"
                                     v-else></fa-icon>
-                                &ensp;Descargar archivo de remesa
+                                &ensp;Confirmar estado
                             </b-button>
                         </span>
-                        <!-- Shown when the manual download has been initiated and when has been selected some row on the table -->
-                        <transition name="slide-fade">
-                            <span
-                                class="d-inline-block ig-inline-text ml-3 my-auto"
-                                key="trans-text-download">
-                                Vas a generar un archivo para {{ rowsSelected.length }} pago/s
-                            </span>
-                        </transition>
-                    <!-- </b-col> -->
+                    </b-row>
+                </b-col>
+                <!-- Shown whe the process to update payments is actived and some valid payments are selected -->
+                <transition name="slide-fade">
+                    <span
+                        class="d-inline-block ig-inline-text ml-md-3 my-auto"
+                        v-if="confirming && rowsSelected.length > 0">
+                        Vas a confirmar {{ rowsSelected.length + (rowsSelected.length > 1 ? ' pagos' : ' pago') }}
+                    </span>
+                </transition>
+                <b-col align-self="end" class="mb-2">
                     <b-button
-                        class="ml-auto"
+                        class="d-block ml-auto mr-0"
                         size="sm"
                         title="Finaliza el proceso, los cambios no guardados se perderán"
                         variant="outline-danger"
@@ -188,790 +106,901 @@
                         @click="endProcedures()">
                         Finalizar
                     </b-button>
-                </b-row>
-                <!-- It will be shown when the manual download process has been started -->
-                <b-alert
-                    class="mb-2"
-                    show
-                    variant="info">
-                    1 - Busca y selecciona los socios sobre los que quieres descargar los datos, solo podrás seleccionar de entre los pagos por 'Domiciliación' los que estén en los estados: 'Confirmado' o 'Devuelto'.
-                    <br>
-                    2 - Descarga el fichero.
-                </b-alert>
-            </b-collapse>
-            <transition-group appear name="fade-height">
-                <!-- Shown when the confirmation process has been started and some of the selected items has been hided for the filters applied to the table -->
+                </b-col>
+            </b-row>
+            <!-- It will be shown when the confirmation process has been started -->
+            <b-alert
+                class="mb-2"
+                show
+                variant="info">
+                1 - Busca y selecciona los pagos que quieres cambiar de estado. En este proceso solo podrás seleccionar los que estén 'Pendientes' y tengan forma de pago 'Domiciliación'.
+                <br>
+                2 - Selecciona el estado que quieres aplicar: 'Confirmado' o 'Devuelto'.
+                <br>
+                3 - Para acabar, confirma los cambios.
+                <br>
+                <br>
+                <u>Importante:</u>
+                <br>
+                - Fíjate que el periodo de pago y la forma de pago de los pagos que selecciones sean los correctos.
+                <br>
+                - Si lo necesitas, puedes editar ciertos datos en la tabla o ir a la ficha del usuario y modificar lo que necesites.
+                <br>
+                - Los pagos que no sean domiciliados se gestionan desde la herramienta para pagos de la barra de navegación.
+                <br>
+                - Si hubieras seleccionado un pago no compatible se desmarcará automáticamente (los que no sean domiciliados o los que lo sean y no estén pendientes).
+            </b-alert>
+        </b-collapse>
+        <!-- Content for the manual download of payments process -->
+        <b-collapse
+            id="collapse-information-manual"
+            :visible="manualDownload">
+            <h5 class="subtitle subtitle-sub" data-v-step="wzd-pagos-download-0" md="4">
+                Descarga manual de fichero de remesa para los pagos pendientes
+            </h5>
+            <b-row class="mb-2" no-gutters>
+                <b-col cols="12" sm="auto">
+                    <!-- It will be shown when the manual download is actived-->
+                    <span
+                        class="d-inline-block mb-1 px-0 w-100"
+                        key="trans-btn-download"
+                        tabindex="0"
+                        v-b-tooltip.hover.noninteractive
+                        :title="rowsSelected.length == 0 ? 'Selecciona algún pago de la tabla' : csvDownloadManual ? 'Descargando...' : ''">
+                        <!-- Disabled when any row on the table has been selected or if the edition of some row is actived or if the process of manual download hasn't been started of if the flag wich controls the download of the file is true -->
+                        <b-button
+                            class="w-100"
+                            data-v-step="wzd-pagos-download-2"
+                            size="sm"
+                            key="trans-btn-save-confirm"
+                            :disabled="rowsSelected.length == 0 || !manualDownload || csvDownloadManual"
+                            :variant="csvDownloadManual == false && (rowsSelected.length != 0 && manualDownload) ? 'success' : 'outline-success'"
+                            @click="paymentsToCsv()">
+                            <!-- Shown if the flag to control the download of the file is true -->
+                            <b-spinner
+                                small
+                                type="grow"
+                                v-if="csvDownloadManual == true"></b-spinner>
+                            <fa-icon
+                                icon="file-download"
+                                v-else></fa-icon>
+                            &ensp;Descargar archivo de remesa
+                        </b-button>
+                    </span>
+                </b-col>
+                <!-- Shown whe the process to update grades is actived and some grade are selected -->
+                <transition name="slide-fade">
+                    <span
+                        class="d-inline-block ig-inline-text ml-sm-3 my-auto"
+                        v-if="manualDownload && rowsSelected.length > 0">
+                        Vas a descargar datos de {{ rowsSelected.length + (rowsSelected.length > 1 ? ' socios' : ' socio') }}
+                    </span>
+                </transition>
+                <!-- <b-col cols="auto" class="mb-1"> -->
+                    <b-button
+                        class="d-block mb-1 ml-auto mr-0"
+                        size="sm"
+                        title="Finaliza el proceso, los cambios no guardados se perderán"
+                        variant="outline-danger"
+                        v-b-tooltip.hover.noninteractive
+                        @click="endProcedures()">
+                        Finalizar
+                    </b-button>
+                <!-- </b-col> -->
+            </b-row>
+            <!-- It will be shown when the manual download process has been started -->
+            <b-alert
+                class="mb-2"
+                show
+                variant="info">
+                1 - Busca y selecciona los socios sobre los que quieres descargar los datos, solo podrás seleccionar de entre los pagos por 'Domiciliación' los que estén en los estados: 'Confirmado' o 'Devuelto'.
+                <br>
+                2 - Descarga el fichero.
+            </b-alert>
+        </b-collapse>
+        <TransitionExpand>
+            <div
+                v-if="selectedHided">
+            <!-- Shown when the confirmation process has been started and some of the selected items has been hided for the filters applied to the table -->
                 <b-alert
                     class="mb-2"
                     key="trans-alert-warning-selected-confirm"
                     show
-                    variant="warning"
-                    v-if="((confirming || manualDownload) && showingDetails) || selectedHided">
+                    variant="warning">
+                    Tienes seleccionadas filas que están ocultas debido a los filtros aplicados a la tabla. Pulsa en este botón para mostrar solo las filas seleccionadas:
                     <span
-                        v-if="((confirming || manualDownload) && showingDetails)">
-                        Mientras editas una fila de la tabla no podrás finalizar la descarga de datos o la confirmación de pagos. Finaliza la edición de la tabla o cancélala:
-                        <span
-                            class="d-inline-block ml-1"
-                            key="trans-btn-show-all"
-                            tabindex="0">
-                            <b-button
-                                size="sm"
-                                variant="dark"
-                                @click="cancelEdit()">
-                                Cancelar edición
-                            </b-button>
-                        </span>
-                    </span>
-                    <span
-                        v-if="selectedHided">
-                        Tienes seleccionadas filas que están ocultas debido a los filtros aplicados a la tabla. Pulsa en este botón para mostrar solo las filas seleccionadas:
-                        <span
-                            class="d-inline-block ml-1"
-                            key="trans-btn-show-all"
-                            tabindex="0">
-                            <b-button
-                                size="sm"
-                                variant="dark"
-                                @click="filterSelected()">
-                                Solo seleccionadas
-                            </b-button>
-                        </span>
+                        class="d-inline-block ml-1"
+                        key="trans-btn-show-all"
+                        tabindex="0">
+                        <b-button
+                            size="sm"
+                            variant="dark"
+                            @click="filterSelected()">
+                            Solo seleccionadas
+                        </b-button>
                     </span>
                 </b-alert>
-            </transition-group>
-            <!-- Charts -->
-            <!-- Shown only at the main payments page -->
-            <b-collapse
-                id="collapse-charts"
-                v-if="$route.name == 'payments.index'"
-                :visible="collapseCharts">
-                <h5 class="subtitle subtitle-sub" md="4">
-                    Gráficos
-                </h5>
-                <div id="ctn-collapse-charts" class="pb-3 pt-2">
-                    <b-row no-gutters>
-                        <b-button
-                            class="col mr-1"
-                            id="btn-chart-pagos-tipo"
-                            size="sm"
-                            title="Muestra el total mensual por tipo y estado del pago"
-                            value="pagos-tipo"
-                            v-b-toggle.chart-pagos-tipo
-                            v-b-tooltip.hover.noninteractive
-                            :variant="$refs.chartPagosTipo && $refs.chartPagosTipo.show ? 'secondary' : 'outline-secondary'">
-                            <fa-icon icon="chart-bar"></fa-icon>
-                            &ensp;Pagos por tipo
-                        </b-button>
-                        <b-button
-                            class="col mr-1"
-                            id="btn-chart-pagos-total"
-                            size="sm"
-                            title="Muestra el total de pagos completados y pendientes en relación con el total de socios"
-                            value="pagos-total"
-                            v-b-toggle.chart-pagos-total
-                            v-b-tooltip.hover.noninteractive
-                            :variant="$refs.chartPagosTotal && $refs.chartPagosTotal.show ? 'secondary' : 'outline-secondary'">
-                            <fa-icon icon="chart-bar"></fa-icon>
-                            &ensp;Pagos totales
-                        </b-button>
-                        <b-button
-                            class="col"
-                            id="btn-chart-pagos-ingresos"
-                            size="sm"
-                            title="Muestra los ingresos y las devoluciones en relación con el total de socios"
-                            value="pagos-ingresos"
-                            v-b-toggle.chart-ingresos-total
-                            v-b-tooltip.hover.noninteractive
-                            :variant="$refs.chartIngresosTotal && $refs.chartIngresosTotal.show ? 'secondary' : 'outline-secondary'">
-                            <fa-icon icon="chart-bar"></fa-icon>
-                            &ensp;Ingresos
-                        </b-button>
-                    </b-row>
-                    <b-collapse
-                        id="chart-pagos-tipo"
-                        ref="chartPagosTipo">
-                        <div class="wrp-chart">
-                            <h5 class="subtitle subtitle-sub">Pagos por tipo</h5>
-                            <bar-chart
-                                class="chart-pagos"
-                                :chart-data="chartPagosTipoData"
-                                :options="chartPagosTipoOptions"></bar-chart>
-                        </div>
-                    </b-collapse>
-                    <b-collapse
-                        id="chart-pagos-total"
-                        ref="chartPagosTotal">
-                        <div class="wrp-chart">
-                            <h5 class="subtitle subtitle-sub">Pagos totales</h5>
-                            <bar-chart
-                                class="chart-pagos"
-                                :chart-data="chartPagosTotalData"
-                                :options="chartPagosTotalOptions"></bar-chart>
-                        </div>
-                    </b-collapse>
-                    <b-collapse
-                        id="chart-ingresos-total"
-                        ref="chartIngresosTotal">
-                        <div class="wrp-chart">
-                            <h5 class="subtitle subtitle-sub">Ingresos</h5>
-                            <bar-chart
-                                class="chart-pagos"
-                                :chart-data="chartIngresosTotalData"
-                                :options="chartIngresosTotalOptions"></bar-chart>
-                        </div>
-                    </b-collapse>
-                </div>
-            </b-collapse>
-            <!-- Row with the tags -->
-            <b-row align-v="end" class="mb-2" no-gutters>
-                <b-col>
-                    <b-form-tags
-                        class="filter-form-tags p-0"
-                        data-v-step="wzd-main-pagos-3"
-                        no-outer-focus
-                        v-model="filterTags">
-                        <template>
-                            <b-form-text>Filtros activos:</b-form-text>
-                            <b-form-tag
-                                class="filter-tag mr-1 mt-1"
-                                size="sm"
-                                v-for="tag in filterTags"
-                                :key="tag"
-                                :variant="months.includes(tag) ? 'info' : btnStates.includes(tag) ? 'secondary' : btnPayTypes.includes(tag) ? 'dark' : 'primary'"
-                                @remove="deleteTag(tag); cancelEdit()">
-                                {{ tag }}
-                            </b-form-tag>
-                            <!-- Shown when there are no tags added to the v-model of tags -->
-                            <b-form-tag
-                                class="filter-tag mt-1 tag-ninguno"
-                                disabled
-                                variant="success"
-                                v-if="filterTags.length == 0 && paymentsSearch == '' && !allSelected">
-                                Ninguno
-                            </b-form-tag>
-                            <!-- It will be shown when the flag wich indicates that we want to show all the selected rows on the table is true and only at the main payments page -->
-                            <b-form-tag
-                                class="filter-tag mr-1 mt-1"
-                                variant="primary"
-                                v-if="allSelected && $route.name == 'payments.index'"
-                                @remove="allSelected = false; cancelEdit()">
-                                Seleccionadas
-                            </b-form-tag>
-                            <!-- It will show the content of the input wich filters the table data -->
-                            <b-form-tag
-                                class="filter-tag mt-1"
-                                variant="danger"
-                                v-if="paymentsSearch != ''"
-                                @remove="paymentsSearch = ''">
-                                {{ paymentsSearch }}
-                            </b-form-tag>
-                        </template>
-                    </b-form-tags>
-                </b-col>
-            </b-row>
-            <!-- Row with the filters for the table -->
-            <b-row
-                class="mb-2 row-busqueda-table"
-                data-v-step="wzd-main-pagos-2"
-                no-gutters>
-                <b-col class="mt-1 px-0" cols="lg-4">
-                    <b-form-input
-                        id="table-pagos-search"
+            </div>
+        </TransitionExpand>
+        <!-- Charts -->
+        <!-- Shown only at the main payments page -->
+        <!-- <b-collapse
+            id="collapse-charts"
+            v-if="$route.name == 'payments.index'"
+            :visible="collapseCharts">
+            <h5 class="subtitle subtitle-sub" md="4">
+                Gráficos
+            </h5>
+            <div id="ctn-collapse-charts" class="pb-3 pt-2">
+                <b-row no-gutters>
+                    <b-button
+                        class="col mr-1"
+                        id="btn-chart-pagos-tipo"
                         size="sm"
-                        placeholder="Buscar en la tabla..."
-                        type="search"
-                        v-model="paymentsSearch"
-                        @input="disableEditingRow()"
-                        @keyup="fetchChartData()"></b-form-input>
-                </b-col>
-                <b-col cols="lg-8">
-                    <b-row class="ml-lg-2" no-gutters>
-                        <!-- Shown only on the main payments page -->
-                        <span
-                            class="col col-auto col-sm mr-1 mt-1 px-0"
-                            key="trans-btn-show-all"
-                            tabindex="0"
-                            v-b-tooltip.hover.noninteractive
-                            v-if="$route.name == 'payments.index'"
-                            :title="rowsSelected.length == 0 ? 'No hay ninguna fila seleccionado' : 'Mostrar solo las filas seleccionadas'">
-                            <!-- It will be disabled when no rows are selected -->
-                            <b-button
-                                id="payments-seleccionadas-btn"
-                                class="col-12 px-1"
-                                size="sm"
-                                variant="outline-dark"
-                                v-b-tooltip.hover.noninteractive
-                                :disabled="rowsSelected.length == 0"
-                                @click="allSelected = true">
-                                Seleccionadas
-                            </b-button>
-                        </span>
-                        <b-dropdown
-                            class="col col-auto col-sm ig-dropdown mr-1 mt-1"
+                        title="Muestra el total mensual por tipo y estado del pago"
+                        value="pagos-tipo"
+                        v-b-toggle.chart-pagos-tipo
+                        v-b-tooltip.hover.noninteractive
+                        :variant="$refs.chartPagosTipo && $refs.chartPagosTipo.show ? 'secondary' : 'outline-secondary'">
+                        <fa-icon icon="chart-bar"></fa-icon>
+                        &ensp;Pagos por tipo
+                    </b-button>
+                    <b-button
+                        class="col mr-1"
+                        id="btn-chart-pagos-total"
+                        size="sm"
+                        title="Muestra el total de pagos completados y pendientes en relación con el total de socios"
+                        value="pagos-total"
+                        v-b-toggle.chart-pagos-total
+                        v-b-tooltip.hover.noninteractive
+                        :variant="$refs.chartPagosTotal && $refs.chartPagosTotal.show ? 'secondary' : 'outline-secondary'">
+                        <fa-icon icon="chart-bar"></fa-icon>
+                        &ensp;Pagos totales
+                    </b-button>
+                    <b-button
+                        class="col"
+                        id="btn-chart-pagos-ingresos"
+                        size="sm"
+                        title="Muestra los ingresos y las devoluciones en relación con el total de socios"
+                        value="pagos-ingresos"
+                        v-b-toggle.chart-ingresos-total
+                        v-b-tooltip.hover.noninteractive
+                        :variant="$refs.chartIngresosTotal && $refs.chartIngresosTotal.show ? 'secondary' : 'outline-secondary'">
+                        <fa-icon icon="chart-bar"></fa-icon>
+                        &ensp;Ingresos
+                    </b-button>
+                </b-row>
+                <b-collapse
+                    id="chart-pagos-tipo"
+                    ref="chartPagosTipo">
+                    <div class="wrp-chart">
+                        <h5 class="subtitle subtitle-sub">Pagos por tipo</h5>
+                        <bar-chart
+                            class="chart-pagos"
+                            :chart-data="chartPagosTipoData"
+                            :options="chartPagosTipoOptions"></bar-chart>
+                    </div>
+                </b-collapse>
+                <b-collapse
+                    id="chart-pagos-total"
+                    ref="chartPagosTotal">
+                    <div class="wrp-chart">
+                        <h5 class="subtitle subtitle-sub">Pagos totales</h5>
+                        <bar-chart
+                            class="chart-pagos"
+                            :chart-data="chartPagosTotalData"
+                            :options="chartPagosTotalOptions"></bar-chart>
+                    </div>
+                </b-collapse>
+                <b-collapse
+                    id="chart-ingresos-total"
+                    ref="chartIngresosTotal">
+                    <div class="wrp-chart">
+                        <h5 class="subtitle subtitle-sub">Ingresos</h5>
+                        <bar-chart
+                            class="chart-pagos"
+                            :chart-data="chartIngresosTotalData"
+                            :options="chartIngresosTotalOptions"></bar-chart>
+                    </div>
+                </b-collapse>
+            </div>
+        </b-collapse> -->
+        <TransitionExpand>
+            <div
+                v-if="allHided && !selectedHided">
+                <b-alert
+                    class="py-1"
+                    variant="warning"
+                    show>
+                    Los filtros activos sobre la tabla están ocultando todos sus elementos
+                </b-alert>
+            </div>
+        </TransitionExpand>
+        <!-- Row with the tags -->
+        <b-row align-v="end" class="mb-3" no-gutters>
+            <b-col>
+                <b-form-tags
+                    class="filter-form-tags p-0"
+                    data-v-step="wzd-main-pagos-3"
+                    no-outer-focus
+                    v-model="filterTags">
+                    <template>
+                        <b-form-text>Filtros activos:</b-form-text>
+                        <b-form-tag
+                            class="filter-tag mr-1 mt-1"
                             size="sm"
-                            split
-                            text="Año"
-                            variant="primary">
-                            <b-dropdown-form>
-                                <b-form-checkbox-group
-                                    buttons
-                                    button-variant="outline-primary"
-                                    size="sm"
-                                    stacked
-                                    v-model="getSelectedYear">
-                                    <b-form-checkbox
-                                        class="ig-dropdown-item"
-                                        v-for="btn in btnYears"
-                                        :key="btn"
-                                        :value="btn"
-                                        @change.native="addTags(btn); cancelEdit()">
-                                        {{ btn }}
-                                    </b-form-checkbox>
-                                </b-form-checkbox-group>
-                            </b-dropdown-form>
-                        </b-dropdown>
-                        <b-dropdown
-                            class="col col-auto col-sm ig-dropdown mr-1 mt-1"
-                            size="sm"
-                            split
-                            text="Mes"
-                            variant="info">
-                            <b-dropdown-form>
-                                <b-form-checkbox-group
-                                    buttons
-                                    button-variant="outline-info"
-                                    name="month-selected"
-                                    size="sm"
-                                    stacked
-                                    v-model="getSelectedMonth">
-                                    <b-form-checkbox
-                                        class="ig-dropdown-item"
-                                        v-for="btn in btnMonths"
-                                        :key="btn.value"
-                                        :value="btn.value"
-                                        @change.native="addTags(btn.value, 'month'); cancelEdit()">
-                                        {{ btn.text }}
-                                    </b-form-checkbox>
-                                    <!-- :title="ctnArray.filter(el => getSelectedYear.includes($moment(el['interval'], 'YYYY-MM').year()) && $moment(el['interval'], 'YYYY-MM').month() == btn.value).length == 0 ? 'Sin datos' : 'Selecciona'" -->
-                                </b-form-checkbox-group>
-                            </b-dropdown-form>
-                        </b-dropdown>
-                        <b-dropdown
-                            class="col col-auto col-sm ig-dropdown mr-1 mt-1"
-                            size="sm"
-                            split
-                            text="Estado"
-                            variant="secondary">
-                            <b-dropdown-form>
-                                <b-form-checkbox-group
-                                    buttons
-                                    button-variant="outline-secondary"
-                                    size="sm"
-                                    stacked
-                                    v-model="getSelectedState">
-                                    <b-form-checkbox
-                                        class="ig-dropdown-item"
-                                        v-for="btn in btnStates"
-                                        :key="btn"
-                                        :value="btn"
-                                        @change.native="addTags(btn); cancelEdit()">
-                                        {{ btn }}
-                                    </b-form-checkbox>
-                                </b-form-checkbox-group>
-                            </b-dropdown-form>
-                        </b-dropdown>
-                        <b-dropdown
-                            class="col col-auto col-sm ig-dropdown mr-1 mt-1"
-                            size="sm"
-                            split
-                            text="Pago"
-                            variant="dark">
-                            <b-dropdown-form>
-                                <b-form-checkbox-group
-                                    buttons
-                                    button-variant="outline-dark"
-                                    size="sm"
-                                    stacked
-                                    v-model="getSelectedPayType">
-                                    <b-form-checkbox
-                                        class="ig-dropdown-item"
-                                        v-for="btn in btnPayTypes"
-                                        :key="btn"
-                                        :value="btn"
-                                        @change.native="addTags(btn); cancelEdit()">
-                                        {{ btn }}
-                                    </b-form-checkbox>
-                                </b-form-checkbox-group>
-                            </b-dropdown-form>
-                        </b-dropdown>
-                        <b-col class="col-auto col-sm-auto mt-1">
-                            <b-button
-                                class="btn-fa-tiny"
-                                size="sm"
-                                title="Restablecer los filtros"
-                                variant="outline-warning"
-                                v-b-tooltip.hover.noninteractive
-                                @click="resetFilters()">
-                                <fa-icon icon="sync-alt"></fa-icon>
-                            </b-button>
-                            <span
-                                align-h="end"
-                                data-v-step="wzd-main-pagos-4"
-                                class="d-inline-block"
-                                tabindex="0"
-                                v-b-tooltip.hover.noninteractive.topleft
-                                :title="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) ? 'No hay datos en la tabla para descargar' : csvDownloadTable ? 'Descargando...' : 'Descargar los datos de la tabla'">
-                                <!-- It will be disabled when there are no rows on the table or if the flag wich controls the download of the file is on -->
-                                <b-button
-                                    class="btn-fa-tiny"
-                                    size="sm"
-                                    variant="outline-success"
-                                    :disabled="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) || csvDownloadTable"
-                                    @click="$tableToCsv(['_id', 'customerNumber', 'name', 'rate', 'amount', 'paymenttype', 'iban', 'interval', 'dateconfirmed'], paymentsItems, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_pagos_tabla.csv', 'csvDownloadTable')">
-                                    <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
-                                    <b-spinner
-                                        small
-                                        type="grow"
-                                        v-if="csvDownloadTable == true"></b-spinner>
-                                    <!-- By default, show plain text -->
-                                    <fa-icon
-                                        icon="download"
-                                        v-else></fa-icon>
-                                </b-button>
-                            </span>
+                            v-for="tag in filterTags"
+                            :key="tag"
+                            :variant="months.includes(tag) ? 'info' : btnStates.includes(tag) ? 'secondary' : btnPayTypes.includes(tag) ? 'dark' : Object.values(btnTypes).some(btn => btn.text == tag) ? 'warning' : 'primary'"
+                            @remove="deleteTag(tag)">
+                            <!-- @remove="deleteTag(tag); cancelEdit()"> -->
+                            {{ tag }}
+                        </b-form-tag>
+                        <!-- Shown when a range of dateconfirmed is selected -->
+                        <b-form-tag
+                            class="filter-tag mt-1 tag-dateconfirmed"
+                            variant="success"
+                            v-if="dateCreationRange.startDate != null && dateCreationRange.endDate != null"
+                            @remove="dateCreationRange.startDate = null; dateCreationRange.endDate = null;">
+                            Fecha de creación
+                        </b-form-tag>
+                        <!-- Shown when a range of dateconfirmed is selected -->
+                        <b-form-tag
+                            class="filter-tag mt-1 tag-dateconfirmed"
+                            variant="primary"
+                            v-if="dateConfirmationRange.startDate != null && dateConfirmationRange.endDate != null"
+                            @remove="dateConfirmationRange.startDate = null; dateConfirmationRange.endDate = null;">
+                            Fecha de pago
+                        </b-form-tag>
+                        <!-- Shown when there are no tags added to the v-model of tags -->
+                        <b-form-tag
+                            class="filter-tag mt-1 tag-ninguno"
+                            disabled
+                            variant="secondary"
+                            v-if="filterTags.length == 0 && paymentsSearch == '' && !allSelected && (dateCreationRange.startDate == null && dateCreationRange.endDate == null) && (dateConfirmationRange.startDate == null && dateConfirmationRange.endDate == null)">
+                            Ninguno
+                        </b-form-tag>
+                        <!-- It will be shown when the flag wich indicates that we want to show all the selected rows on the table is true and only at the main payments page -->
+                        <b-form-tag
+                            class="filter-tag mr-1 mt-1"
+                            variant="primary"
+                            v-if="allSelected && $route.name == 'payments.index'"
+                            @remove="allSelected = false">
+                            <!-- @remove="allSelected = false; cancelEdit()"> -->
+                            Seleccionadas
+                        </b-form-tag>
+                        <!-- It will show the content of the input wich filters the table data -->
+                        <b-form-tag
+                            class="filter-tag mt-1"
+                            variant="danger"
+                            v-if="paymentsSearch != ''"
+                            @remove="paymentsSearch = ''">
+                            {{ paymentsSearch }}
+                        </b-form-tag>
+                    </template>
+                </b-form-tags>
+            </b-col>
+        </b-row>
+        <!-- Row with the filters for the table -->
+        <b-row class="mb-2 mx-0 no-gutters">
+            <b-dropdown
+                class="col col-auto col-md ig-dropdown ig-dropdown-horizontal mr-1 mt-1"
+                no-caret
+                size="sm"
+                variant="outline-primary"
+                v-if="filters == null || filters.includes('interval')">
+                <template #button-content>
+                    <b-row class="flex-nowrap" no-gutters>
+                        <b-col>
+                            Periodo del pago
+                        </b-col>
+                        <b-col cols="2">
+                            <fa-icon icon="caret-down"></fa-icon>
                         </b-col>
                     </b-row>
-                </b-col>
-            </b-row>
-            <!-- Main table -->
-            <div
-                :data-v-step="confirming ? 'wzd-pagos-confirming-1' : manualDownload ? 'wzd-pagos-download-1' : 'wzd-main-pagos-0'">
-                <b-table
-                    bordered
-                    filter-debounce="200"
-                    id="paymentsTable"
-                    no-select-on-click
-                    per-page="1000"
-                    ref="paymentsTable"
-                    responsive="lg"
-                    select-mode="multi"
-                    selectable
-                    show-empty
-                    small
-                    striped
-                    :busy="paymentsTableBusy"
-                    :current-page="paymentsTablePagination"
-                    :fields="computedFields"
-                    :filter="paymentsSearch"
-                    :filter-function="filterTable"
-                    :items="paymentsItems">
-                    <!-- sticky-header="10000px" -> causes that the head elements cannot to be focused -->
-                    <!-- :tbody-transition-props="{ mode: 'out-in', name: 'fade' }"> will cause jumps between filtered states -->
-                    <template
-                        #head(selected)>
+                </template>
+                <b-dropdown-form>
+                    <b-form-group class="mb-1" label="Año">
+                        <b-form-checkbox-group
+                            buttons
+                            button-variant="outline-primary"
+                            size="sm"
+                            v-model="getSelectedYear">
+                            <b-form-checkbox
+                                class="ig-dropdown-item"
+                                v-for="btn in btnYears"
+                                :key="btn"
+                                :value="btn"
+                                @change.native="addTags(btn)">
+                                {{ btn }}
+                            </b-form-checkbox>
+                        </b-form-checkbox-group>
+                    </b-form-group>
+                    <b-form-group class="mb-1" label="Mes">
+                        <b-form-checkbox-group
+                            buttons
+                            button-variant="outline-info"
+                            class="flex-wrap"
+                            name="month-selected"
+                            size="sm"
+                            v-model="getSelectedMonth">
+                            <b-form-checkbox
+                                class="ig-dropdown-item"
+                                v-for="btn in btnMonths"
+                                :key="btn.value"
+                                :value="btn.value"
+                                @change.native="addTags(btn.value, 'month')">
+                                {{ btn.text }}
+                            </b-form-checkbox>
+                            <!-- :title="ctnArray.filter(el => getSelectedYear.includes($moment(el['interval'], 'YYYY-MM').year()) && $moment(el['interval'], 'YYYY-MM').month() == btn.value).length == 0 ? 'Sin datos' : 'Selecciona'" -->
+                        </b-form-checkbox-group>
+                    </b-form-group>
+                </b-dropdown-form>
+            </b-dropdown>
+            <b-dropdown
+                class="col col-auto col-md ig-dropdown mr-1 mt-1"
+                no-caret
+                size="sm"
+                variant="outline-secondary"
+                v-if="filters == null || filters.includes('status')">
+                <template #button-content>
+                    <b-row class="flex-nowrap" no-gutters>
+                        <b-col>
+                            Estado del pago
+                        </b-col>
+                        <b-col cols="2">
+                            <fa-icon icon="caret-down"></fa-icon>
+                        </b-col>
+                    </b-row>
+                </template>
+                <b-dropdown-form>
+                    <b-form-checkbox-group
+                        buttons
+                        button-variant="outline-secondary"
+                        size="sm"
+                        stacked
+                        v-model="getSelectedState">
+                        <b-form-checkbox
+                            class="ig-dropdown-item"
+                            v-for="btn in btnStates"
+                            :key="btn"
+                            :value="btn"
+                            @change.native="addTags(btn)">
+                            {{ btn }}
+                        </b-form-checkbox>
+                    </b-form-checkbox-group>
+                </b-dropdown-form>
+            </b-dropdown>
+            <b-dropdown
+                class="col col-auto col-md ig-dropdown mr-1 mt-1"
+                no-caret
+                size="sm"
+                variant="outline-dark"
+                v-if="filters == null || filters.includes('paymenttype')">
+                <template #button-content>
+                    <b-row class="flex-nowrap" no-gutters>
+                        <b-col>
+                            Forma de pago
+                        </b-col>
+                        <b-col cols="2">
+                            <fa-icon icon="caret-down"></fa-icon>
+                        </b-col>
+                    </b-row>
+                </template>
+                <b-dropdown-form>
+                    <b-form-checkbox-group
+                        buttons
+                        button-variant="outline-dark"
+                        size="sm"
+                        stacked
+                        v-model="getSelectedPayType">
+                        <b-form-checkbox
+                            class="ig-dropdown-item"
+                            v-for="btn in btnPayTypes"
+                            :key="btn"
+                            :value="btn"
+                            @change.native="addTags(btn)">
+                            {{ btn }}
+                        </b-form-checkbox>
+                    </b-form-checkbox-group>
+                </b-dropdown-form>
+            </b-dropdown>
+            <b-dropdown
+                class="col col-auto col-md ig-dropdown mr-1 mt-1"
+                no-caret
+                size="sm"
+                variant="outline-warning"
+                v-if="filters == null || filters.includes('type')">
+                <template #button-content>
+                    <b-row class="flex-nowrap" no-gutters>
+                        <b-col>
+                            Tipo
+                        </b-col>
+                        <b-col cols="2">
+                            <fa-icon icon="caret-down"></fa-icon>
+                        </b-col>
+                    </b-row>
+                </template>
+                <b-dropdown-form>
+                    <b-form-checkbox-group
+                        buttons
+                        button-variant="outline-warning"
+                        size="sm"
+                        stacked
+                        v-model="getSelectedType">
+                        <b-form-checkbox
+                            class="ig-dropdown-item"
+                            v-for="btn in btnTypes"
+                            :key="btn.text"
+                            :value="btn.value"
+                            @change.native="addTags(btn.text)">
+                            {{ btn.text }}
+                        </b-form-checkbox>
+                    </b-form-checkbox-group>
+                </b-dropdown-form>
+            </b-dropdown>
+            <DateRangePicker
+                class="col col-auto ig-dropdown mr-1 mt-1"
+                control-container-class="btn btn-outline-success btn-sm date-range-payments"
+                minDate="2020/01/01 00:00:00"
+                maxDate="2999/12/31 23:59:59"
+                opens="left"
+                ref="picker"
+                v-if="filters == null || filters.includes('creationdate')"
+                v-model="dateCreationRange"
+                :auto-apply="true"
+                :linkedCalendars="true"
+                :locale-data="dateLocaleData"
+                :showDropdowns="true"
+                :time-picker="true"
+                @update="dateCreationRangeSelected($event)">
+                <template
+                    #input="picker">
+                    <b-row>
+                        <b-col class="text-nowrap" cols="10">
+                            {{ !picker.startDate || !picker.endDate ? 'Fecha de creación...' : 'Fecha de creación:  ' + $moment(picker.startDate).format('DD/MM/YYYY') + ' - ' + $moment(picker.endDate).format('DD/MM/YYYY') }}
+                        </b-col>
+                        <b-col class="pl-1" cols="2">
+                            <fa-icon icon="caret-down"></fa-icon>
+                        </b-col>
+                    </b-row>
+                </template>
+                <template
+                    #ranges>
+                    <b-col>
                         <b-button
-                            :class="'ig-table-checkbox' + (selectedAll ? ' ig-checked' : '')"
-                            @click="rowSelectAll(!selectedAll)">
+                            class="m-1"
+                            size="sm"
+                            :variant="btn.text == 'Limpiar' ? 'outline-danger' : 'outline-success'"
+                            v-for="btn in dateRangeButtons"
+                            :key="btn.text"
+                            @click="dateCreationRangeSelected({ startDate: btn.startDate, endDate: btn.endDate })">
+                            {{ btn.text }}
+                        </b-button>
+                    </b-col>
+                </template>
+            </DateRangePicker>
+            <DateRangePicker
+                class="col col-auto ig-dropdown mt-1"
+                control-container-class="btn btn-outline-primary btn-sm date-range-payments"
+                minDate="2020/01/01 00:00:00"
+                maxDate="2999/12/31 23:59:59"
+                opens="left"
+                ref="picker"
+                v-if="filters == null || filters.includes('confirmationdate')"
+                v-model="dateConfirmationRange"
+                :auto-apply="true"
+                :linkedCalendars="true"
+                :locale-data="dateLocaleData"
+                :showDropdowns="true"
+                :time-picker="true"
+                @update="dateConfirmationRangeSelected($event)">
+                <template
+                    #input="picker">
+                    <b-row>
+                        <b-col class="text-nowrap" cols="10">
+                            {{ !picker.startDate || !picker.endDate ? 'Fecha de confirmación...' : 'Fecha de confirmación:  ' + $moment(picker.startDate).format('DD/MM/YYYY') + ' - ' + $moment(picker.endDate).format('DD/MM/YYYY') }}
+                        </b-col>
+                        <b-col class="pl-1" cols="2">
+                            <fa-icon icon="caret-down"></fa-icon>
+                        </b-col>
+                    </b-row>
+                </template>
+                <template
+                    #ranges>
+                    <b-col>
+                        <b-button
+                            class="m-1"
+                            size="sm"
+                            :variant="btn.text == 'Limpiar' ? 'outline-danger' : 'outline-primary'"
+                            v-for="btn in dateRangeButtons"
+                            :key="btn.text"
+                            @click="dateConfirmationRangeSelected({ startDate: btn.startDate, endDate: btn.endDate })">
+                            {{ btn.text }}
+                        </b-button>
+                    </b-col>
+                </template>
+            </DateRangePicker>
+        </b-row>
+        <b-row
+            class="mb-2 row-busqueda-table"
+            data-v-step="wzd-main-pagos-2"
+            no-gutters>
+            <b-col class="mt-1 mr-1 px-0" cols="12" sm>
+                <b-form-input
+                    debounce="200"
+                    id="table-pagos-search"
+                    size="sm"
+                    placeholder="Buscar en la tabla..."
+                    type="search"
+                    v-if="filters == null || filters.includes('textfilter')"
+                    v-model="paymentsSearch"></b-form-input>
+                    <!-- @keyup="fetchChartData()"></b-form-input> -->
+            </b-col>
+            <!-- Shown only on the main payments page -->
+            <span
+                class="col col-auto mr-1 mt-1 px-0"
+                tabindex="0"
+                v-b-tooltip.hover.noninteractive
+                v-if="$route.name == 'payments.index'"
+                :title="rowsSelected.length == 0 ? 'No hay ninguna fila seleccionado' : 'Mostrar solo las filas seleccionadas'">
+                <!-- It will be disabled when no rows are selected -->
+                <b-button
+                    id="payments-seleccionadas-btn"
+                    class="px-1"
+                    size="sm"
+                    variant="outline-dark"
+                    v-b-tooltip.hover.noninteractive
+                    :disabled="rowsSelected.length == 0"
+                    @click="allSelected = true">
+                    Seleccionadas
+                </b-button>
+            </span>
+            <b-col class="ml-auto ml-sm-0 mt-1" cols="auto">
+                <b-button
+                    class="btn-fa-tiny"
+                    size="sm"
+                    title="Restablecer los filtros"
+                    variant="outline-warning"
+                    v-b-tooltip.hover.noninteractive
+                    @click="resetFilters()">
+                    <fa-icon icon="sync-alt"></fa-icon>
+                </b-button>
+                <!-- Show all row details button -->
+                <span
+                    class="ml-1"
+                    tabindex="0"
+                    v-b-tooltip.hover.noninteractive
+                    :title="paymentsItems.length == 0 ? 'No hay datos en la tabla' : 'Mostrar detalles de todas las filas'">
+                    <!-- Disabled when the table hasn't content or if all the existing rows are showing their details -->
+                    <b-button
+                        class="btn-fa-tiny"
+                        size="sm"
+                        :disabled="paymentsItems.length == 0 || paymentsItems.every(pt => pt._showDetails == true)"
+                        :variant="paymentsItems.length == 0 || paymentsItems.every(pt => pt._showDetails == true) ? 'outline-info' : 'info'"
+                        @click="detailsExpandAll()">
+                        <fa-icon icon="angle-double-down"></fa-icon>
+                    </b-button>
+                </span>
+                <!-- Hide all row details button -->
+                <span
+                    class="mr-1"
+                    tabindex="0"
+                    v-b-tooltip.hover.noninteractive
+                    :title="paymentsItems.length == 0 ? 'No hay datos en la tabla' : 'Ocultar detalles de todas las filas'">
+                    <!-- Disabled when the table hasn't content or if all the existing rows aren't showing their details -->
+                    <b-button
+                        class="btn-fa-tiny"
+                        size="sm"
+                        :disabled="paymentsItems.length == 0 || !paymentsItems.some(pt => pt._showDetails == true)"
+                        :variant="paymentsItems.length == 0 || !paymentsItems.some(pt => pt._showDetails == true) ? 'outline-secondary' : 'secondary'"
+                        @click="detailsCollapseAll()">
+                        <fa-icon icon="angle-double-up"></fa-icon>
+                    </b-button>
+                </span>
+                <span
+                    data-v-step="wzd-main-pagos-4"
+                    class="d-inline-block"
+                    tabindex="0"
+                    v-b-tooltip.hover.noninteractive.topleft
+                    :title="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) ? 'No hay datos en la tabla para descargar' : csvDownloadTable ? 'Descargando...' : 'Descargar los datos de la tabla'">
+                    <!-- It will be disabled when there are no rows on the table or if the flag wich controls the download of the file is on -->
+                    <b-button
+                        class="btn-fa-tiny"
+                        size="sm"
+                        variant="outline-success"
+                        :disabled="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) || csvDownloadTable"
+                        @click="$tableToCsv(['_id', 'customerNumber', 'name', 'rate', 'amount', 'paymenttype', 'iban', 'interval', 'dateconfirmed'], paymentsItems, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_pagos_tabla.csv', 'csvDownloadTable')">
+                        <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
+                        <b-spinner
+                            small
+                            type="grow"
+                            v-if="csvDownloadTable == true"></b-spinner>
+                        <!-- By default, show plain text -->
+                        <fa-icon
+                            icon="download"
+                            v-else></fa-icon>
+                    </b-button>
+                </span>
+            </b-col>
+        </b-row>
+        <!-- Main table -->
+        <div
+            :data-v-step="confirming ? 'wzd-pagos-confirming-1' : manualDownload ? 'wzd-pagos-download-1' : 'wzd-main-pagos-0'">
+            <b-table
+                bordered
+                id="paymentsTable"
+                fixed
+                no-select-on-click
+                ref="paymentsTable"
+                responsive="lg"
+                select-mode="multi"
+                selectable
+                show-empty
+                small
+                striped
+                :busy="paymentsTableBusy"
+                :current-page="paymentsTablePagination"
+                :fields="tableFields"
+                :filter="paymentsSearch"
+                :filter-function="filterTable"
+                :items="paymentsItems"
+                :per-page="perPage">
+                <!-- sticky-header="10000px" -> causes that the head elements cannot to be focused -->
+                <!-- :tbody-transition-props="{ mode: 'out-in', name: 'fade' }"> will cause jumps between filtered states -->
+                <template
+                    #head(selected)>
+                    <b-button
+                        :class="'ig-table-checkbox' + (selectedAll ? ' ig-checked' : '')"
+                        @click="rowSelectAll(!selectedAll)">
+                        <fa-icon
+                            icon="check"
+                            v-if="selectedAll"></fa-icon>
+                        <fa-icon
+                            icon="circle"
+                            v-else-if="selectedSome"></fa-icon>
+                    </b-button>
+                </template>
+                <!-- The selected elems are managed locally, don't depend on vuex and the table events, it will be evaluated by local functions -->
+                <template
+                    #cell(selected)="row">
+                    <span
+                        v-b-tooltip.hover.noninteractive
+                        :title="(confirming && (row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación')) ? 'Este pago no se puede confirmar. El estado no es Pendiente y/o la forma de pago Domiciliación' :  (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación'))) ? 'No puedes descargar archivo de remesa de un pago que no sea por domiciliación o si lo es, que esté pendiente' : ''">
+                        <b-button
+                            :class="'ig-table-checkbox' + (isSelected(row.item) ? ' ig-checked' : '')"
+                            :disabled="(confirming && (row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación')) || (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación')))"
+                            @click="rowSelect(row.item, !isSelected(row.item))">
                             <fa-icon
                                 icon="check"
-                                v-if="selectedAll"></fa-icon>
-                            <fa-icon
-                                icon="circle"
-                                v-else-if="selectedSome"></fa-icon>
+                                v-if="isSelected(row.item)"></fa-icon>
                         </b-button>
-                    </template>
-                    <!-- The selected elems are managed locally, don't depend on vuex and the table events, it will be evaluated by local functions -->
-                    <template
-                        #cell(selected)="row">
-                        <span
-                            v-b-tooltip.hover.noninteractive
-                            :title="(confirming && (row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación')) ? 'Este pago no se puede confirmar. El estado no es Pendiente y/o la forma de pago Domiciliación' :  (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación'))) ? 'No puedes descargar archivo de remesa de un pago que no sea por domiciliación o si lo es, que esté pendiente' : ''">
-                            <b-button
-                                :class="'ig-table-checkbox' + (isSelected(row.item) ? ' ig-checked' : '')"
-                                :disabled="(confirming && (row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación')) || (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación')))"
-                                @click="rowSelect(row.item, !isSelected(row.item))">
-                                <fa-icon
-                                    icon="check"
-                                    v-if="isSelected(row.item)"></fa-icon>
-                            </b-button>
-                        </span>
-                    </template>
-                    <!-- <template
-                        #cell(_id)="row">
-                        <b-link
-                            positioning="top"
-                            target="_blank"
-                            title="Abre la ficha del socio"
-                            v-b-tooltip.hover.noninteractive
-                            v-html="row.value"
-                            :to="{ name: 'customers.profile', params: { id: row.item._id } }"></b-link>
-                    </template> -->
-                    <template
-                        #cell(active)="row">
-                        <b-form-checkbox
-                            disabled
-                            switch
-                            v-model="row.value"></b-form-checkbox>
-                    </template>
-                    <template
-                        #cell(name)="row">
-                        <b-link
-                            positioning="top"
-                            target="_blank"
-                            title="Abre la ficha del socio"
-                            v-b-tooltip.hover.noninteractive
-                            v-html="row.value"
-                            :to="{ name: 'customers.profile', params: { id: row.item._id } }"></b-link>
-                    </template>
-                    <template
-                        #cell(rate)="row">
-                        <b-form-select
-                            :class="'editable-field slot-table-input ' + (!row.detailsShowing ? 'disabled' : '')"
-                            :disabled="!row.detailsShowing"
-                            :options="rates"
-                            :value="row.value"
-                            @change="updatePaymentField({ field: 'rate', newVal: $event, ...row.item }); selectImporte(row, $event)"></b-form-select>
-                    </template>
-                    <template
-                        #cell(amount)="row">
-                        <!-- Input disabled when the row is not showing details wich means is not being edited -->
-                        <b-form-input
-                            type="number"
-                            v-validate="'required|numeric|max_value:99|min_value:10'"
-                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : (row.item.rate != 'Personalizada' && (row.item.rate != 'Personalizada + Karate' && row.item.rate != 'Personalizada + GYM')) ? ' disabled' : '') + (errors.has('amount-row' + row.index) ? ' is-invalid' : '')"
-                            :disabled="!row.detailsShowing"
-                            :id="'amount-row' + row.index"
-                            :name="'amount-row' + row.index"
-                            :value="row.value"
-                            @input="updatePaymentField({ field: 'amount', newVal: $event, ...row.item })"
-                            @keypress="$isNumber($event)"></b-form-input>
-                        <transition mode="out-in" name="liveFeedbacks">
-                            <b-form-invalid-feedback
-                                v-for="error in errors.collect('amount-row' + row.index)"
-                                :key="error">
-                                {{ error }}
-                            </b-form-invalid-feedback>
-                        </transition>
-                    </template>
-                    <template
-                        #cell(paymenttype)="row">
-                        <!-- Input disabled when the row is not showing details wich means is not being edited -->
-                        <b-form-select
-                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '')"
-                            :disabled="!row.detailsShowing"
-                            :id="'forma-pago-row' + row.index"
-                            :name="'forma-pago-row' + row.index"
-                            :options="paymentTypes"
-                            :value="row.value"
-                            @change="updatePaymentField({ field: 'paymenttype', newVal: $event, ...row.item })"></b-form-select>
-                    </template>
-                    <template
-                        #cell(iban)="row">
-                        <!-- Input disabled when the row is not showing details wich means is not being edited -->
-                        <transition-group mode="in-out" name="liveFeedbacks-table">
-                            <span
-                                v-if="row.item.paymenttype == 'Domiciliación'"
-                                :key="'trans-iban-input-' + row.index">
-                                <b-form-input
-                                    v-validate.immediate="'required|iban'"
-                                    :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('iban-row' + row.index) ? ' is-invalid' : '')"
-                                    :disabled="!row.detailsShowing"
-                                    :id="'iban-row' + row.index"
-                                    :name="'iban-row' + row.index"
-                                    :value="row.value"
-                                    @input="updatePaymentField({ field: 'iban', newVal: $event, ...row.item })"></b-form-input>
-                                <transition mode="out-in" name="liveFeedbacks-table">
-                                    <b-form-invalid-feedback
-                                        v-for="error in errors.collect('iban-row' + row.index)"
-                                        :key="error">
-                                        {{ error }}
-                                    </b-form-invalid-feedback>
-                                </transition>
-                            </span>
-                            <!-- If the paymenttype of the payment is different from the original advise to the user that the IBAN will be deleted-->
-                            <div
-                                v-else-if="row.item.paymenttype != 'Domiciliación' && row.detailsShowing && onEditItem.iban != row.item.iban"
-                                :key="'trans-iban-advise-' + row.index">
-                                <span class="needs-attention-message">
-                                    El iban se borrará
-                                </span>
-                            </div>
-                        </transition-group>
-                    </template>
-                    <template
-                        #cell(ibanownername)="row">
-                        <!-- Input disabled when the row is not showing details wich means is not being edited -->
-                        <transition-group mode="out-in" name="liveFeedbacks-table">
-                            <span
-                                v-if="row.item.paymenttype == 'Domiciliación'"
-                                :key="'trans-ibanownername-input-' + row.index">
-                                <b-form-input
-                                    v-validate.immediate="'required|alpha_dash'"
-                                    :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('ibanownername-row' + row.index) ? ' is-invalid' : '')"
-                                    :disabled="!row.detailsShowing"
-                                    :id="'ibanownername-row' + row.index"
-                                    :name="'ibanownername-row' + row.index"
-                                    :value="row.value"
-                                    @input="updatePaymentField({ field: 'ibanownername', newVal: $event, ...row.item })"
-                                    @drop.prevent
-                                    @keypress="$isAlphaDash($event)"
-                                    @paste="row.value = $isAlphaDash($event)"></b-form-input>
-                                <transition mode="out-in" name="liveFeedbacks-table">
-                                    <b-form-invalid-feedback
-                                        v-for="error in errors.collect('ibanownername-row' + row.index)"
-                                        :key="error">
-                                        {{ error }}
-                                    </b-form-invalid-feedback>
-                                </transition>
-                            </span>
-                            <!-- If the paymenttype of the payment is different from the original advise to the user that the IBAN owner name will be deleted-->
-                            <div
-                                v-else-if="row.item.paymenttype != 'Domiciliación' && row.detailsShowing && onEditItem.ibanownername != row.item.ibanownername"
-                                :key="'trans-iban-advise-' + row.index">
-                                <span class="needs-attention-message">
-                                    El titular se borrará
-                                </span>
-                            </div>
-                        </transition-group>
-                    </template>
-                    <template
-                        #cell(ibanownerdni)="row">
-                        <!-- Input disabled when the row is not showing details wich means is not being edited -->
-                        <transition-group mode="out-in" name="liveFeedbacks-table">
-                            <span
-                                v-if="row.item.paymenttype == 'Domiciliación'"
-                                :key="'trans-ibanownerdni-input-' + row.index">
-                                <b-form-input
-                                    v-validate.immediate="'required|dnie|lengthDnie'"
-                                    :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : '') + (errors.has('ibanownerdni-row' + row.index) ? ' is-invalid' : '')"
-                                    :disabled="!row.detailsShowing"
-                                    :id="'ibanownerdni-row' + row.index"
-                                    :name="'ibanownerdni-row' + row.index"
-                                    :value="row.value"
-                                    @drop.prevent
-                                    @focusout="row.value ? (row.value = row.value.toUpperCase()) : ''"
-                                    @input="updatePaymentField({ field: 'ibanownerdni', newVal: $event, ...row.item })"
-                                    @keypress="$isAlphaNum($event)"
-                                    @paste="row.value = $isAlphaNum($event)"></b-form-input>
-                                <transition mode="out-in" name="liveFeedbacks-table">
-                                    <b-form-invalid-feedback
-                                        v-for="error in errors.collect('ibanownerdni-row' + row.index)"
-                                        :key="error">
-                                        {{ error }}
-                                    </b-form-invalid-feedback>
-                                </transition>
-                            </span>
-                            <!-- If the paymenttype of the payment is different from the original advise to the user that the IBAN owner dni will be deleted-->
-                            <div
-                                v-else-if="row.item.paymenttype != 'Domiciliación' && row.detailsShowing && onEditItem.ibanownerdni != row.item.ibanownerdni"
-                                :key="'trans-iban-advise-' + row.index">
-                                <span class="needs-attention-message">
-                                    El dni se borrará
-                                </span>
-                            </div>
-                        </transition-group>
-                    </template>
-                    <template
-                        #cell(status)="row">
-                        <!-- Depending of the selection on paymenttype during the edition, the options will change -->
-                        <b-form-select
-                            v-validate="'required'"
-                            :class="'editable-field slot-table-input' + (!row.detailsShowing ? ' disabled' : row.value == '' ? ' is-invalid' : '') + (!row.detailsShowing && row.value == 'Pendiente' ? ' text-warning' : !row.detailsShowing && row.value == 'Devuelto' ? ' text-danger' : '')"
-                            :disabled="!row.detailsShowing"
-                            :id="'status-pago-row' + row.index"
-                            :name="'status-pago-row' + row.index"
-                            :options="!row.detailsShowing ? states : row.detailsShowing && row.item.paymenttype != 'Domiciliación' ? [{ text: 'Confirmado', value: 'Confirmado' }, { text: 'Pendiente', value: 'Pendiente' }, { text: 'Devuelto', value: 'Devuelto', disabled: true }] : states"
-                            :value="row.value"
-                            @change.capture="updatePaymentField({ field: 'status', newVal: $event, ...row.item }); $event == 'Pendiente' && (newEditRowDate = null); $refs.paymentsTable.refresh(); "></b-form-select>
-                        <transition mode="in-out" name="liveFeedbacks">
-                            <b-form-invalid-feedback
-                                v-if="row.item.status == ''">
-                                {{ errors.first('status-pago-row' + row.index) }}
-                                <!-- {{ errors.first('forma-pago-row' + row.index) }} -->
-                            </b-form-invalid-feedback>
-                        </transition>
-                    </template>
-                    <template
-                        #cell(dateconfirmed)="row">
-                        <transition-group mode="out-in" name="liveFeedbacks-table">
-                            <!-- It will be shown when the row is showing its details and when the payment status is not 'Pendiente' -->
-                            <span
-                                v-if="row.detailsShowing && row.item.status != 'Pendiente'"
-                                :key="'trans-datepicker-' + row.index">
-                                <!-- Because it is dynamic rendered this input cannot be vee-validated and its validation simulated via conditions -->
-                                <b-form-input
-                                    size="sm"
-                                    type="date"
-                                    v-model="newEditRowDate"
-                                    :class="{ 'is-invalid' : !newEditRowDate }"
-                                    :id="'datepicker-pagos-' + row.index"
-                                    :name="'editPagoFecha' + row.index"
-                                    @input="updatePaymentField({ field: 'dateconfirmed', newVal: $moment($event).format('DD-MM-YYYY HH:mm:ss'), ...row.item })"></b-form-input>
-                                <transition mode="out-in" name="liveFeedbacks">
-                                    <b-form-invalid-feedback
-                                        v-if="row.detailsShowing && row.item.status != 'Pendiente' && !newEditRowDate">
-                                        Campo obligatorio
-                                    </b-form-invalid-feedback>
-                                </transition>
-                            </span>
-                            <!-- If the state of the payment is different from the original and the new state is pending we need to show an advise to the user -->
-                            <div
-                                v-else-if="row.detailsShowing && onEditItem.status != row.item.status && row.item.status == 'Pendiente' && onEditItem.status != 'Pendiente'"
-                                :key="'trans-datepicker-pendiente-' + row.index">
-                                <span class="needs-attention-message">
-                                    La fecha se borrará
-                                </span>
-                            </div>
-                            <!-- By default, show the date in plain text -->
-                            <span
-                                v-else
-                                :key="'trans-datepicker-default-' + row.index">
-                                {{ row.item.dateconfirmed }}
-                                <!-- {{ $moment(parseInt(row.item.dateconfirmed.$date.$numberLong)).format('DD-MM-YYYY HH:mm:ss') }} -->
-                            </span>
-                        </transition-group>
-                    </template>
-                    <template
-                        #head(editRow)>
-                        <span class="d-inline-block" data-v-step="wzd-main-pagos-1">
-                            <fa-icon icon="edit"></fa-icon>
-                        </span>
-                    </template>
-                    <!-- Conditionally rendered at the customer profile (when the isDisabled prop is false) -->
-                    <template
-                        #cell(editRow)="row"
-                        v-if="isDisabled == false">
-                        <!-- Shown only when the flag wich indicates there is a row on edition is false. Only can edit one row at time -->
+                    </span>
+                </template>
+                <template
+                    #cell(active)="row">
+                    <b-form-checkbox
+                        disabled
+                        switch
+                        v-model="row.value"></b-form-checkbox>
+                </template>
+                <template
+                    #cell(name)="row">
+                    <b-link
+                        class="d-block table-text-overflowed text-nowrap"
+                        positioning="top"
+                        target="_blank"
+                        title="Abre la ficha del socio"
+                        v-b-tooltip.hover.right.noninteractive
+                        :to="{ name: 'customers.profile', params: { id: row.item._id } }">
+                        {{ row.value }}
+                        <small class="ml-1"><fa-icon icon="external-link-alt"></fa-icon></small>
+                    </b-link>
+                </template>
+                <template
+                    #cell(rate)="row">
+                    <div
+                        class="table-text-overflowed text-nowrap"
+                        :title="row.value">
+                        {{ row.value }}
+                    </div>
+                </template>
+                <template
+                    #cell(status)="row">
+                    <span
+                        :class="row.value == 'Pendiente' ? 'text-warning' : row.value == 'Devuelto' ? 'text-danger' : ''">
+                        {{ row.value }}
+                    </span>
+                </template>
+                <template
+                    #cell(amount)="row">
+                    <span>
+                        {{ row.value + '€'}}
+                    </span>
+                </template>
+                <template
+                    #cell(type)="row">
+                    {{ row.value == 'periodic' ? 'Periódico' : 'Manual' }}
+                </template>
+                <template
+                    #cell(actions)="row">
+                    <b-button
+                        class="ig-small-btn"
+                        size="sm"
+                        title="Editar el pago"
+                        variant="outline-secondary"
+                        v-b-tooltip.hover.left.noninteractive
+                        :id="'tooltip_edit_row' + row.index"
+                        @click="manageEdit(row.item)">
+                        <fa-icon icon="edit"></fa-icon>
+                    </b-button>
+                    <b-button
+                        class="ig-small-btn"
+                        size="sm"
+                        title="Descargar recibo"
+                        variant="outline-dark"
+                        v-b-tooltip.hover.left.noninteractive
+                        @click="printBill(row.item)">
+                        <fa-icon icon="file-download"></fa-icon>
+                    </b-button>
+                    <b-button
+                        class="ig-small-btn"
+                        size="sm"
+                        v-b-tooltip.hover.left.noninteractive
+                        :title="!row.item._showDetails ? 'Mostrar detalles' : 'Ocultar detalles'"
+                        :variant="!row.item._showDetails ? 'outline-info' : 'info'"
+                        @click="row.toggleDetails">
                         <fa-icon
-                            icon="edit"
-                            v-if="!showingDetails"
-                            :id="'tooltip_edit_row' + row.index"
-                            @click="manageDetails(row.item)"></fa-icon>
-                        <b-tooltip
-                            noninteractive
-                            placement="topleft"
-                            v-if="!row.item._showDetails"
-                            :target="'tooltip_edit_row' + row.index">
-                            Editar el pago
-                        </b-tooltip>
-                    </template>
-                    <!-- Shown only when other procedures are not initiated -->
-                    <template
-                        #row-details="row">
-                        <b-row align-h="end" align-v="center" class="m-0">
-                            <b-col class="mr-auto px-0">
-                                <b-button
-                                    class="px-1 py-0"
-                                    id="btn-del-payment"
-                                    size="sm"
-                                    variant="outline-danger"
-                                    @click="delPayment(row.item)">
-                                <b-tooltip noninteractive target="btn-del-payment" title="Modifícalo para que se ajuste a lo que necesites. Evita borrar los pagos." variant="warning"></b-tooltip>
-                                    Borrar
-                                </b-button>
+                            :icon="!row.item._showDetails ? 'angle-double-down' : 'angle-double-up'"></fa-icon>
+                    </b-button>
+                </template>
+                <template
+                    #cell(use)="row">
+                    <b-button
+                        class="ig-modal-table-btn"
+                        size="sm"
+                        variant="outline-primary"
+                        @click="$emit('choose', row.item)">
+                        Usar
+                    </b-button>
+                </template>
+                <!-- Shown only when other procedures are not initiated -->
+                <template
+                    #row-details="row">
+                    <div class="p-2">
+                        <b-row>
+                            <b-col cols="6">
+                                <b-row
+                                    v-for="(field, idx) in detailFields"
+                                    :key="idx">
+                                    <b-col cols="4" class="text-nowrap">
+                                        <span class="text-muted">{{ field.key }}:</span>
+                                    </b-col>
+                                    <b-col>{{ field.value == 'dateconfirmed' && (row.item.dateconfirmed == null || row.item.dateconfirmed == '') ? 'El pago aún no está confirmado' : row.item[field.value] }}</b-col>
+                                </b-row>
                             </b-col>
-                            <b-col class="px-1" cols="auto">
-                                <b-button
-                                    size="sm"
-                                    @click="cancelEdit()">
-                                    Cancelar
-                                </b-button>
-                            </b-col>
-                            <b-col class="p-0" cols="auto">
-                                <span
-                                    class="d-inline-block"
-                                    tabindex="0"
-                                    v-b-tooltip.hover.noninteractive
-                                    :title="!rowEdited(row.item) ? 'Nada que guardar' : row.item.status == '' || (newEditRowDate == null && row.item.status != 'Pendiente') || (row.item.paymenttype == 'Domiciliación' && errors.has('iban-row' + row.index)) || (errors.has('amount-row' + row.index)) ? 'Revisa los campos incorrectos' : 'Guardar'">
-                                    <!-- Button disabled when if no changes are made to the data on the row, when the edition is started, the data on the row is stored on onEditItem -->
-                                    <b-button
-                                        size="sm"
-                                        variant="primary"
-                                        :disabled="!rowEdited(row.item) || (newEditRowDate == null && row.item.status != 'Pendiente') || (row.item.paymenttype == 'Domiciliación' && row.item.iban == null || (errors.has('amount-row' + row.index) || errors.has('iban-row' + row.index) || errors.has('status-pago-row' + row.index)))"
-                                        @click="applyEditRow(row.item)">
-                                        Guardar
-                                    </b-button>
-                                </span>
-                            </b-col>
-                        </b-row>
-                    </template>
-                    <template
-                        #table-colgroup="scope">
-                        <col
-                            v-for="field in scope.fields"
-                            :key="field.key"
-                            :style="{ width: field.key == 'selected' || field.key == 'editRow' || field.key == 'active' ? '30px' : field.key == 'amount' ? '100px' : field.key == 'interval' ? '60px' : field.key == 'status' || field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' :  field.key == 'dateconfirmed' || field.key == 'iban' ? '180px' : field.key == 'customerNumber' ? '75px' : field.key == 'ibanownerdni' ? '130px' : 'auto' }">
-                    </template>
-                    <template
-                        #table-caption>
-                        <b-row align-h="between" no-gutters>
-                            <!-- Shown only at the main payments page -->
                             <b-col
-                                v-if="$route.name == 'payments.index'"
-                                :cols="$refs.paymentsTable && $refs.paymentsTable.isFiltered && ($refs.paymentsTable.filteredItems.length > 1000 || paymentsItems.length > 1000) ? 6 : 'auto'">
-                                <p>
-                                    La tabla solo muestra los socios activos. Mostrar los inactivos
-                                    <b-form-checkbox
-                                        class="d-inline custom inline-switch"
-                                        size="sm"
-                                        switch
-                                        v-model="inactives"
-                                        @change="cancelEdit()"></b-form-checkbox>
-                                </p>
-                                Filas seleccionadas:
-                                <AnimatedNum
-                                    :numFounded="rowsSelected.length"></AnimatedNum>
-                                <br>
-                                Filas totales: {{ $refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length : paymentsItems.length }}
-                                <!-- <AnimatedNum
-                                    :numFounded="$refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length : paymentsItems.length"></AnimatedNum> -->
-                            </b-col>
-                            <b-col cols="auto">
-                                <b-pagination
-                                    aria-controls="paymentsTable"
-                                    class="float-right"
-                                    per-page="1000"
-                                    size="sm"
-                                    v-model="paymentsTablePagination"
-                                    v-if="$refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length > 1000 : paymentsItems.length > 1000"
-                                    :total-rows="$refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length : paymentsItems.length"></b-pagination>
+                                cols="6"
+                                v-if="row.item.paymenttype == 'Domiciliación'">
+                                <b-row>
+                                    <b-col>
+                                        <span class="text-muted text-nowrap"><u>Datos bancarios</u></span>
+                                    </b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-col cols="4">
+                                        <span class="text-muted text-nowrap">IBAN:</span>
+                                    </b-col>
+                                    <b-col>{{ row.item.iban }}</b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-col cols="4">
+                                        <span class="text-muted text-nowrap">Nombre del titular:</span>
+                                    </b-col>
+                                    <b-col>{{ row.item.ibanownername }}</b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-col cols="4">
+                                        <span class="text-muted text-nowrap">Dni del titular:</span>
+                                    </b-col>
+                                    <b-col>{{ row.item.ibanownerdni }}</b-col>
+                                </b-row>
                             </b-col>
                         </b-row>
-                    </template>
-                    <template
-                        #table-busy>
-                        <div class="text-center my-2">
-                            <b-spinner class="align-middle" type="grow" variant="secondary"></b-spinner>
-                        </div>
-                    </template>
-                    <!-- It will be shown when the table hasn't rows because the filters have emptied it -->
-                    <template
-                        #empty>
-                        <b-form-text>
-                            No hay pagos con estos criterios
-                        </b-form-text>
-                    </template>
-                    <template
-                        #emptyfiltered>
-                        <b-form-text>
-                            Ningún registro coincide con tu búsqueda
-                        </b-form-text>
-                    </template>
-                </b-table>
+                    </div>
+                </template>
+                <template
+                    #table-colgroup="scope">
+                    <col
+                        v-for="field in scope.fields"
+                        :key="field.key"
+                        :style="{ width: field.key == 'name' ? '200px' : field.key == 'active' ? '60px' : field.key == 'use' ? '50px' : field.key == 'selected' ? '30px' : field.key == 'amount' || field.key == 'type' || field.key == 'interval' ? '70px' : field.key == 'actions' ? '125px' : field.key == 'paymenttype' ? '110px' : field.key == 'status' ? '90px' : field.key == 'rate' ? '150px' :  field.key == 'dateconfirmed' ? '180px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                </template>
+                <template
+                    #table-caption>
+                    <b-row align-h="between" no-gutters>
+                        <!-- Shown only at the main payments page -->
+                        <b-col
+                            v-if="$route.name == 'payments.index' && !lite"
+                            :cols="$refs.paymentsTable && $refs.paymentsTable.isFiltered && ($refs.paymentsTable.filteredItems.length > perPage || paymentsItems.length > perPage) ? 6 : 'auto'">
+                            <p>
+                                La tabla solo muestra los socios activos. Mostrar los inactivos
+                                <b-form-checkbox
+                                    class="d-inline custom inline-switch"
+                                    size="sm"
+                                    switch
+                                    v-model="inactives"></b-form-checkbox>
+                                    <!-- @change="cancelEdit()"></b-form-checkbox> -->
+                            </p>
+                            Filas seleccionadas:
+                            <AnimatedNum
+                                :numFounded="rowsSelected.length"></AnimatedNum>
+                            <br>
+                            Filas totales: {{ $refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length : paymentsItems.length }}
+                            <!-- <AnimatedNum
+                                :numFounded="$refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length : paymentsItems.length"></AnimatedNum> -->
+                        </b-col>
+                        <b-col align-self="end">
+                            <b-pagination
+                                aria-controls="paymentsTable"
+                                class="float-right"
+                                size="sm"
+                                v-model="paymentsTablePagination"
+                                v-if="$refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length > perPage : paymentsItems.length > perPage"
+                                :per-page="perPage"
+                                :total-rows="$refs.paymentsTable && $refs.paymentsTable.isFiltered ? $refs.paymentsTable.filteredItems.length : paymentsItems.length"></b-pagination>
+                        </b-col>
+                    </b-row>
+                </template>
+                <template
+                    #table-busy>
+                    <div class="text-center my-2">
+                        <b-spinner class="align-middle" type="grow" variant="secondary"></b-spinner>
+                    </div>
+                </template>
+                <!-- It will be shown when the table hasn't rows because the filters have emptied it -->
+                <template
+                    #empty>
+                    <b-form-text>
+                        No hay pagos con estos criterios
+                    </b-form-text>
+                </template>
+                <template
+                    #emptyfiltered>
+                    <b-form-text>
+                        Ningún registro coincide con tu búsqueda
+                    </b-form-text>
+                </template>
+            </b-table>
+        </div>
+        <!-- Hided printable bill -->
+        <div class="printable-wrp">
+            <div class="pr-1 printable-ctn" ref="printableNPB">
+                <Bill
+                    v-if="print"
+                    :customer="printCustomer"
+                    :printItem="printItem"></Bill>
             </div>
+        </div>
+        <PaymentsEdit
+            :editingItem="editingItem"
+            @editSuccess="evaluateRowSelectedState(...arguments)"></PaymentsEdit>
+            <!-- @editSuccess="evaluateRowSelectedState(...arguments); fetchChartData();"></PaymentsEdit> -->
     </div>
 </template>
 <script>
     import { http } from '../utils/http';
     import BarChart from '../charts/BarChart.vue';
+    import DateRangePicker from 'vue2-daterange-picker'; /* https://innologica.github.io/vue2-daterange-picker/#props */
     import LineChart from '../charts/LineChart.vue';
     import { mapActions, mapGetters } from 'vuex';
+    import NProgress from 'nprogress';
+    import 'vue2-daterange-picker/dist/vue2-daterange-picker.css' /* https://innologica.github.io/vue2-daterange-picker/#props */
     import * as WzdSteps from './wzdsteps/payments';
     const QS = require('qs'); /* Needed at axios.post function to pass arrays as params to the controller */
-    const RESTORE_FIELDS = [ '_id', '_showDetails', 'amount', 'dateconfirmed', 'dategenerated', 'iban', 'ibanownername', 'ibanownerdni', 'interval', 'paymenttype', 'rate', 'status'];
     const SPECIAL_CHARACTERS = { 'Ã': 'A', 'À': 'A', 'Á': 'A', 'Ä': 'A', 'Â': 'A', 'È': 'E', 'É': 'E', 'Ë': 'E', 'Ê': 'E', 'Ì': 'I', 'Í': 'I', 'Ï': 'I', 'Î': 'I', 'Ò': 'O', 'Ó': 'O', 'Ö': 'O', 'Ô': 'O', 'Ù': 'U', 'Ú': 'U', 'Ü': 'U', 'Û': 'U', 'ã': 'a', 'à': 'a', 'á': 'a', 'ä': 'a', 'â': 'a', 'è': 'e', 'é': 'e', 'ë': 'e', 'ê': 'e', 'ì': 'i', 'í': 'i', 'ï': 'i', 'î': 'i', 'ò': 'o', 'ó': 'o', 'ö': 'o', 'ô': 'o', 'ù': 'u', 'ú': 'u', 'ü': 'u', 'û': 'u', 'Ñ': 'N', 'ñ': 'n', 'Ç': 'c', 'ç': 'c' };
     export default {
-        components: { BarChart, LineChart },
+        components: { BarChart, DateRangePicker, LineChart },
         data() {
             return {
                 allSelected: false, /* Flag to obtain only the selected elements on the table */
@@ -990,6 +1019,10 @@
                     { text: 'Diciembre' ,value: 11, },
                 ], /* Data for a b-checkbox-group with the selectable months and its values to show it on the view, it is used to apply filters on the table data */
                 btnPayTypes: [ 'Efectivo', 'Tarjeta', 'Domiciliación' ], /* The selectable pay types to show it on the view, it is used to apply filters on the table data */
+                btnTypes: [
+                    { text: 'Periódico', value: 'periodic' },
+                    { text: 'Manual', value: 'manual' }
+                ], /* The selectable pay types to show it on the view, it is used to apply filters on the table data */
                 btnStates: [ 'Confirmado', 'Pendiente', 'Devuelto' ], /* The selectable states to show it on the view, it is used to apply filters on the table data */
                 btnYears: [], /* Data to show on a b-form-checkbox with the selectable years, the years will be calculated based on the data stored on the database. It is used to apply filters on the table data */
                 chartIngresosTotalData: {}, /* Chart data */
@@ -1098,48 +1131,56 @@
                 csvDownloadConfirmation: false, /* Flag to conditional render an spinner or icon on the confirmation button */
                 csvDownloadManual: false, /* Flag to conditional render an spinner or icon on the manual download button */
                 csvDownloadTable: false, /* Flag to conditional render an spinner or icon on a manual print table button */
+                editingItem: {}, /* Stores the data of a row when it is edited to allow recover it */
+                dateLocaleData: {
+                    format: 'YYYY/MM/DD HH:mm:ss',
+                    separator: ' - ',
+                    daysOfWeek: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                    monthNames: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    firstDay: 1
+                }, /* Parameters to the datepicker */
+                dateCreationRange: {
+                    startDate: null /* this.$moment().startOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                    endDate: null /* this.$moment().endOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                }, /* V-model for the creation date filter */
+                dateConfirmationRange: {
+                    startDate: null /* this.$moment().startOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                    endDate: null /* this.$moment().endOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                }, /* V-model for the confirmation date filter */
+                dateRangeButtons: [
+                    { text: "Limpiar", startDate: null, endDate: null },
+                    { text: "Hoy", startDate: this.$moment().startOf('day').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().endOf('day').format('YYYY/MM/DD HH:mm:ss') },
+                    { text: "Ayer", startDate: this.$moment().subtract(1, 'days').startOf('day').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().subtract(1, 'days').endOf('day').format('YYYY/MM/DD HH:mm:ss') },
+                    { text: "Esta semana", startDate: this.$moment().startOf('week').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().endOf('week').format('YYYY/MM/DD HH:mm:ss') },
+                    { text: "Semana pasada", startDate: this.$moment().subtract(1, 'week').startOf('week').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().subtract(1, 'week').endOf('week').format('YYYY/MM/DD HH:mm:ss') },
+                    { text: "Este mes", startDate: this.$moment().startOf('month').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().endOf('month').format('YYYY/MM/DD HH:mm:ss') },
+                    { text: "Mes pasado", startDate: this.$moment().subtract(1, 'month').startOf('month').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().subtract(1, 'month').endOf('month').format('YYYY/MM/DD HH:mm:ss') },
+                    { text: "Últimos 3 meses", startDate: this.$moment().subtract(2, 'months').startOf('month').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().endOf('month').format('YYYY/MM/DD HH:mm:ss') },
+                    { text: "Este año", startDate: this.$moment().startOf('year').format('YYYY/MM/DD HH:mm:ss'), endDate: this.$moment().endOf('year').format('YYYY/MM/DD HH:mm:ss') },
+                ], /* Objects to show different buttons to interact with the date picked */
+                detailFields: [
+                    { key: 'ID', value: '_id' },
+                    { key: 'Número de socio', value: 'customerNumber' },
+                    { key: 'Fecha pago', value: 'dateconfirmed' },
+                    { key: 'Fecha creación', value: 'dategenerated' },
+                ], /* Values to show on row-details */
                 filterTags: [], /* v-model that contains the filters applied on the table */
-                getSelectedMonth: [ this.$moment().month() ], /* v-model for a b-checkbox-group, it stores the months selecteds to filter the data on the table. The current month is the default selected */
-                getSelectedMonthRecover: [], /* Array to store the filters applied to return to a previous state */
+                getSelectedDateConfirmed: '', /* v-model for a b-checkbox-group, it stores the dateconfirmed */
+                getSelectedMonth: [this.$moment().month()], /* v-model for a b-checkbox-group, it stores the months selecteds to filter the data on the table */
+                getSelectedDateConfirmed: [], /* v-model for a b-checkbox-group, it stores the pay type of the payments selecteds to filter the data on the table */
                 getSelectedPayType: [], /* v-model for a b-checkbox-group, it stores the pay type of the payments selecteds to filter the data on the table */
-                getSelectedPayTypeRecover: [], /* Array to store the filters applied to return to a previous state */
+                getSelectedType: [], /* v-model for a b-checkbox-group, it stores the type of the payments selecteds to filter the data on the table */
                 getSelectedState: [], /* v-model for a b-checkbox-group, it stores the states of the payments selecteds to filter the data on the table */
-                getSelectedStateRecover: [], /* Array to store the filters applied to return to a previous state */
-                getSelectedYear: [ this.$moment().year() ], /* v-model for a b-checkbox-group, it stores the years selected to filter the data on the table. The current year is the default selected */
-                getSelectedYearRecover: [], /* Array to store the filters applied to return to a previous state */
+                getSelectedYear: [this.$moment().year()], /* v-model for a b-checkbox-group, it stores the years selected to filter the data on the table */
                 inactives: false, /* Flag to show or not the inactive customers */
                 months: [ 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre' ], /* Array used to convert the numbers to string */
-                newEditRowDate: null, /* v-model to the datepicker of the table row modifications */
                 newStateSelected: false, /* v-model for a b-checkbox-group, acts like a flag to activate options on the confirming payments procedure */
-                onEditItem: {}, /* Stores the data of a row when it is edited to allow recover it */
-                // paymentsItemsFields: [
-                //     { key: 'selected', label: '', class: 'text-center' },
-                //     { key: 'id', label: 'ID', sortable: true, },
-                //     { key: 'name', label: 'Socio', sortable: true, },
-                //     { key: 'rate', label: 'Tarifa', sortable: true, },
-                //     { key: 'amount', label: 'Importe', sortable: true, },
-                //     { key: 'paymenttype', label: 'Forma de pago', sortable: true, },
-                //     // { key: 'fechaPago', label: 'Fecha de pago', sortable: true, },
-                //     { key: 'interval', label: 'Periodo', sortable: true, },
-                //     { key: 'status', label: 'Estado', sortable: true, },
-                //     { key: 'dateconfirmed', label: 'Fecha de pago confirmado', sortable: true, },
-                //     { key: 'editRow', class: 'tableEditRow' },
-                // ], /* Array width the fields of the main b-table */
                 paymentsTableBusy: true, /* Flag to mark table as busy */
                 paymentsTablePagination: 1, /* The pagination index of the table */
-                paymentTypes: [
-                    { value: 'Domiciliación', text: 'Domiciliación' },
-                    { value: 'Tarjeta', text: 'Tarjeta' },
-                    { value: 'Efectivo', text: 'Efectivo' },
-                ], /* options for a b-select on the main b-table element */
-
-                rates: ['Karate 1', 'Karate 2', 'Karate 3', 'GYM 1', 'GYM 2', 'GYM Libre', 'Personalizada + Karate', 'Personalizada + GYM',], /* Options for a b-select on the main b-table element to select the fee when edit a row */
+                print: false, /* Flag to activate the print component */
+                printCustomer: null, /* The id of the customer to print a bill */
+                printItem: null, /* The item used to print a bill */
                 rowsSelected: [], /* Stores the selected rows of the table to manage some conditional rendering and states */
-                states: [
-                    { text: 'Confirmado', value: 'Confirmado' },
-                    { text: 'Pendiente', value: 'Pendiente' },
-                    { text: 'Devuelto', value: 'Devuelto' }
-                ], /* Options for a select element */
                 paymentsSearch: '', /* v-model for the table input search */
                 wmpSteps: null, /* Steps for vue-tour, will be filled with external data */
                 wpcSteps: null, /* Steps for vue-tour, will be filled with external data */
@@ -1166,8 +1207,16 @@
             }
         },
         computed: {
-            ...mapGetters(['getPayments', 'getPaymentsById', 'getPaymentsYears']),
+            ...mapGetters(['filterPayments', 'getCustomerById', 'getFilteredPaymentsAll', 'getFilteredPaymentsById', 'getPaymentsYears']),
             ...mapGetters('navbar', ['getProcedureState']),
+            /**
+             * Determines if all the payments avaiable are hided by the filters
+             *
+             * @retuns {Boolean} Boolean with the evaluation based on the table items and the items filtered
+             */
+            allHided() {
+                return this.paymentsAll.length > 0 && this.paymentsItems.length == 0;
+            },
             /**
              * v-model that indicates if the charts has been saw
              */
@@ -1177,16 +1226,6 @@
                 },
                 set(val) {
                     this.setProcedureState({ procedure: 'paymentsCharts', newVal: val });
-                }
-            },
-            /**
-             * Determine the fields to shown on the table, depending on the edition of a row we need to show or no some fields
-             */
-            computedFields() {
-                if (this.showingDetails) {
-                    return this.tableFields.filter(tf => !tf.showingDetails || tf.oneditField);
-                } else {
-                    return this.tableFields.filter(tf => !tf.oneditField);
                 }
             },
             /**
@@ -1202,10 +1241,20 @@
                 return this.getProcedureState('paymentsPrinting');
             },
             /**
-             * Compute all the payments without any filter
+             * Compute all the payments for each type parent
+             *
+             * @return {Array} Array with the paymets objects
              */
             paymentsAll() {
-                return this.getPayments();
+                /* If the items are provided from the parent */
+                if (this.parentItems) {
+                    return this.parentItems;
+                /* If the parent provide and id to search the payments return its search */
+                } else if (this.parentId) {
+                    return this.getFilteredPaymentsById(this.parentId, null, null, null, null, null, null, true);
+                }
+                /* Else return all the payments without any filter */
+                return this.getFilteredPaymentsAll();
             },
             /**
              * Initialize the payments data from the store. Determine the value of local variables.
@@ -1213,23 +1262,23 @@
              * @return {Array} Array with the objects-rows to the table
              */
             paymentsItems() {
-                /* If an id is provided via props then search the payments related with it, if not id is provided acquire all the payments o every customer */
-                let payments = this.customer_id != null ? this.getPaymentsById(this.customer_id, this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.inactives) : this.getPayments(this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.inactives);
+                /* If the parent provides the items use it. If the parent provides the id then search the payments related with it. For this options always active the inactives flag (last param of the filter action call) to acquire all the payments of this customer althought is inactive (this options are provided from the customer profile or from payment print and always want to print this documents regardless of the state of the customer). If not parent id or items are provided acquire all the payments of every customer */
+                let payments = this.parentItems ? this.filterPayments(this.parentItems, this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.getSelectedType, this.dateCreationRange, this.dateConfirmationRange, true) : this.parentId ? this.getFilteredPaymentsById(this.parentId, this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.getSelectedType, this.dateCreationRange, this.dateConfirmationRange, true) : this.getFilteredPaymentsAll(this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.getSelectedType, this.dateCreationRange, this.dateConfirmationRange, this.inactives);
                 if (this.allSelected) {
                     /* Get only the selected rows */
-                    payments = payments.filter(payment => this.rowsSelected.some(rs => rs._id == payment._id && rs.interval == payment.interval) == true);
-                }
-                /* If a row has its '_showDetails' attribute actived it is necessary to check on the current filtered payments and to avoid errors, if on the current is not founded, checks on all the payments also */
-                if (this.showingDetails) {
-                    /* If the payment is on the current array of payments */
-                    if (payments.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval)) {
-                        this.$set(payments.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval), '_showDetails', true);
-                    /* If the payment is not on the current array of payments discard finding on all the payments */
-                    } else {
-                        this.$set(this.paymentsAll.find(payment => payment._id == this.onEditItem._id && payment.interval == this.onEditItem.interval), '_showDetails', true);
-                    }
+                    payments = payments.filter(payment => this.rowsSelected.some(rs => rs._id == payment._id && rs.payment_id == payment.payment_id) == true);
                 }
                 return payments;
+            },
+            /**
+             * Table items per page
+             */
+            perPage() {
+                /* If the parent provides a number of items per page use it */
+                if (this.itemsPerPage) {
+                    return this.itemsPerPage;
+                }
+                return 100;
             },
             /**
              * Determines if all the elements are selected under visible filtered elements on the table. This function is used at the simulated checkbox of the head at the col selected of the table
@@ -1241,10 +1290,10 @@
                 if (this.rowsSelected.length > 0 && filteredItems.length > 0) {
                     if (this.confirming || this.manualDownload) {
                         const usefulRows = filteredItems.filter(el => el.paymenttype == 'Domiciliación' && el.status == 'Pendiente');
-                        return usefulRows.every(ur => this.rowsSelected.some(rs => rs._id == ur._id && rs.interval == ur.interval) == true);
+                        return usefulRows.every(ur => this.rowsSelected.some(rs => rs._id == ur._id && rs.payment_id == ur.payment_id) == true);
                     }
                     if (!this.confirming && !this.manualDownload) {
-                        return filteredItems.every(fi => this.rowsSelected.some(rs => rs._id == fi._id && rs.interval == fi.interval) == true);
+                        return filteredItems.every(fi => this.rowsSelected.some(rs => rs._id == fi._id && rs.payment_id == fi.payment_id) == true);
                     }
                 }
             },
@@ -1255,7 +1304,7 @@
              */
             selectedHided() {
                 const filteredItems = this.$refs.paymentsTable && this.$refs.paymentsTable.filteredItems;
-                return this.rowsSelected.length > 0 && this.rowsSelected.some(rs => filteredItems.findIndex(fi => fi._id == rs._id && rs.interval == fi.interval) == -1);
+                return this.rowsSelected.length > 0 && this.rowsSelected.some(rs => filteredItems.findIndex(fi => fi._id == rs._id && rs.payment_id == fi.payment_id) == -1);
             },
             /**
              * Determines if some row is selected
@@ -1266,16 +1315,10 @@
                 const filteredItems = this.$refs.paymentsTable && this.$refs.paymentsTable.filteredItems;
                 return this.rowsSelected.length > 0 && filteredItems.length > 0 && this.rowsSelected.length > 0;
             },
-            /**
-             * Informs if some row is showing its details that means is editing
-             *
-             * @return {Boolean} Boolean that informs if some row is showing its details
-             */
-            showingDetails() {
-                return Object.keys(this.onEditItem).length !== 0;
-            },
         },
         created() {
+            /* Is not working for the v-overflown */
+            // window.addEventListener('resize', () => { this.$forceUpdate() });
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
             /* Initialize the imported information for the wizard steps */
@@ -1286,9 +1329,14 @@
         destroyed() {
             /* Destroy de listeners */
             window.removeEventListener('beforeunload', this.beforeUnload);
+            /* Is not working for the v-overflown */
+            // window.removeEventListener('resize', () => { this.$forceUpdate() });
         },
+        inject: [
+            '$validator', /* Inject the main $validator from the parent */
+        ],
         methods: {
-            ...mapActions(['deletePayment', 'updatePaymentData', 'updatePaymentField']),
+            ...mapActions(['deletePayment', 'fetchCustomerImages', 'updatePaymentData']),
             ...mapActions('navbar', ['endProcedures', 'setProcedureState']),
             /**
              * Function that add the tags to the array v-model. Is called when a filter on the table is selected and on the mounted hook to apply the current year and month
@@ -1302,44 +1350,14 @@
                 this.filterTags.includes(tag) ? this.filterTags.splice(this.filterTags.indexOf(tag), 1) : this.filterTags.push(tag);
             },
             /**
-             * Function to save the changes at the db
-             *
-             * @param {Object} row: contains the row from the table with the customer data that will be edited
-             */
-            applyEditRow(row) {
-                this.paymentsTableBusy = true;
-                /* Determine and format the date to pass to the api */
-                let toControllerDate = this.determineDate(row);
-                /* Pass the params as an Array */
-                http.post('/api/updatePayments', QS.stringify({ data: new Array(row), date: toControllerDate, action: 'updating' }))
-                    .then(response => {
-                        /* Hide de details of the row (that means the edit has been finished) */
-                        this.$set(row, '_showDetails', false);
-                        /* Trigger a modification on the localStorage to propagate the changes on other windows */
-                        localStorage.setItem('customer_updated', row._id);
-                        localStorage.removeItem('customer_updated');
-                        /* Reset the backup var */
-                        this.onEditItem = {};
-                        /* Check if any process (confirm or manual download) of payments is activated and manage the selection of the edited row */
-                        this.evaluateRowSelectedState();
-                        /* Regenerate the charts data */
-                        this.fetchChartData();
-                    })
-                    .catch(error => {
-                        this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FEPa@ApEdRo', 'Ha ocurrido un error')
-                        console.error(error.response ? error.response.data : error);
-                    });
-                this.paymentsTableBusy = false;
-            },
-            /**
              * Prevent leave the page with changes unsaved
              *
              * @param {Event} ev: the event fired
              */
             beforeUnload(ev) {
                 let answer = true;
-                /* From Chrome 60 onward, the beforeunload dialog will only appear if the frame attempting to display it has received a user gesture or user interaction (or if any embedded frame has received such a gesture). */
-                if (this.confirming || this.manualDownload || this.paymentsItems.some(el => el._showDetails == true)) {
+                /* From Chrome 60 onward, the beforeunload dialog will only appear if the frame attempting to display it has received a user gesture or user interaction (or if any embedded frame has received such a gesture). Confirm with the user when a procedure is open or if a editing modal is open */
+                if (this.confirming || this.manualDownload || document.getElementById('edit-payment-modal')) {
                     answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
                     if (!answer) {
                         ev.preventDefault();
@@ -1355,41 +1373,27 @@
                 }
             },
             /**
-             * Cancel the edition of a row on demand
-             */
-            cancelEdit() {
-                if (this.showingDetails) {
-                    /* Restore the _showDetails attr */
-                    this.$set(this.paymentsAll.find(payment => payment._id == this.onEditItem._id), '_showDetails', false);
-                    /* Restore the entire editable data from the backup variable */
-                    this.updatePaymentData({ _id: this.onEditItem._id, interval: this.onEditItem.interval, ...this.onEditItem });
-                    /* Restore the backup variable */
-                    this.onEditItem = {};
-                }
-            },
-            /**
              * Mass confirmation of the payments on the payments.index route
              */
             confirmingState() {
-                // this.paymentsTableBusy = true;
-                http.post('/api/updatePayments', QS.stringify({ data: this.rowsSelected, action: this.newStateSelected }))
+                this.paymentsTableBusy = true;
+                /* Update the payment on the db via vuex */
+                this.updatePaymentData({ items: this.rowsSelected, action: this.newStateSelected })
                     .then(response => {
-                        /* Iterate over all the edited items */
-                        response.data.updated.forEach(item => {
-                            /* Update the customers state */
-                            this.updatePaymentData({ ...item });
-                            /* Trigger a modification on the localStorage to propagate the changes on other windows */
-                            localStorage.setItem('customer_updated', item._id);
-                            localStorage.removeItem('customer_updated');
+                        console.log(response)
+                        response.updated.forEach(item => {
                             /* Delete the selected row from the array of selected elements */
                             this.rowSelect(item, false);
+                            /* Trigger a modification on the localStorage to propagate the changes on other windows */
+                            /* This makes a lot of writes without much sense, not activated for now */
+                            // localStorage.setItem('customer_updated', item._id);
+                            // localStorage.removeItem('customer_updated');
                         });
                         /* Reset the used vars */
                         this.newStateSelected = false;
-                        this.newEditRowDate = null
-                        this.$showToast(response.data.status, response.data.message, 'Confirmación de pagos');
+                        this.$showToast(response.status, response.message, 'Confirmación masiva de pagos');
                         /* Regenerate the charts data */
-                        this.fetchChartData();
+                        // this.fetchChartData();
                     })
                     .then(() => {
                         this.paymentsTableBusy = false;
@@ -1400,43 +1404,22 @@
                     });
             },
             /**
-             * Function that deletes a payment in the db
+             * Function to set the datepicker return value on update its range by the user interaction
              *
-             * @param {Object} row: contains the row from the table with the customer data that will be deleted
+             * @param {Object} event with the date object composed by the start and end date.
              */
-            delPayment(row) {
-                this.paymentsTableBusy = true;
-                /* Confirm to the user that the action can not be undoed */
-                this.$bvModal.msgBoxConfirm("EVITA USAR ESTA OPCIÓN, SI LO NECESITAS EDITA EL PAGO. ¿Estás seguro de que quieres borrar el pago? Nota: ESTO NO SE PUEDE DESHACER", {
-                    title: 'ATENCIÓN',
-                    size: 'sm',
-                    buttonSize: 'sm',
-                    okVariant: 'danger',
-                    okTitle: 'Continuar',
-                    cancelTitle: 'Volver',
-                })
-                .then(value => {
-                    if (value) {
-                        http.post('/api/deletePayments', QS.stringify(row))
-                            .then(response => {
-                                this.deletePayment({ _id: row._id, interval: row.interval });
-                                /* Trigger a modification on the localStorage to propagate the changes on other windows */
-                                localStorage.setItem('customer_updated', row._id);
-                                localStorage.removeItem('customer_updated');
-                                /* Reset the on edit item */
-                                this.onEditItem = {};
-                                this.$showToast(response.data.status, response.data.message, 'Borrado de pagos');
-                            })
-                            .catch(error => {
-                                this.paymentsTableBusy = false;
-                                this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FEPa@DePa', 'Ha ocurrido un error')
-                                console.error(error.response ? error.response.data : error);
-                            });
-                    }
-                })
-                .then(() => {
-                    this.paymentsTableBusy = false;
-                })
+            dateCreationRangeSelected(date) {
+                this.dateCreationRange.startDate = date.startDate == null ? date.startDate : this.$moment(date.startDate).format('YYYY/MM/DD HH:mm:ss');
+                this.dateCreationRange.endDate = date.endDate == null ? date.endDate : this.$moment(date.endDate).format('YYYY/MM/DD HH:mm:ss');
+            },
+            /**
+             * Function to set the datepicker return value on update its range by the user interaction
+             *
+             * @param {Object} event with the date object composed by the start and end date.
+             */
+            dateConfirmationRangeSelected(date) {
+                this.dateConfirmationRange.startDate = date.startDate == null ? date.startDate : this.$moment(date.startDate).format('YYYY/MM/DD HH:mm:ss');
+                this.dateConfirmationRange.endDate = date.endDate == null ? date.endDate : this.$moment(date.endDate).format('YYYY/MM/DD HH:mm:ss');
             },
             /**
              * Function called when a tag is removed from its interaction. It will splice the tag removed from the v-model of the tags element
@@ -1455,48 +1438,36 @@
                     this.getSelectedState.splice(this.getSelectedState.indexOf(tag), 1);
                 } else if (this.btnPayTypes.indexOf(tag) != -1) {
                     this.getSelectedPayType.splice(this.getSelectedPayType.indexOf(tag), 1);
+                } else if (this.btnTypes.indexOf(tag) != -1) {
+                    this.getSelectedType.splice(this.getSelectedType.indexOf(tag), 1);
                 }
             },
             /**
-             * Determine the date format to store at the database on the edition of a specific row in the confirmingState()
-             *
-             * @param {Object} row: the row item to update
-             *
-             * @returns The date formatted or null
+             * Function to deactivate all the row details on the table paymentsTable
              */
-            determineDate(row) {
-                /* If the new state is 'Pendiente' the date must be always null */
-                if (row.status == 'Pendiente') {
-                    return null;
-                /* Format the date to the controller if the selected at the datepicker is different of null */
-                } else if ((this.onEditItem.dateconfirmed != null && this.newEditRowDate != this.$moment(this.onEditItem.dateconfirmed, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD')) || (this.onEditItem.dateconfirmed == null && this.newEditRowDate != null)) {
-                    return this.$moment(this.newEditRowDate, 'YYYY-MM-DD').format('DD-MM-YYYY HH:mm:ss');
-                /* If the selected datepicker-dateconfirmed dates are the same pass it to the controller */
-                } else if (this.onEditItem.dateconfirmed != null && this.newEditRowDate == this.$moment(this.onEditItem.dateconfirmed, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD')) {
-                    return this.onEditItem.dateconfirmed;
-                }
-            },
-            /**
-             * Function that resets the variables that were changed on a row edition and recover the data of the row. Called to prevent hidding the row with and editing open when is applied some filter to the table with the input searcher or using the filter buttons dropdown.
-             */
-            disableEditingRow() {
-                if (this.showingDetails) {
-                    this.updatePaymentData({ _id: this.onEditItem._id, interval: this.onEditItem.interval, ...this.onEditItem });
-
-                }
-            },
-            /**
-             * Evaluate if the selected rows on the table can be selected when the manual download of payments or confirmation of payments process are launched. If the rows can be used on the process launched this function will unmark it and delete it from the rowsSelected array
-             */
-            evaluateRowSelectedState() {
-                this.rowsSelected.forEach(item => {
-                    /* If a payment is not on the status 'Pendiente' and with the paymenttype 'Domiciliación', cannot be used at te procedures */
-                    if ((this.confirming || this.manualDownload) && (item.paymenttype != 'Domiciliación' || (item.paymenttype == 'Domiciliación' && item.status != 'Pendiente'))) {
-                        this.rowSelect(item, false);
-                        /* Recursive call to iterate over all the items of the array */
-                        this.evaluateRowSelectedState();
-                    }
+            detailsCollapseAll() {
+                this.paymentsItems.forEach(payment => {
+                    this.$set(payment, '_showDetails', false);
                 });
+            },
+            /**
+             * Function to activate all the row details on the table paymentsTable
+             */
+            detailsExpandAll() {
+                this.paymentsItems.forEach(payment => {
+                    this.$set(payment, '_showDetails', true);
+                });
+            },
+            /**
+             * Evaluate if the selected rows are selectable on the process open. This function can be called on watch the status changes of the procedures start flags or when a payment of the table is edited and needs to be reconfirmed if its allowed to the process open
+             *
+             * @param {String} payment_id: is the payment_id of a payment updated, only provided when the function calls from a payment edit
+             */
+            evaluateRowSelectedState(payment_id = null) {
+                if (payment_id) {
+                    this.rowsSelected = this.rowsSelected.map(rs => rs.payment_id == payment_id ? this.paymentsAll.find(pa => pa.payment_id == payment_id) : rs);
+                }
+                this.rowsSelected = this.rowsSelected.filter(rs => ((this.confirming || this.manualDownload) && (rs.paymenttype == 'Domiciliación' && rs.status == 'Pendiente')));
             },
             /**
              * Function that fetch the chart data with the table data. The data can be generated inside of the function when is called from a initial load of the table data or can be passed as a param when is called from an update of the table data
@@ -1629,7 +1600,7 @@
                 }
             },
             /**
-             * Activates the flags to show the selected elements on the table and reset the filters applied
+             * Activates the flags to show the selected elements on the table and reset all the filters applied
              */
             filterSelected() {
                 /* Active the flag/v-model to show the tag and all the  */
@@ -1640,6 +1611,15 @@
                 this.getSelectedPayType = [];
                 this.getSelectedYear = [];
                 this.getSelectedState = [];
+                this.getSelectedType = [];
+                this.dateCreationRange = {
+                    startDate:  null,
+                    endDate: null,
+                };
+                this.dateConfirmationRange = {
+                    startDate:  null,
+                    endDate: null,
+                };
                 this.paymentsSearch = '';
                 /* If one of the selected elements is inactive, active the option to show the inactive customers */
                 if (this.rowsSelected.some(el => el.active == false)) {
@@ -1647,7 +1627,7 @@
                 }
             },
             /**
-             * Filters the table component by the input provided for it
+             * Filters the table component with the input provided for it
              *
              * @param {Object} value: the row of the table to make the search
              *
@@ -1763,23 +1743,21 @@
              * @return {Boolean} Boolean to determine if the row passed is selected
              */
             isSelected(row) {
-                return this.rowsSelected.some(el => el._id == row._id && el.interval == row.interval);
+                return this.rowsSelected.some(el => el._id == row._id && el.payment_id == row.payment_id);
             },
             /**
-             * Function that shows the details on a table row. The details showed means that this row its being updated or deleted. Moreover, the function backups the data passed to allows a 'Cancel' option and revert the possible modifications do it without save at the db
+             * Function to fill the object with the row to edit. This object will be passed to the component PaymentsEdit where will be modified.
              *
              * @param {Object} row: contains the row from the table with the customer data that will be deleted
              */
-            manageDetails(row) {
-                /* Assign formatted value to the v-model of the date if a date is provided on the row */
-                this.newEditRowDate = row.dateconfirmed != null ? this.$moment(row.dateconfirmed, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD') : null;
-                this.$set(row, '_showDetails', !row._showDetails);
-                if (!this.showingDetails) {
-                    /* Backup the data to allow the user undo the edition if it is goint to be saved (on the recover only recovers the relevant/editable data) */
-                    RESTORE_FIELDS.forEach(field => {
-                        this.$set(this.onEditItem, field, row[field]);
-                    });
-                }
+            manageEdit(row) {
+                /* Restore the object that will be passed to the child */
+                this.editingItem = {};
+                /* Assign to the object the new data */
+                Object.keys(row).forEach(async field => {
+                    await this.$set(this.editingItem, field, row[field]);
+                });
+                this.$bvModal.show('payment-edit-modal')
             },
             /**
              * Manage the payments data before send it to the plugin on will be csv printed
@@ -1788,17 +1766,41 @@
                 /* Unify the same iban payments */
                 let csvPayments = [];
                 this.rowsSelected.forEach(row => {
-                    /* If the iban is used on other payment stored on the csv data sum the amount of this payment to the existing csv line of data */
-                    let exist = csvPayments.findIndex(cp => cp.iban == row.iban);
-                    if (exist !== -1) {
-                        let amount = parseFloat(csvPayments[exist]['amount']) + parseFloat(row.amount);
-                        csvPayments[exist]['amount'] = amount;
-                    /* If the iban isn't used on any payment stored on the csv data add the payment to the csv data */
+                    /* If the iban is previously used sum the amounts of the new and previous data and check if the intervals and rates are different too to show it on the csv file data*/
+                    if (csvPayments.some(cp => cp.iban == row.iban)) {
+                        csvPayments = csvPayments.map(cp => cp.iban == row.iban ? { ...(cp.amount = parseFloat(cp.amount) + parseFloat(row.amount)), ...(cp.interval != row.interval ? 'Múltiples intervalos' : cp.interval), ...(cp.rate += ', ' + row.name + ' - ' + row.rate + ' - ' + row.amount), ...cp } : cp);
+                    /* If the iban is never used, add the row to the csv data without reference */
                     } else {
-                        csvPayments.push(row);
+                        let noRef = { ...row };
+                        csvPayments.push({ ...(noRef.rate = noRef.name + ' - ' + noRef.rate + ' - ' + noRef.amount), ...noRef })
                     }
                 });
-                this.$tableToCsv(['ibanownername', 'ibanownerdni', 'iban', 'amount', 'interval'], csvPayments, this.$moment().format('YYYY-MM-DD_HH.mm.ss') + '_pagos_manual.csv', 'csvDownloadManual');
+                this.$tableToCsv(['ibanownername', 'ibanownerdni', 'iban', 'amount', 'interval', 'rate'], csvPayments, this.$moment().format('YYYY-MM-DD_HH.mm.ss') + '_pagos_manual.csv', 'csvDownloadManual');
+            },
+            /**
+             * Function to print a bill of specific row item
+             *
+             * @param {Object} item: the row item wich trigger this function
+             */
+            async printBill(item) {
+                this.print = true;
+                /* Fill the payment object for the Bill component */
+                this.printItem = Object.assign({}, item);
+                /* Fill the customer data for the Bill component */
+                this.printCustomer = this.getCustomerById(item._id);
+                this.printCustomer = Object.assign({}, await this.fetchCustomerImages({ customer: this.printCustomer, sign: true, image: false }));
+                this.$showToast('success', 'En breve se iniciará la descarga del fichero', 'Descarga de recibo solicitada');
+                this.$nextTick(async () => {
+                    /* Call the plugin to capture and download the component document */
+                    const filename = this.printCustomer.name.replace(/\s/g, '-') + '__recibo__' + this.$moment().format('YYYY-MM-DD_HH_mm') + '.pdf';
+                    NProgress.set(0.5);
+                    await this.$html2print(filename, this.$refs.printableNPB);
+                    NProgress.done();
+                    /* Reset the involved variables */
+                    this.print = null;
+                    this.printItem = null;
+                    this.printCustomer = null;
+                });
             },
             /**
              * Function that unselect all the actived checkbox filters of the table and reload the data, this function will show all the existing payments on the database for every customer for the current year
@@ -1806,10 +1808,19 @@
             resetFilters() {
                 /* Reset the filters of the main table. Always mantain the filters to the current year and month to avoid performance issues */
                 this.paymentsSearch = '';
-                this.getSelectedYear = [ this.$moment().year() ];
-                this.getSelectedMonth = [ this.$moment().month() ];
+                this.getSelectedYear = [this.$moment().year()];
+                this.getSelectedMonth = [this.$moment().month()];
                 this.getSelectedState = [];
                 this.getSelectedPayType = [];
+                this.getSelectedType = [];
+                this.dateCreationRange = {
+                    startDate:  null /* this.$moment().startOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                    endDate: null /* this.$moment().endOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                };
+                this.dateConfirmationRange = {
+                    startDate:  null /* this.$moment().startOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                    endDate: null /* this.$moment().endOf('month').format('YYYY/MM/DD HH:mm:ss') */,
+                };
                 /* Reset the tags */
                 this.filterTags = [];
                 this.allSelected = false;
@@ -1818,25 +1829,13 @@
                 this.addTags(this.getSelectedMonth[0], 'month');
             },
             /**
-             * Resolves if a row has some field edited to allow its restore
-             *
-             * @param {Object} row: row item of the table
-             *
-             * @return {Boolean} true when the row has an edited fied and false when the row remains inalterated
-             */
-            rowEdited(row) {
-                return RESTORE_FIELDS.some(field => {
-                    return (field == 'dateconfirmed' && this.newEditRowDate != (this.onEditItem.dateconfirmed == null ? null : this.$moment(this.onEditItem.dateconfirmed, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD')) || row[field] != this.onEditItem[field]);
-                });
-            },
-            /**
              * Select/Unselect a row (pushing it at the rowsSelected array) individually on check its on-line checkbox
              *
              * @param {Object} row: row item of the table
              * @param {Boolean} ev: the state of the checkbox
              */
             rowSelect(row, newVal) {
-                let index = this.rowsSelected.findIndex(el => el._id == row._id && el.interval == row.interval);
+                let index = this.rowsSelected.findIndex(el => el._id == row._id && el.payment_id == row.payment_id);
                 if (newVal && index == -1) {
                     this.rowsSelected.push(row);
                 } else if (!newVal && index != -1) {
@@ -1850,52 +1849,22 @@
              */
             rowSelectAll(checked) {
                 this.$refs.paymentsTable.filteredItems.forEach(rowItem => {
-                    if (checked == true && !this.rowsSelected.some(el => el._id == rowItem._id && el.interval == rowItem.interval)) {
+                    if (checked == true && !this.rowsSelected.some(el => el._id == rowItem._id && el.payment_id == rowItem.payment_id)) {
                         /* Evaluate separetly to select the rows in every procedure actived (they cannot be active simultaneously), in some way this overload the conditions on rowSelect() */
                         if ((this.confirming && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (this.manualDownload && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (!this.confirming && !this.manualDownload)) {
                             this.rowSelect(rowItem, true);
                         }
-                    } else if (checked == false && this.rowsSelected.some(el => el._id == rowItem._id && el.interval == rowItem.interval)) {
+                    } else if (checked == false && this.rowsSelected.some(el => el._id == rowItem._id && el.payment_id == rowItem.payment_id)) {
                         this.rowSelect(rowItem, false);
                     }
                 });
-            },
-            /**
-             * Evaluate the value of the amount field based on the rate field on a row editing
-             *
-             * @param {Object} row: contains the row from the table with the customer data that has being edited
-             * @param {Event} ev: contains the value of the select element wich launch this function
-             */
-            selectImporte(row, ev) {
-                let newAmount = '';
-                switch(ev) {
-                    case 'Karate 1':
-                        newAmount = 24;
-                        break;
-                    case 'Karate 2':
-                        newAmount = 34;
-                        break;
-                    case 'Karate 3':
-                        newAmount = 38;
-                        break;
-                    case 'GYM 1':
-                        newAmount = 24;
-                        break;
-                    case 'GYM 2':
-                        newAmount = 35;
-                        break;
-                    case 'GYM Libre':
-                        newAmount = 40;
-                        break;
-                }
-                this.updatePaymentField({ field: 'amount', newVal: newAmount, ...row.item });
             },
         },
         mounted() {
             /* Get all the distinct years in the store */
             this.btnYears = this.getPaymentsYears;
             /* Fetch the charts data */
-            this.fetchChartData();
+            // this.fetchChartData();
             /* Add the tags of the filters applied always on the first load */
             this.addTags(this.getSelectedYear[0]);
             this.addTags(this.getSelectedMonth[0], 'month');
@@ -1903,10 +1872,22 @@
             this.paymentsTableBusy = false;
         },
         props: [
-            'customer_id', /* If is provided the table items are from this customer */
+            'parentId', /* If is provided the table items are from this customer */
+            'filters', /* Array with the filters to show, possible filters: type, paymenttype, textfilter, creationdate, confirmationdate, status, interval */
             'isDisabled', /* Indicates if the form is being edited */
+            'itemsPerPage', /* Items to show per page */
+            'lite', /* Optional flag to show/hide determined elements on the table */
+            'parentItems', /* Items getted on the parent */
             'tableFields', /* The table fields */
         ],
+        /**
+         * Provide the same $validator to the childs
+         */
+        provide() {
+            return {
+                $validator: this.$validator,
+            }
+        },
         watch: {
             /* Watch the confirming changes to evaluate the rows selected */
             confirming(newVal, oldVal) {
@@ -1927,34 +1908,23 @@
                 }
             },
             /* Watch to the table items changes to fetch the carts */
-            paymentsItems(newVal, oldVal) {
-                if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
-                    this.fetchChartData();
-                }
-            },
+            // paymentsItems(newVal, oldVal) {
+            //     if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
+            //         this.fetchChartData();
+            //     }
+            // },
         },
     }
 </script>
-
 <style>
-    .editable-field {
-        padding: 0 2.5px;
+    .date-range-payments {
+        min-width: 265px
     }
-    #paymentsTable .b-table-details {
-        background-color: rgba(0, 81, 130, .2)!important;
-    }
-    /* Overwritting the default datepicker values for the table elements  */
-    [id^='datepicker-pagos'] {
-        height: 25px!important;
-        margin-top: 2px!important; /* Align to the rest row inputs */
-        padding: 0!important;
-        /* width: 130px!important; */
+    .table-responsive-lg {
+        overflow-x: auto!important;
     }
 </style>
 <style scoped>
-    .badge-inline-text {
-        transform: translateY(-1px);
-    }
     .chart-pagos {
         background: linear-gradient(90deg, rgba(0, 0, 0, .01) 60%, rgba(0, 0, 0, .02) 100%);
         border-radius: .25rem;
@@ -1963,12 +1933,6 @@
         margin: 0 auto;
         width: 100%;
     }
-    .invalid-feedback {
-        position: unset!important; /* Its important to avoid the position: absolute general that in table will produce superposition */
-    }
-    .tableEditRow span {
-        padding: .25rem;
-    }
     .subtitle.subtitle-filters {
         font-size: calc(20px + (50 - 20) * ((100vw - 300px) / (1600 - 300))); /* minsize + (max-min) * (maxvw - minvw) * (maxpx - minpx) */
         margin-right: 15px;
@@ -1976,40 +1940,11 @@
     .wrp-chart {
         padding: 1rem;
     }
-    [class*='slot-table-input'] {
-        max-height: 25px;
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-    input[class*='disabled'],
-    select[class*='disabled']  {
-        background-color: unset!important;
-        border: unset!important;
-    }
-    input[class*='disabled']:focus,
-    select[class*='disabled']:focus  {
-        box-shadow: unset!important;
-    }
-    select[class*='slot-table-input'] {
-        min-width: 130px;
-    }
-    #card-pagos {
-        margin-bottom: 50px;
-    }
     #collapse-charts {
         background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .02) 100%);
         border-radius: .25rem;
     }
     #payments-seleccionadas-btn {
         white-space: nowrap;
-    }
-    [id^=amount-row] {
-        padding: 0!important;
-    }
-    /* Media queries */
-    @media (max-width: 1200px) {
-        .wrp-group-btns {
-            display: block;
-        }
     }
 </style>
