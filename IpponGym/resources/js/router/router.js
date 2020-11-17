@@ -114,6 +114,11 @@ const router = new Router ({
             }
         },
         /* MAINTENANCE */
+        {
+            path: '/mantenimiento',
+            name: 'maintenance',
+            component: UnderConstruct
+        },
         // {
         //     path: '*',
         //     name: 'maintenance',
@@ -137,24 +142,29 @@ const router = new Router ({
     },
 })
 import { http } from '../utils/http';
+const maintenance = true;
 router.beforeEach(async (to, from, next) => {
-    if (store.getters['auth/isLoggedIn']) {
-        /* Update the session data of the current user */
-        const id = store.getters['auth/authId'];
-        http.post('/api/updateSession', { id: id });
-    }
-    /* Start the route progress bar out of the documentation page */
-    if (!to.hash.includes('#doc-') && to.name != '404') {
-        NProgress.start();
-    }
-    /* Check if the role and the user are valid */
-    if ((to.matched.some(record => record.meta.requiresAuth) && store.getters['auth/isLoggedIn']) || (to.matched.some(record => record.meta.requiresAuth && record.meta.role) && store.getters['auth/isLoggedIn'] && store.getters['auth/authenticatedRole'] == record.meta.role)) {
-        next();
-        return;
-    } else if (((to.matched.some(record => record.meta.requiresAuth) && !store.getters['auth/isLoggedIn'])) || (to.matched.some(record => record.meta.requiresAuth && record.meta.role) && (!store.getters['auth/isLoggedIn'] || store.getters['auth/authenticatedRole'] != record.meta.role))) {
-        next('/');
+    if (maintenance && store.getters['auth/authenticatedRole'] == 'root' || !maintenance) {
+        if (store.getters['auth/isLoggedIn']) {
+            /* Update the session data of the current user */
+            const id = store.getters['auth/authId'];
+            http.post('/api/updateSession', { id: id });
+        }
+        /* Start the route progress bar out of the documentation page */
+        if (!to.hash.includes('#doc-') && to.name != '404') {
+            NProgress.start();
+        }
+        /* Check if the role and the user are valid */
+        if ((to.matched.some(record => record.meta.requiresAuth) && store.getters['auth/isLoggedIn']) || (to.matched.some(record => record.meta.requiresAuth && record.meta.role) && store.getters['auth/isLoggedIn'] && store.getters['auth/authenticatedRole'] == record.meta.role)) {
+            next();
+            return;
+        } else if (((to.matched.some(record => record.meta.requiresAuth) && !store.getters['auth/isLoggedIn'])) || (to.matched.some(record => record.meta.requiresAuth && record.meta.role) && (!store.getters['auth/isLoggedIn'] || store.getters['auth/authenticatedRole'] != record.meta.role))) {
+            next('/');
+        } else {
+            next();
+        }
     } else {
-        next();
+        next('/mantenimiento')
     }
 })
 router.afterEach(() => {
