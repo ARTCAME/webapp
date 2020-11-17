@@ -1,43 +1,33 @@
 <template>
-    <div>
-        <h4>Lee detenidamente, por favor 🙏🏻: </h4>
-        <p>
-            <u>Importante</u>: visita la sección TESTS para seguir enviando tus resultados y poder validar el funcionamiento de la aplicación, la encontrarás accesible desde la barra de navegación o desde la página de inicio en el botón 'Realizar TESTS sobre procesos'.
-            <br><br>
-            Es necesario que rellenes los tests que se piden en esta sección para poder ir conociendo el funcionamiento de la aplicación.
-            <br><br>
-            Además, te recomiento que <u>accedas a la documentación</u> si tienes cualquier duda o no ya que, aunque es extensa, podrás conocer el funcionamiento de la aplicación en profundidad. Puedes acceder desde cualquier pantalla de la aplicación usando el botón que hay en el margen inferior izquierdo.
-        </p>
+    <b-container>
         <h4>
-            Revisa los cambios aplicados y los que están por llegar:
+            📢Se han liberado una gran cantidad de mejoras y cambios, los más relevantes son:
         </h4>
         <p>
-            <h5>Cambios recientes:</h5>
-            &emsp;- Se ha confirmado el funcionamiento correcto de la captura de imagen a través de la cámara
-            <br>&emsp;- Se ha confirmado el funcionamiento correcto de la captura de firma a través de la tableta wacom
+            <h5>Mejoras visuales:</h5>
+            &emsp;- Se ha mejorado y estandarizado el funcionamiento de animaciones y transiciones
+            <br>&emsp;- Se han estandarizado el funcionamiento y estilo de algunos botones
             <br>&emsp;- Se han añadido mejoras para facilitar el uso en pantallas de menor tamaño
-            <br>&emsp;- Se han revisado los tutoriales de ayuda para facilitar su uso en pantallas de menor tamaño y confirmar se ha confirmado su correcto funcionamiento
-            <br>&emsp;- Se ha mejorado el funcionamiento de la sección CINTURONES: ahora al editar se pueden borrar o cambiar fechas desde allí directamente (antes debiamos ir a la ficha del socio) y se ha revisado el funcionamiento de la descarga de archivo de diplomas, ahora se pueden descargar más de un diploma por socio
-            <br>&emsp;- Se ha refinado el funcionamiento de la barra de navegación
-            <br>&emsp;- Se ha mejorado la gestión de los archivos de remesa: ahora los pagos se agrupan por iban, así, en el fichero de remesa veremos una línea por iban, el titular del iban se deberá indicar al registrarlo en la ficha del socio
-            <br>&emsp;- Se ha añadido el texto 'IVA incluído' a los recibos
-            <br>&emsp;- Los documentos legales ya no se guardarán al registrar al socio y solo se podrán descargar manualmente, ahora la fecha de firma es la fecha en la que se indicó si aceptaba o no la protección de datos, derechos de imagen, etc
-            <br>&emsp;- Se han aplicado mejoras y corrección de errores menores
-            <br>&emsp;- Se han añadido nuevos tests
+            <br>&emsp;- Se ha mejorado el funcionamiento de la barra de navegación, sus botones y animaciones
+            <br>&emsp;- Se ha añadido una animación de carga en la página del socio
+            <h5>Pagos:</h5>
+            &emsp;- Los pagos ahora se dividen entre pagos manuales y periódicos y podemos crear pagos manuales basados en un concepto e importe que escojamos nosotros o pagos periódicos basados en la cuota contratada por el socio
+            <br>&emsp;- Se ha revisado el funcionamiento de la tabla de pagos y su filtrado, se han añadido los filtros por fecha de creación y fecha de confirmación
+            <br>&emsp;- Se ha mejorado el proceso de edición de un pago desde la tabla de pagos que comparte diseño y proceso con la creación de nuevos pagos
+            <h5>Alta, edición y ficha del socio:</h5>
+            &emsp;- Los grados ahora se añaden durante la edición de un socio y es necesario guardar la ficha para que se apliquen los cambios
+            <br>&emsp;- Los pagos ahora se pueden editar desde la tabla de pagos que hay en ficha del socio sin necesidad de editar todo el socio
+            <br>&emsp;- Se ha añadido un campo notas para el socio en el que se verán reflejadas tanto el día y hora como la nota, esto se aplica también en contactos y tutores
+            <br>&emsp;- Se ha ampliado el margen del importe de la cuota permitido, ahora empieza en 0,01€
+            <h5>Documentos:</h5>
+            &emsp;- Se ha mejorado visualmente el proceso para generar manualmente documentos desde la herramienta dedicada, también se ha añadido una vista previa del documento
+            <br>&emsp;- Los documentos legales no podrán generarse si el socio no los ha aceptado
+            <br>&emsp;- Cualquier tipo de documento podrá se impreso aun faltando datos del socio, el sistema nos avisará de que faltan datos pero nos permitirá imprimir el documento incompleto
+            <h5>Otras mejoras:</h5>
+            &emsp;- Se han aplicado mejoras en el rendimiento al cargar los socios
+            <br>&emsp;- Se han aplicado mejoras en el rendimiento al buscar socios
+            <br><br>
+            <h5>Durante los próximos días se publicará <router-link target="_blank" to="/wiki">la documentación</router-link> relacionada con todos estos cambios.</h5>
         </p>
-        <!-- <p>
-            <h5>Fallos conocidos que se solucionarán en próximas versiones:</h5>
-            &emsp;- Al guardar un socio se descargará automáticamente documentación. Esta documentación por el momento no es correcta y puede contener fallos que no indican un error
-        </p> -->
-        <h3>
-            Gracias por ayudar a mejorar la aplicación 💌
-        </h3>
-    </div>
+    </b-container>
 </template>
-
-<script>
-</script>
-
-<style>
-
-</style>
