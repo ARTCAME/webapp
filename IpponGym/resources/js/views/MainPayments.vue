@@ -23,21 +23,15 @@
                 newPagos: [], /* Items object of the main table with the array cell of the data from the socios -> [year1[month1[stat1,stat2,stat3],month2[stat1],month3[stat1,stat2]]],year2...] */
                 tableFields: [
                     { key: 'selected', label: '', showingDetails: true, },
-                    // { key: '_id', label: 'ID', sortable: true, },
-                    // { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', },
                     { key: 'active', label: 'Activo', sortable: true, class: 'text-center', showingDetails: true, },
+                    { key: 'type', label: 'Tipo', sortable: true, showingDetails: true,},
                     { key: 'name', label: 'Socio', sortable: true, showingDetails: true,},
                     { key: 'rate', label: 'Tarifa', sortable: true, },
                     { key: 'amount', label: 'Importe', sortable: true, },
                     { key: 'paymenttype', label: 'Forma de pago', sortable: true, },
-                    // { key: 'fechaPago', label: 'Fecha de pago', sortable: true, },
-                    { key: 'iban', label: 'IBAN', sortable: true, },
-                    { key: 'ibanownername', label: 'IBAN Titular', sortable: true, oneditField: true, },
-                    { key: 'ibanownerdni', label: 'IBAN Dni', sortable: true, oneditField: true, },
                     { key: 'interval', label: 'Periodo', sortable: true, },
                     { key: 'status', label: 'Estado', sortable: true, },
-                    { key: 'dateconfirmed', label: 'Confirmado', sortable: true, },
-                    { key: 'editRow', label: 'editRow', label: '', class: 'tableEditRow text-center'},
+                    { key: 'actions', label: 'Acciones', class: 'text-center'},
                 ], /* Array width the fields of the main b-table */
             }
         },
