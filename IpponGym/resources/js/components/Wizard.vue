@@ -191,14 +191,32 @@
                     this.manageNav();
                 }
             },
+            zIndexEval(zIndex) {
+                console.log(zIndex);
+                if (zIndex > 1000) {
+                    const fullFace = document.getElementById('wzd-full-face');
+                    fullFace.style.zIndex = zIndex + '!important';
+                    const wzdFocused = document.getElementsByClassName('wizard-focused')[0];
+                    wzdFocused.style.zIndex = zIndex + 1 + '!important';
+                    const fullDisableFace = document.getElementById('wzd-full-disable-face');
+                    fullDisableFace.style.zIndex = zIndex + 2 + '!important';
+                    const progress = document.getElementById('wrp-wzd-progress-bar');
+                    progress.style.zIndex = zIndex + 3 + '!important';
+                }
+            },
             /**
              * Function that launchs the wizard
              */
             start() {
                 this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + 0 + '"]');
+                /* Store the zIndex before modify the item to evaluate if its zIndex is bigger than the wizard elements */
+                const zIndex = parseInt(document.defaultView.getComputedStyle(this.currentEl).getPropertyValue('z-index'));
                 this.currentEl.classList.add('wizard-focused');
                 this.wizardLaunched = true;
                 this.manageNav();
+                this.$nextTick(() => {
+                    this.zIndexEval(zIndex);
+                })
             },
             /**
              * Stops the wizard
@@ -273,6 +291,7 @@
         bottom: -1px /* 45px */;
         box-shadow: 0 0 3px rgba(0,0,0,.5);
         color: rgba(250, 250, 250, 1);
+        cursor: pointer;
         font-size: 20px;
         height: 40px;
         line-height: 40px;
