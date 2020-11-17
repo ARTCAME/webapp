@@ -9,3 +9,12 @@
         </b-col>
     </b-row>
 </template>
+<style scoped>
+    .doc-logo img {
+        width: 180px;
+    }
+    .doc-ippon-data {
+        font-size: 17px;
+        text-align: right;
+    }
+</style>
