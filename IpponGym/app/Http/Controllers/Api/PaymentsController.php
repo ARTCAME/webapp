@@ -51,7 +51,6 @@ class PaymentsController extends Controller {
      */
     public function editPaymentsManual() {
         $customers = Socios::all();
-        $updated = []; /* The returned value */
         $arr = [];
         $nullKeys = ['sign', 'image', 'tutor', 'paymentData.iban', 'paymentData.ibanownername', 'paymentData.ibanownerdni'];
         $arrKeys = ['phones', 'emails', 'contacts', 'payments', 'notes'];
