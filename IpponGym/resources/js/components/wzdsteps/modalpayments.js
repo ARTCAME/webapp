@@ -21,3 +21,14 @@ export const wmodalpayments = [
         }
     },
 ]
+
+export const wmodalpayments_previouspending = [
+    {
+        target: '[data-v-step="wzd-modal-payments-previouspending-0"]',
+        content: `En la lista se te los pagos pendientes que tiene el socio para que, si fuera el caso, utilices el botón 'Usar' que encontrarás en cada línea de la tabla para editar ese pago y no crear uno nuevo.<br><br>Si ningún pago se corresponde con el que quieres añadir puedes usar el botón 'Omitir y gestionar nuevo pago'`,
+        params: {
+            placement: 'top',
+        }
+    },
+]
+
