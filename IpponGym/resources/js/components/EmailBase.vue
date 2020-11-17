@@ -1,32 +1,64 @@
 <template>
-    <transition appear name="fade-height">
-        <div class="wrapper-dismissible">
-            <div class="form-agrupation">
-                <!-- Shown when the form is being edited -->
-                <b-btn-close
-                    class="wrapper-dismissible-close"
-                    tabindex="-1"
-                    v-if="!isDisabled"
-                    @click="delFormElement({ _id: form._id, entity: target, entityIndex: contactIndex, field: 'emails', fieldIndex: emailIndex, })"></b-btn-close>
-                <b-form-group label="Correo electrónico">
-                    <b-form-input
-                        autocomplete="off"
-                        type="email"
-                        v-model="email"
-                        v-validate="{ required: true, email }"
-                        :class="{ 'is-invalid' : errors.has(validateName) }"
-                        :disabled="isDisabled"
-                        :name="validateName"></b-form-input>
-                    <transition mode="out-in" name="liveFeedbacks">
-                        <b-form-invalid-feedback
-                            v-if="errors.has(validateName)">
-                            {{ errors.first(validateName) }}
-                        </b-form-invalid-feedback>
-                    </transition>
-                </b-form-group>
+    <div>
+        <TransitionExpand>
+            <div
+                key="form-warning-emails"
+                v-if="!inEmails || (inEmails && inEmails.length == 0)">
+                <b-alert
+                    class="py-1"
+                    show
+                    variant="info">
+                    No has añadido ningún email y es muy recomendable que el {{ target == 'customer' ? 'socio' : target == 'tutor' ? 'tutor' : 'contacto'}} tenga por lo menos uno
+                </b-alert>
             </div>
-        </div>
-    </transition>
+        </TransitionExpand>
+        <TransitionExpand group>
+            <div
+                v-for="(email, emailIndex) in inEmails"
+                :key="target + '_email_' + emailIndex">
+                <div class="wrapper-dismissible">
+                    <div class="form-agrupation">
+                        <!-- Shown when the form is being edited -->
+                        <b-btn-close
+                            class="wrapper-dismissible-close"
+                            tabindex="-1"
+                            v-if="!isDisabled"
+                            @click="delFormElement({ _id: form._id, entity: target, entityIndex: targetIndex, field: 'emails', fieldIndex: emailIndex, })"></b-btn-close>
+                        <b-form-group label="Correo electrónico">
+                            <b-form-input
+                                autocomplete="off"
+                                debounce="500"
+                                type="email"
+                                v-validate="{ required: true, email }"
+                                :class="{ 'is-invalid' : errors.has(validateName(emailIndex)) }"
+                                :disabled="isDisabled"
+                                :name="validateName(emailIndex)"
+                                :value="email"
+                                @input="$emit('input', { email: $event, emailIndex: emailIndex, contactIndex: targetIndex })"></b-form-input>
+                            <transition mode="out-in" name="liveFeedbacks">
+                                <b-form-invalid-feedback
+                                    v-if="errors.has(validateName(emailIndex))">
+                                    {{ errors.first(validateName(emailIndex)) }}
+                                </b-form-invalid-feedback>
+                            </transition>
+                        </b-form-group>
+                    </div>
+                </div>
+            </div>
+        </TransitionExpand>
+        <b-row
+            class="mb-4"
+            no-gutters
+            v-if="!isDisabled">
+            <b-button
+                variant="ig-gradient"
+                :class="'ig-add-button ml-auto' + (!inEmails || (inEmails && inEmails.length == 0) ? ' expanded' : '')"
+                @click="addNewElement({ _id: form._id, element: 'emails', entity: target, entityIndex: targetIndex })">
+                <fa-icon class="mr-3" icon="plus"></fa-icon>
+                Añadir email
+            </b-button>
+        </b-row>
+    </div>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex';
@@ -44,38 +76,26 @@ export default {
         form() {
             return this.$route.name == 'customers.new' ? this.newCustomerForm : this.editCustomerForm;
         },
-        /**
-         * v-model for the email
-         */
-        email: {
-            get() {
-                return this.inEmail ? this.inEmail : '';
-            },
-            set(val) {
-                this.$emit('input', val);
-            }
-        },
-        /**
-         * Returns a name builded based on the target to use it at the validation process
-         *
-         * @return {String} The name to use at the validator
-         */
-        validateName() {
-            return this.target + (this.target == 'contacts' ? '-' + this.contactIndex : '') + '-email-' + this.emailIndex;
-        },
     },
     inject: [
         '$validator', /* Inject the main $validator from the parent */
     ],
     methods: {
-        ...mapActions(['delFormElement']),
+        ...mapActions(['addNewElement', 'delFormElement']),
+        /**
+         * Returns a name builded based on the target to use it at the validation process
+         *
+         * @return {String} The name to use at the validator
+         */
+        validateName(emailIndex) {
+            return this.target + (this.targetIndex ? '-' + this.targetIndex : '') + '-email-' + emailIndex;
+        },
     },
     props: [
-        'contactIndex', /* When the parent is a contact will receive this index */
         'isDisabled', /* Boolean that indicates if the form is being edited */
-        'inEmail', /* The email data to render */
-        'emailIndex', /* The email index on the array of emails of the parent */
+        'inEmails', /* The email data to render */
         'target', /* The parent (customer, tutor or contact) */
+        'targetIndex', /* When the parent is an array of parents (ie contacts) will receive its index */
     ],
 }
 </script>
