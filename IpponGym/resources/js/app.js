@@ -16,7 +16,7 @@ import Vue from 'vue';
 /* Import directives */
 import './directives/TextOverflown.js';
 
-// Vue.config.devtools = false
+Vue.config.devtools = false
 
 import BootstrapVue from 'bootstrap-vue'; /* https://www.npmjs.com/package/bootstrap-vue */
 import 'bootstrap/dist/css/bootstrap.css';
