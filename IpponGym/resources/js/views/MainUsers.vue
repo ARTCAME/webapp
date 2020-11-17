@@ -20,6 +20,12 @@
                     @click="current = 2">
                     Edición de usuario
                 </b-nav-item>
+                <b-nav-item
+                    class="p-0"
+                    :active="current == 3"
+                    @click="current = 3">
+                    Labs
+                </b-nav-item>
             </b-nav>
         </template>
         <transition appear mode="out-in" name="fade">
@@ -366,6 +372,12 @@
                     </b-form>
                 </transition>
             </b-card>
+            <div
+                key="labs-tab"
+                v-if="current == 3 && authenticatedRole == 'root'">
+                Función para añadir a todos los pagos de cada socio el tipo periódico:
+                <b-button @click="editPaymentsManual">Llamar función</b-button>
+            </div>
         </transition>
     </b-card>
 </template>
@@ -425,6 +437,15 @@
         },
         methods: {
             ...mapActions('auth', ['register']),
+            /**
+             * Call to the api
+             */
+            editPaymentsManual() {
+                http.post('api/editPaymentsManual')
+                    .then(response => {
+                        console.log(response)
+                    })
+            },
             /**
              * On typing on input, filter by the username the users shown
              *
