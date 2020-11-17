@@ -1,4 +1,37 @@
 
+/* Used on the form fields to show the errors */
+.alert-height-enter-active,
+.alert-height-leave-active {
+    overflow: hidden;
+    max-height: 250px;
+    transition: all .35s ease;
+}
+.alert-height-enter, .alert-height-leave-to {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-5px);
+}
+/* Used on the list-group-item to show the errors, is not perfect... */
+.list-height-enter-active,
+.list-height-leave-active,
+.list-height-move {
+    overflow: hidden;
+    transition-property: opacity;
+    transition: .3s ease;
+}
+.list-height-enter,
+.list-height-leave-to {
+    overflow: hidden;
+    opacity: 0;
+}
+.list-height-enter-to {
+    opacity: 1;
+}
+.list-height-leave-active {
+    position: absolute;
+}
+
 .blur-in-enter-active,
 .blur-in-leave-active {
     transition: opacity .3s ease,  blur .3s ease;
@@ -41,7 +74,23 @@ USED ??
     transition: opacity .2s;
     opacity: 0;
 }
+/* Opacity transition */
+.fade-delayed-enter{
+    opacity: 0;
+}
+.fade-delayed-enter-active{
+    transition: .5s opacity .2s;
+}
+.fade-delayed-leave-active{
+    transition: opacity .2s;
+    opacity: 0;
+}
 /* Transition the height on auto height elements (similar to bootstrap collapse) */
+.ig-trans-fh {
+    /* position: relative; */
+    height: auto; /* Necessary to the fade-height transition */
+    overflow: hidden;
+}
 .fade-height-enter-to,
 .fade-height-leave {
     max-height: 800px;
@@ -51,22 +100,26 @@ USED ??
 .fade-height-leave-to {
     max-height: 0;
     opacity: 0;
-    transition: all .35s ease;
+    transition: all .35s ease, opacity .5 ease;
 }
 /* Fade translating from the right */
 .slide-fade-enter-active,
-.slide-fade-leave-active
-/* USED ??
-.slide-fade-absolute-enter-active,
-.slide-fade-absolute-leave-active,
-.slide-fade-absolute-left-enter-active,
-.slide-fade-absolute-left-leave-active */  {
+.slide-fade-leave-active{
     transition: all .3s .006s ease;
 }
 .slide-fade-enter,
 .slide-fade-leave-to {
     opacity: 0;
     transform: translateX(10px);
+}
+.left-slide-fade-enter-active,
+.left-slide-fade-leave-active {
+    transition: all .3s .006s ease;
+}
+.left-slide-fade-enter,
+.left-slide-fade-leave-to {
+    opacity: 0;
+    transform: translateX(-10px);
 }
 /* USED ??
 .slide-fade-absolute-leave-active {
@@ -89,30 +142,27 @@ USED ??
     filter: blur(5px);
     opacity: 0;
 }
+
 /* Used on the form fields to show the errors */
-.liveFeedbacks-enter-active {
+.liveFeedbacks-enter-active,
+.liveFeedbacks-leave-active {
     transition: all .3s ease;
 }
-.liveFeedbacks-leave-active {
-    transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
 .liveFeedbacks-enter, .liveFeedbacks-leave-to {
-    transform: translateY(-10px);
     opacity: 0;
+    transform: translateY(-10px);
 }
 /* Used on the form fields of the editable tables to show the errors */
 .liveFeedbacks-table-enter-active,
 .liveFeedbacks-table-leave-active {
-    position: absolute;
+    /* position: absolute; */
     transition: all .3s ease;
-    width: 130px;
 }
 .liveFeedbacks-table-enter,
 .liveFeedbacks-table-leave-to {
     display:block;
     opacity: 0;
     transform: translateY(-10px);
-    width: 130px;
 }
 /***
 USED ??
