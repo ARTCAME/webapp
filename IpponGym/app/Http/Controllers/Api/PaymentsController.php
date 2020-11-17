@@ -54,20 +54,20 @@ class PaymentsController extends Controller {
         $updated = []; /* The returned value */
         foreach ($customers as $customer) {
             foreach ($customer['payments'] as $idx => $payment) {
-                $updated = false;
+                $wasUpdated = false;
                 if (!isset($payment['type'])) {
                     $payment['type'] = 'periodic'; /* Assign the new value on the referenced and no linked array with the payment data */
-                    $updated = true;
+                    $wasUpdated = true;
                 }
                 // $payment['payment_id'] = ($payment['type'] == 'periodic' ? 'P_' : 'M_') . $customer['_id'] . '_' . $payment['dategenerated'] . '_' . new \MongoDB\BSON\ObjectID();;
                 if (!isset($payment['payment_id'])) {
                     $payment['payment_id'] = $customer['_id'] . '_' . $payment['dategenerated'] . '_' . new \MongoDB\BSON\ObjectID();;
-                    $updated = true;
+                    $wasUpdated = true;
                 }
-                if ($updated == true) {
-                    $customer['payments.'.$idx] = $payment; /* Assign to the customer the new data */
-                    $customer->save(); /* Save the customer */
-                }
+                $customer['payments.'.$idx] = $payment; /* Assign to the customer the new data */
+            }
+            if ($wasUpdated == true) {
+                $customer->save(); /* Save the customer */
             }
             array_push($updated, $customer);
         }
