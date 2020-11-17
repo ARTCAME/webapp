@@ -52,26 +52,72 @@ class PaymentsController extends Controller {
     public function editPaymentsManual() {
         $customers = Socios::all();
         $updated = []; /* The returned value */
+        $arr = [];
+        $nullKeys = ['sign', 'image', 'tutor', 'paymentData.iban', 'paymentData.ibanownername', 'paymentData.ibanownerdni'];
+        $arrKeys = ['phones', 'emails', 'contacts', 'payments', 'notes'];
         foreach ($customers as $customer) {
-            foreach ($customer['payments'] as $idx => $payment) {
-                $wasUpdated = false;
-                if (!isset($payment['type'])) {
-                    $payment['type'] = 'periodic'; /* Assign the new value on the referenced and no linked array with the payment data */
-                    $wasUpdated = true;
-                }
-                // $payment['payment_id'] = ($payment['type'] == 'periodic' ? 'P_' : 'M_') . $customer['_id'] . '_' . $payment['dategenerated'] . '_' . new \MongoDB\BSON\ObjectID();;
-                if (!isset($payment['payment_id'])) {
-                    $payment['payment_id'] = $customer['_id'] . '_' . $payment['dategenerated'] . '_' . new \MongoDB\BSON\ObjectID();;
-                    $wasUpdated = true;
-                }
-                $customer['payments.'.$idx] = $payment; /* Assign to the customer the new data */
+            $wasUpdated = false;
+            // DELETE THE BELTS OF THE NO KARATE CUSTOMERS
+            if (isset($customer['belts']) && !preg_match('/karate/i', $customer['paymentData.rate'])) {
+                $customer->unset('belts');
+                $wasUpdated = true;
             }
+            // DELETE THE NULL KEYS THAT ARE NO LONGER NECESSARY TO EXISTS AS NULL
+            foreach ($nullKeys as $key) {
+                if ($customer[$key] == null) {
+                    $customer->unset($key);
+                    $wasUpdated = true;
+                }
+            }
+            // DELETE THE EMPTY ARRAYS
+            foreach ($arrKeys as $key) {
+                if (count($customer[$key]) == 0) {
+                    $customer->unset($key);
+                    $wasUpdated = true;
+                }
+            }
+            // DELETE TUTOR NULLS, EMTPY ARRAYS AND SET THE NOTES IF EXISTS
+            if (isset($customer['tutor'])) {
+                foreach (['tutor._id', 'tutor.customerNumber', 'tutor.notes'] as $key) {
+                    if ($customer[$key] == null) {
+                        $customer->unset($key);
+                        $wasUpdated = true;
+                    }
+                }
+                foreach (['phones', 'emails'] as $key) {
+                    if (count($customer[$key]) == 0) {
+                        $customer->unset($key);
+                        $wasUpdated = true;
+                    }
+                }
+                if ($customer['tutor.notes'] != null) {
+                    $arrNotes = [$customer['tutor.notes']];
+                    array_push($arrNotes, $customer['tutor.notes']);
+                    $customer['tutor.notes'] = $arrNotes;
+                    array_push($arr, $customer);
+                }
+            }
+            // SET THE PAYMENT TYPE AND PAYMENT_ID
+            // foreach ($customer['payments'] as $idx => $payment) {
+            //     $wasUpdated = false;
+            //     if (!isset($payment['type'])) {
+            //         $payment['type'] = 'periodic'; /* Assign the new value on the referenced and no linked array with the payment data */
+            //         $wasUpdated = true;
+            //     }
+            //     if (!isset($payment['payment_id'])) {
+            //         $payment['payment_id'] = $customer['_id'] . '_' . $payment['dategenerated'] . '_' . new \MongoDB\BSON\ObjectID();;
+            //         $wasUpdated = true;
+            //     }
+            //     $customer['payments.'.$idx] = $payment; /* Assign to the customer the new data */
+            // }
+
             if ($wasUpdated == true) {
-                $customer->save(); /* Save the customer */
+                // array_push($arr, $customer);
+                // $customer->save(); /* Save the customer */
             }
-            array_push($updated, $customer);
+            // array_push($updated, $customer);
         }
-        return $updated;
+        return response()->json([ $arr ]);/*  $updated;*/
     }
     /**
      * Function that register all the payments of the socios via monthly schedule
