@@ -11,7 +11,8 @@
                 if (event.type == 'paste') {
                     event.preventDefault();
                     let input = event.clipboardData.getData('text');
-                    input = input.replace(new RegExp('[^0-9]', 'g'), '');
+                    // input = input.replace(new RegExp('[^0-9]', 'g'), '');
+                    input = input.replace(/[^0-9]/g, '');
                     return input;
                 } else {
                     var charCode = (event.which) ? event.which : event.keyCode;
@@ -32,7 +33,8 @@
                 if (event.type == 'paste') {
                     event.preventDefault();
                     let input = event.clipboardData.getData('text');
-                    input = input.replace(new RegExp('[^0-9,]', 'g'), '');
+                    // input = input.replace(new RegExp('[^0-9,]', 'g'), '');
+                    input = input.replace(/^\d{1,4}((\,|\.)\d{1,2})?$/g, '');
                     return input;
                 } else {
                     var charCode = (event.which) ? event.which : event.keyCode;
