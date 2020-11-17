@@ -119,15 +119,6 @@ requireComponent.keys().forEach(fileName => {
     );
 });
 
-// import RightsProtect from './components/customerdoc/RightsProtect';
-// Vue.component('RightsProtect',  RightsProtect);
-// import RightsImage from './components/customerdoc/RightsImage';
-// Vue.component('RightsImage',  RightsImage);
-// import Bill from './components/customerdoc/Bill';
-// Vue.component('Bill',  Bill);
-// import DocImg from './components/userdocassets/DocImg';
-// Vue.component('DocImg',  DocImg);
-
 // import '../css/styles.css'; // Las fuentes están en app.css en public
 import App from './views/App'; /* Contain the css main styles */
 
