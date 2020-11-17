@@ -21,6 +21,13 @@
                 <b-form-group>
                     <h5 class="subtitle" md="4">Inicio de sesión</h5>
                 </b-form-group>
+                <b-alert
+                    class="py-1"
+                    show
+                    variant="danger"
+                    v-if="maintenance">
+                    Página en mantenimiento, no es posible iniciar sesión
+                </b-alert>
                 <b-form-group label="Nombre de usuario" label-for="username">
                     <b-form-input
                         name="login-username"
@@ -56,7 +63,8 @@
                 </b-form-group>
                 <b-button
                     size="sm"
-                    type="submit">Iniciar sesión</b-button>
+                    type="submit"
+                    :disabled="maintenance">Iniciar sesión</b-button>
             </b-form>
             <!-- Visible when the user is logged in -->
             <span
@@ -141,6 +149,7 @@ import Axios from 'axios';
                 alta: { name: 'Dar de ALTA un socio', path: 'customers.new' },
                 cinturones: { name: 'Actualizar y ver los CINTURONES', path: 'belts.index' },
                 logging: false, /* Flag to apply visual modifications when logging in/out */
+                maintenance: true,
                 numUserFounded: '', /* Number of users coincidents at the db. Used on typing the user name to show error  */
                 pagos: { name: 'Gestionar y consultar los PAGOS existentes', path: 'payments.index' },
                 password: '', /* v-model */
