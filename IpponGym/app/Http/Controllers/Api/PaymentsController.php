@@ -19,9 +19,9 @@ class PaymentsController extends Controller {
         try {
             $item = $request->item;
             $customer = Socios::find($item['_id']);
-            $payment = array_filter($customer->payments, function($payment) use($item){
+            $payment = array_values(array_filter($customer->payments, function($payment) use($item){
                 return $payment['payment_id'] == $item['payment_id'];
-            });
+            }));
             if (sizeof($payment) == 1) {
                 $customer->pull('payments', $payment);
                 return [

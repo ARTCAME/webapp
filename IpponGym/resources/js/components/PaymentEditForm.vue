@@ -276,7 +276,7 @@
                     </TransitionExpand>
                 </b-form-group>
                 <b-form-group
-                    class="mx-0"
+                    class="mx-0 pb-2"
                     label="Forma de pago"
                     label-class="m-0 p-0 subtitle subtitle-sub"
                     label-cols="4"

@@ -787,7 +787,7 @@
                 <template
                     #cell(name)="row">
                     <b-link
-                        class="d-block table-text-overflowed text-nowrap"
+                        class="d-block pl-1 table-text-overflowed text-nowrap"
                         positioning="top"
                         target="_blank"
                         title="Abre la ficha del socio"

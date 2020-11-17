@@ -31,14 +31,23 @@
                         :fields="tableFields"
                         :items="previousPending"
                         :lite="false"
-                        :pagination="2"
-                        @choose="usePreviousPending(...arguments);">
+                        :pagination="5">
                         <template
-                            #colgroup>
+                            #actions="row">
+                            <b-button
+                                class="ig-small-btn"
+                                size="sm"
+                                variant="outline-primary"
+                                @click="usePreviousPending(row.row.item);">
+                                <span class="text">Usar</span>
+                            </b-button>
+                        </template>
+                        <template
+                            #col="tableFields">
                             <col
-                                v-for="field in tableFields"
+                                v-for="field in tableFields.fields"
                                 :key="field.key"
-                                :style="{ 'min-width': field.key == 'amount' || field.key == 'type' ? '100px' : field.key == 'interval' ? '60px' : field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '180px' : 'auto' }">
+                                :style="{ width: field.key == 'amount' || field.key == 'type' || field.key == 'interval' ? '70px' : field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '150px' : field.key == 'actions' ? '50px' : 'auto' }">
                         </template>
                     </TableResults>
                 </b-card>
@@ -94,7 +103,7 @@
                     { key: 'amount', label: 'Importe', },
                     { key: 'interval', label: 'Intervalo', },
                     { key: 'rate', label: 'Tarifa', },
-                    { key: 'use', label: '', },
+                    { key: 'actions', label: '', },
                 ], /* Fields to the pending payments table */
                 wmodalpayments_previouspending: WzdSteps.wmodalpayments_previouspending,
             }
