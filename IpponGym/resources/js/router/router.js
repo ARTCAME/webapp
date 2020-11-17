@@ -9,6 +9,7 @@ import MainTests from '../views/MainTests';
 import NProgress from 'nprogress';
 import Router from 'vue-router';
 import store from '../store/customers';
+import UnderConstruct from '../views/UnderConstruct';
 import Vue from 'vue';
 
 Vue.use(Router)
@@ -111,6 +112,17 @@ const router = new Router ({
                 // role: 'admin',
                 role: 'root',
             }
+        },
+        /* MAINTENANCE */
+        {
+            path: '*',
+            name: 'maintenance',
+            component: UnderConstruct
+        },
+        {
+            path: '/*',
+            name: 'maintenance',
+            component: UnderConstruct
         },
     ],
     scrollBehavior (to, from, savedPosition) {
