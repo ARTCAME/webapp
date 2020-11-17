@@ -39,6 +39,7 @@ Route::namespace('Api')->group(function() {
         /* Customers */
         Route::get('customers', 'CustomersController@index');
         Route::get('customer/{id}', 'CustomersController@show');
+        Route::get('customer/{id}/images', 'CustomersController@getImages');
         Route::put('customer/{id}/edit', 'CustomersController@edit');
         Route::post('newCustomer', 'CustomersController@newCustomer');
         Route::post('updatePaymentData', 'CustomersController@updatePaymentData');
@@ -47,6 +48,7 @@ Route::namespace('Api')->group(function() {
         Route::post('monthlyPayments', 'PaymentsController@monthlyPayments');
         Route::post('newPayment', 'PaymentsController@newPayment');
         Route::post('updatePayments', 'PaymentsController@updatePayments');
+        Route::post('editPaymentsManual', 'PaymentsController@editPaymentsManual')->middleware('isRoot');
         /* Users */
         Route::post('register', 'UsersController@register')->middleware('isRoot');
         Route::post('usersearch', 'UsersController@search');
