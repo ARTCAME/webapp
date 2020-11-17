@@ -1,32 +1,61 @@
 <template>
-        <div>
-            <b-row
-                class="mb-4"
-                no-gutters>
-                <b-button
-                    class="ml-auto"
-                    size="sm"
-                    variant="ig-gradient2-reverse"
-                    :id="'sat-' + field + (contactIndex ? '-' + contactIndex : '')">
-                    <fa-icon class="mr-2" icon="search-plus"></fa-icon>
-                    Buscar socio
-                </b-button>
-            </b-row>
-            <b-popover
-                custom-class="p-0"
-                placement="left"
-                :id="'sat-popover-search' + (contactIndex ? '-' + contactIndex : '')"
-                :show.sync="searchActive"
-                :target="'sat-' + field + (contactIndex ? '-' + contactIndex : '')"
-                :title="'Buscar ' + field">
-                <b-button-close
-                    @click="searchActive = false"></b-button-close>
-                <SearchEngine
-                    :idDiscard="idDiscard"
-                    :tableFields="tableFields"
-                    @choose="chooseAction(...arguments)"></SearchEngine>
-            </b-popover>
-        </div>
+    <div>
+        <b-row
+            class="mb-4"
+            no-gutters>
+            <b-button
+                class="ml-auto"
+                variant="ig-gradient2-reverse"
+                :id="'sat-' + field + (contactIndex ? '-' + contactIndex : '')">
+                <fa-icon class="mr-2" icon="search-plus"></fa-icon>
+                Buscar socio
+            </b-button>
+        </b-row>
+        <b-popover
+            custom-class="p-0"
+            placement="left"
+            :id="'sat-popover-search' + (contactIndex ? '-' + contactIndex : '')"
+            :show.sync="searchActive"
+            :target="'sat-' + field + (contactIndex ? '-' + contactIndex : '')"
+            :title="'Buscar ' + field">
+            <b-button-close
+                @click="searchActive = false"></b-button-close>
+            <SearchEngine
+                :idDiscard="idDiscard"
+                :onlyAdult="field == 'tutor'"
+                @input="searchResult = $event"></SearchEngine>
+            <TableResults
+                :fields="tableFields"
+                :items="searchResult"
+                :pagination="7">
+                <template
+                    #actions="row">
+                    <b-link
+                        class="btn btn-outline-secondary btn-sm ig-small-btn unformated-link"
+                        target="_blank"
+                        title="Consulta la ficha del socio en una ventana nueva"
+                        v-b-tooltip.top.hover.noninteractive
+                        :to="{ name: 'customers.profile', params: { id: row.row.item._id } }">
+                        <span class="text text-secondary">Abrir</span>
+                    </b-link>
+                    <b-button
+                        class="ig-small-btn"
+                        size="sm"
+                        variant="outline-primary"
+                        @click="chooseAction(row.row.item)">
+                        <span class="text">Añadir {{ field }}</span>
+                    </b-button>
+                </template>
+                <template
+                    #col="fields">
+                    <col
+                        v-for="field in fields.fields"
+                        :key="field.key"
+                        :style="{ width: field.key == 'active' ? '40px' : field.key == 'actions' ? '150px' : 'auto' }">
+                </template>
+            </TableResults>
+        </b-popover>
+    </div>
 </template>
 <script>
 import { mapActions, mapState } from "vuex";
@@ -34,11 +63,13 @@ export default {
     data() {
         return {
             searchActive: false, /* Flag to hide the popover */
+            searchResult: null, /* The result of the search */
             tableFields: [
-                { key: 'active', label: '', },
-                { key: 'name', label: '', },
-                { key: 'use', label: '', },
-                { key: 'see', label: '', },
+                { key: 'active', label: '', class: 'text-center'},
+                { key: 'name', label: '', class: 'text-nowrap' },
+                { key: 'actions', label: '', class: 'text-nowrap' },
+                // { key: 'use', label: '', },
+                // { key: 'see', label: '', },
             ], /* Table fields to the search engine results table */
         }
     },
@@ -71,7 +102,7 @@ export default {
                 ids.push(this.form.tutor._id);
             }
             /* If exists any contact and any of their is customer too store his _id */
-            if (this.form.contacts.length > 0) {
+            if (this.form.contacts && this.form.contacts.length > 0) {
                 this.form.contacts.forEach(contact => {
                     if (contact._id) {
                         ids.push(contact._id);
