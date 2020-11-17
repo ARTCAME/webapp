@@ -23,28 +23,15 @@
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
-            :disabled="capturable"
-            :variant="!signatureOk ? 'danger' : capturable ? 'outline-warning' : 'ig-solid-green'"
+            :disabled="capturable.value"
+            :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-success'"
             @click="capture()">
             <fa-icon
                 class="mr-2"
                 icon="signature"
-                v-if="(underage == true && (form.tutor && form.tutor.name != '' && form.tutor.dni != '')) || (underage == false && form.name != '' && form.dni != '')"></fa-icon>
-            <span
-                v-if="!signatureOk">
-                Ha ocurrido un error, pulsa para reintentar
-            </span>
-            <span
-                v-else-if="underage == null">
-                Falta la fecha de nacimiento
-            </span>
-            <span
-                v-else-if="underage == true">
-                {{ !form.tutor ? 'Falta datos del tutor' : form.tutor.name == '' ? 'Falta nombre del tutor' : (form.tutor.dni == '' && form.dni == '') ? 'Falta dni del tutor' : 'Capturar firma' }}
-            </span>
-            <span
-                v-else-if="underage == false">
-                {{ form.name == '' ? 'Falta nombre del socio' : form.dni == '' ? 'Falta dni del socio' : 'Capturar firma' }}
+                v-if="!capturable.value"></fa-icon>
+            <span>
+                {{ capturable.message}}
             </span>
         </b-button>
         <!-- Is not infomation necessary to the user -->
@@ -71,9 +58,29 @@
             }
         },
         computed: {
-            /* Return true if the sign is not capturable */
+            /**
+             * @returns {Object} with the message and the disabled/capturable boolean status for the capture sign button
+             */
             capturable() {
-                return this.underage == null || (this.underage == true && (!this.form.tutor || this.form.tutor.name == '' || this.form.tutor.dni == '') || (this.underage == false && (this.form.name == '' || this.form.dni == '')));
+                const errorsDni = this.errors.items.filter(error => error.field == 'dni').length > 0;
+                const errorsTutorDni = this.errors.items.filter(error => error.field == 'tutor-dni').length > 0
+                let message = 'Capturar firma';
+                if (!this.signatureOk) {
+                    message = 'Ha ocurrido un error, pulsa para reintentar';
+                }
+                if (this.underage == null) {
+                    message = 'Falta la fecha de nacimiento';
+                }
+                if (this.underage == true) {
+                    message = !this.form.tutor ? 'Faltan datos del tutor' : this.form.tutor.name == '' ? 'Falta el nombre del tutor' : ((!this.form.tutor.dni && !this.form.dni) || ((errorsDni && this.form.dni) || (errorsTutorDni && this.form.tutor.dni))) ? 'Revisa el dni del tutor' : 'Capturar firma';
+                }
+                if (this.underage == false) {
+                    message = !this.form.name ? 'Falta el nombre del socio' : !this.form.dni ? 'Falta el dni del socio' : errorsDni ? 'Revisa el dni' : 'Capturar firma';
+                }
+                return {
+                    value: this.underage == null || (this.underage == true && (!this.form.tutor || !this.form.tutor.name || !this.form.tutor.dni || this.errors.items.filter(error => error.field == 'dni').length > 0 || errorsTutorDni || !this.form.dni)) || (this.underage == false && (!this.form.name || !this.form.dni || errorsDni)),
+                    message: message,
+                };
             },
             /**
              * Is the v-model for the sign element
