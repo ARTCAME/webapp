@@ -94,7 +94,7 @@ class PaymentsController extends Controller {
                     $arrNotes = [$customer['tutor.notes']];
                     array_push($arrNotes, $customer['tutor.notes']);
                     $customer['tutor.notes'] = $arrNotes;
-                    array_push($arr, $customer);
+                    $wasUpdated = true;
                 }
             }
             // SET THE PAYMENT TYPE AND PAYMENT_ID
@@ -112,8 +112,8 @@ class PaymentsController extends Controller {
             // }
 
             if ($wasUpdated == true) {
-                // array_push($arr, $customer);
-                // $customer->save(); /* Save the customer */
+                array_push($arr, $customer);
+                $customer->save(); /* Save the customer */
             }
             // array_push($updated, $customer);
         }
