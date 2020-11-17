@@ -56,46 +56,45 @@ class PaymentsController extends Controller {
         $arrKeys = ['phones', 'emails', 'contacts', 'payments', 'notes'];
         foreach ($customers as $customer) {
             $wasUpdated = false;
-            // DELETE THE BELTS OF THE NO KARATE CUSTOMERS
-            if (isset($customer['belts']) && !preg_match('/karate/i', $customer['paymentData.rate'])) {
-                $customer->unset('belts');
-                $wasUpdated = true;
-            }
-            // DELETE THE NULL KEYS THAT ARE NO LONGER NECESSARY TO EXISTS AS NULL
-            foreach ($nullKeys as $key) {
-                if ($customer[$key] == null) {
-                    $customer->unset($key);
-                    $wasUpdated = true;
-                }
-            }
-            // DELETE THE EMPTY ARRAYS
-            foreach ($arrKeys as $key) {
-                if (isset($customer[$key]) && sizeof($customer[$key]) == 0) {
-                    $customer->unset($key);
-                    $wasUpdated = true;
-                }
-            }
-            // DELETE TUTOR NULLS, EMTPY ARRAYS AND SET THE NOTES IF EXISTS
-            if (isset($customer['tutor'])) {
-                foreach (['tutor._id', 'tutor.customerNumber', 'tutor.notes'] as $key) {
-                    if ($customer[$key] == null) {
-                        $customer->unset($key);
-                        $wasUpdated = true;
-                    }
-                }
-                foreach (['phones', 'emails'] as $key) {
-                    if (isset($customer[$key]) && sizeof($customer[$key]) == 0) {
-                        $customer->unset($key);
-                        $wasUpdated = true;
-                    }
-                }
-                if ($customer['tutor.notes'] != null) {
-                    $arrNotes = [$customer['tutor.notes']];
-                    array_push($arrNotes, $customer['tutor.notes']);
-                    $customer['tutor.notes'] = $arrNotes;
-                    $wasUpdated = true;
-                }
-            }
+            // // DELETE THE BELTS OF THE NO KARATE CUSTOMERS
+            // if (isset($customer['belts']) && !preg_match('/karate/i', $customer['paymentData.rate'])) {
+            //     $customer->unset('belts');
+            //     $wasUpdated = true;
+            // }
+            // // DELETE THE NULL KEYS THAT ARE NO LONGER NECESSARY TO EXISTS AS NULL
+            // foreach ($nullKeys as $key) {
+            //     if ($customer[$key] == null) {
+            //         $customer->unset($key);
+            //         $wasUpdated = true;
+            //     }
+            // }
+            // // DELETE THE EMPTY ARRAYS
+            // foreach ($arrKeys as $key) {
+            //     if (isset($customer[$key]) && sizeof($customer[$key]) == 0) {
+            //         $customer->unset($key);
+            //         $wasUpdated = true;
+            //     }
+            // }
+            // // DELETE TUTOR NULLS, EMTPY ARRAYS AND SET THE NOTES IF EXISTS
+            // if (isset($customer['tutor'])) {
+            //     foreach (['tutor._id', 'tutor.customerNumber', 'tutor.notes'] as $key) {
+            //         if ($customer[$key] == null) {
+            //             $customer->unset($key);
+            //             $wasUpdated = true;
+            //         }
+            //     }
+            //     foreach (['phones', 'emails'] as $key) {
+            //         if (isset($customer[$key]) && sizeof($customer[$key]) == 0) {
+            //             $customer->unset($key);
+            //             $wasUpdated = true;
+            //         }
+            //     }
+            //     if ($customer['tutor.notes'] != null) {
+            //         $arrNotes = [$customer['tutor.notes']];
+            //         $customer['tutor.notes'] = $arrNotes;
+            //         $wasUpdated = true;
+            //     }
+            // }
             // SET THE PAYMENT TYPE AND PAYMENT_ID
             // foreach ($customer['payments'] as $idx => $payment) {
             //     $wasUpdated = false;
@@ -112,11 +111,10 @@ class PaymentsController extends Controller {
 
             if ($wasUpdated == true) {
                 array_push($arr, $customer);
-                $customer->save(); /* Save the customer */
+                // $customer->save(); /* Save the customer */
             }
-            // array_push($updated, $customer);
         }
-        return response()->json([ $arr ]);/*  $updated;*/
+        return response()->json([ $arr ]);
     }
     /**
      * Function that register all the payments of the socios via monthly schedule
