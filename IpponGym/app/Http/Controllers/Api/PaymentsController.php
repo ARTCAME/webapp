@@ -17,52 +17,105 @@ class PaymentsController extends Controller {
      */
     public function deletePayments(Request $request) {
         try {
-            $socio = Socios::find($request->_id);
-            foreach($socio->payments as $payment) {
-                if ($request->interval == $payment['interval']) {
-                    $socio->pull('payments', $payment);
-                    return [
-                        'status' => 'success',
-                        'message' => 'El pago se ha borrado',
-                        'data' => $socio,
-                    ];
+            $item = $request->item;
+            $customer = Socios::find($item['_id']);
+            $payment = array_filter($customer->payments, function($payment) use($item){
+                return $payment['payment_id'] == $item['payment_id'];
+            });
+            if (sizeof($payment) == 1) {
+                // $customer->pull('payments', $payment);
+                return [
+                    'status' => 'success',
+                    'message' => 'El pago se ha borrado',
+                    'data' => $customer,
+                ];
+            } else {
+                /* This options are less than impossible but... verbosity is my friend */
+                if (sizeof($payment) > 1) {
+                    throw new Exception('El id de pago está duplicado, comunícalo al administrador: id socio: ' . $item['_id'] . 'id pago: ' . $item['payment_id']);
+                } else if (sizeof($payment) < 1) {
+                    throw new Exception('No existe ningún pago con los datos aportados: id socio: ' . $item['_id'] . 'id pago: ' . $item['payment_id']);
                 }
             }
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Error al generar el nuevo pago. Código de error: BePaCo@DePa',
+                'message' => 'Error al borrar el pago. Código de error: BePaCo@DePa',
                 'status' => 'danger',
                 'title' => 'Registro de nuevo pago',
-                'trace' => 'Error al generar el nuevo pago. Código de error: BePaCo@DePa. Detalle del servidor: ' . $e->getMessage(),
+                'trace' => 'Error al borrar el pago. Código de error: BePaCo@DePa. Detalle del servidor: ' . $e->getMessage(),
             ], 500);
         }
+    }
+    /**
+     * Function to custom mongo queries, is not used on the app, its only for admin purposes
+     */
+    public function editPaymentsManual() {
+        $customers = Socios::all();
+        $updated = []; /* The returned value */
+        foreach ($customers as $customer) {
+            foreach ($customer['payments'] as $idx => $payment) {
+                $payment['type'] = 'periodic'; /* Assign the new value on the referenced and no linked array with the payment data */
+                // $payment['payment_id'] = ($payment['type'] == 'periodic' ? 'P_' : 'M_') . $customer['_id'] . '_' . $payment['dategenerated'] . '_' . new \MongoDB\BSON\ObjectID();;
+                $payment['payment_id'] = $customer['_id'] . '_' . $payment['dategenerated'] . '_' . new \MongoDB\BSON\ObjectID();;
+                $customer['payments.'.$idx] = $payment; /* Assign to the customer the new data */
+                $customer->save(); /* Save the customer */
+            }
+            array_push($updated, $customer);
+        }
+        return $updated;
     }
     /**
      * Function that register all the payments of the socios via monthly schedule
      */
     public static function monthlyPayments() {
         /* Get the active customers */
-        $customers = DB::collection('customers')->where('active', true)->get();
-        // $customers = DB::collection('Personas')->where('active', true)->get();
-        $newPayment = [];
-        $date = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
+        $customers = DB::collection('customers')->where('active', true)->get(); /* The db customers */
+        $newPayment = []; /* Will store the already generated payment data or the new payment data */
+        $date = new \MongoDB\BSON\UTCDateTime(new \DateTime('now')); /* Current date */
+        $filename = date('Y_m_d_H-i-s') . '_Remesa_.csv'; /* Csv filename */
+        $csvoutput = fopen($filename, 'w'); /* Csv file pointer */
+        $csvData = []; /* The csv data to add to the csv file */
 
-        $filename = date('Y_m_d_H-i-s') . '_Remesa_.csv';
-        $csvoutput = fopen($filename, 'w');
-        $csvData = [];
+        $generateCsvData = function($payment) use(&$csvData) {
+            /* Search the payment iban on the csv data array to combine or not the data with a previous same iban payment */
+            $searchIban = array_search($payment['iban'], array_column($csvData, 'iban'));
+            /* If don't find the iban on the current csv data, push the payment data to the csv data, note the rate is a composed value */
+            if ($searchIban === false) {
+                array_push($csvData, ['name' => $payment['ibanownername'], 'dni' => $payment['ibanownerdni'], 'iban' => $payment['iban'], 'amount' => $payment['amount'], 'interval' => $payment['interval'], 'rate' => $payment['customerName'] . ' - ' . $payment['rate'] . ' - ' . $payment['amount']]);
+            /* If the iban exists on the current csv data combine the existing and the new data. The new data to combine is from the payment that can be an existing pending payment or a new payment generated. Note that the app presumes the ibanownername is the same on payments with the same iban, if the user chooses different owners only remains the first on the csvData */
+            } else {
+                /* Sum the amounts */
+                (float)$csvData[array_search($payment['iban'], array_column($csvData, 'iban'))]['amount'] += (float)$payment['amount'];
+                /* Combine the rate column */
+                $csvData[array_search($payment['iban'], array_column($csvData, 'iban'))]['rate'] .= ', ' . $payment['customerName'] . ' - ' . $payment['rate'] . ' - ' . $payment['amount'];
+                /* Combine the interval column */
+                $existingInterval = $csvData[array_search($payment['iban'], array_column($csvData, 'iban'))]['interval'];
+                if ($existingInterval == $payment['interval']) {
+                    $existingInterval = 'Múltiples intervalos';
+                }
+            }
+        };
         foreach ($customers as $customer) {
             $auxPaymentData = $customer['paymentData'];
-            /* Check if for the looped customercustomer we have a payment for the current month-year */
-            $alreadyGenerated = false;
+            /* Iterate over the customer payments to check if has a payment for the current period. On the periodic payments the period will be the interval, on the manual payments the period can be the interval or if it is null the dategenerated */
+            $alreadyGenerated = false; /* Flag to avoid generate a new payment if a periodic was previosly generated for this customer*/
             foreach ($customer['payments'] as $payment) {
-                if ($payment['interval'] == date('Y-m')) {
-                    $alreadyGenerated = true;
-                    /* Store the existing payment */
-                    $newPayment = $payment;
+                if ($payment['paymenttype'] === 'Domiciliación' && (($payment['type'] === 'periodic' && $payment['interval'] === date('Y-m')) || ($payment['type'] === 'manual' && ($payment['interval'] === date('Y-m') || ($payment['interval'] == null && $payment['dategenerated']->toDateTime()->format('Y-m') === date('Y-m')))))) {
+                    /* If the payment is periodic, activate the flag to avoid creating a new payment for this customer. Just in case, the manuals doesn't count */
+                    if ($payment['type'] === 'periodic') {
+                        $alreadyGenerated = true;
+                    }
+                    /* If the payment is pending add it to the csvData */
+                    if ($payment['status'] === 'Pendiente') {
+                        $newPayment = $payment;
+                        $newPayment['customerName'] = $customer['name']; /* Assign the name of the customer to add it to the csv row */
+                        $generateCsvData($newPayment);
+                    }
                 }
             }
             /* If doesn't exists a payment registered for this month we create and save it on the customer based on the last payments attributes, here we create all the non manual created monthly payments, later treat the inbank payments to generate the csv bank data */
             if (!$alreadyGenerated) {
+                $newPayment['payment_id'] = $customer['_id'] . '_' . $date . '_' . new \MongoDB\BSON\ObjectID();
                 $newPayment['rate'] = $auxPaymentData['rate'];
                 $newPayment['amount'] = $auxPaymentData['amount'];
                 $newPayment['paymenttype'] = $auxPaymentData['paymenttype'];
@@ -76,45 +129,19 @@ class PaymentsController extends Controller {
                 $auxCustomer = Socios::find($customer['_id']);
                 $auxCustomer->push('payments', $newPayment);
                 $auxCustomer->save();
+                $newPayment['customerName'] = $customer['name']; /* Assign the name of the customer to add it to the csv row */
                 /* Manage utf8 characters */
                 fprintf($csvoutput, chr(0xEF).chr(0xBB).chr(0xBF));
-            }
-            /* We need to add to the array of the csv data only the inbank payments */
-            if (strcmp($newPayment['paymenttype'], 'Domiciliación') === 0) {
-                /* If the payment is already generated and its status is pending we need to send it to the bank, the already generated and no pending will be ignored because there are already managed too */
-                if ($alreadyGenerated && strcmp($newPayment['status'], 'Pendiente') === 0) {
-                    /* Search on newPayment array which on $alreadyGenerated stores the existing payment */
-                    $searchIban = array_search($newPayment['iban'], array_column($csvData, 'iban'));
-                    /* If don't find the iban on the current csv data, add the already generated payment data to the csv data */
-                    if ($searchIban === false) {
-                        array_push($csvData, ['name' => $newPayment['ibanownername'], 'dni' => $newPayment['ibanownerdni'], 'iban' => $newPayment['iban'], 'amount' => $newPayment['amount'], 'interval' => $newPayment['interval']]);
-                    /* If the iban exists on the current csv data, sum the amounts */
-                    } else {
-                        /* Sum operation, use the iban on the newPayment and csvData to find the index */
-                        (float)$csvData[array_search($newPayment['iban'], array_column($csvData, 'iban'))]['amount'] += (float)$auxPaymentData['amount'];
-                        // (float)$csvData[array_search($newPayment['ibanownerdni'], array_column($csvData, 'dni'))]['amount'] += (float)$auxPaymentData['amount'];
-                    }
-                /* If the payment isn't generated */
-                } else if (!$alreadyGenerated) {
-                    /* Search the payment data saved on the customer profile to determine if exists on the csvData */
-                    $searchIban = array_search($auxPaymentData['iban'], array_column($csvData, 'iban'));
-                    /* If don't find the iban on the current csv data, add the new payment data to the csv data */
-                    if (!$searchIban) {
-                        /* If the iban exists on the current csv data, sum the amounts */
-                        array_push($csvData, ['name' => $auxPaymentData['ibanownername'], 'dni' => $auxPaymentData['ibanownerdni'], 'iban' => $auxPaymentData['iban'], 'amount' => $auxPaymentData['amount'], 'interval' => $newPayment['interval']]);
-                    } else {
-                        /* Sum operation, use the iban on the auxPaymentData (the payment data of the customer profile) and csvData to find the index */
-                        (float)$csvData[array_search($auxPaymentData['iban'], array_column($csvData, 'iban'))]['amount'] += (float)$auxPaymentData['amount'];
-                        // (float)$csvData[array_search($auxPaymentData['ibanownerdni'], array_column($csvData, 'dni'))]['amount'] += (float)$auxPaymentData['amount'];
-                    }
-
+                /* If the new payment is via bank add it to the csvData */
+                if ($newPayment['paymenttype'] === 'Domiciliación') {
+                    $generateCsvData($newPayment);
                 }
             }
         }
         /* Add the array data to the csv file */
         if (sizeof($csvData) > 0) {
             /* Put the customer/payment data into the csv file */
-            fputcsv($csvoutput, ['Nombre', 'Dni', 'Iban', 'Importe', 'Periodo'], ";");
+            fputcsv($csvoutput, ['Titular', 'Dni del titular', 'Iban', 'Importe', 'Periodo', 'Detalle tarifas y socios para el iban'], ";");
             foreach ($csvData as $data) {
                 fputcsv($csvoutput, $data, ";");
             }
@@ -133,6 +160,7 @@ class PaymentsController extends Controller {
         $mail->Port       = 587;
         $mail->setFrom('ippongymzaragoza@gmail.com', 'IPPONGYM ZARAGOZA');
         $mail->addAddress('arzzz@hotmail.es', 'Arturo Casas');
+        $mail->addAddress('ippongymzaragoza@gmail.com', 'IPPONGYM ZARAGOZA');
         $mail->addAttachment($filename);
         $mail->isHTML(true);
         $mail->Subject = 'Remesa mensual';
@@ -144,37 +172,44 @@ class PaymentsController extends Controller {
         unlink($filename);
     }
     /**
-     * Function called when a new payment is registered on SociosForm
+     * Function called when a new payment is registered. The new payment can have totally different compared with the default customer profile data, here we save the data provided by the new payment save process and ignore the default customer payment data
      *
-     * @param Request { id, data } -> id of the socio to add a new payment and data the payment attributes
+     * @param Request { item } -> the new payment data
      */
     public static function newPayment(Request $request) {
         try {
-            $newDate = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
-            $id = $request->id;
-            $newPayment = [];
-            $customer = Socios::find($id);
-            $alreadyExists = false;
-            foreach ($customer->payments as $payment) {
-                if ($payment['interval'] == $request->interval) {
-                    $alreadyExists = true;
+            $item = $request->item; /* Store new payment data from the front end */
+            $newDate = new \MongoDB\BSON\UTCDateTime(new \DateTime('now')); /* Store the date generated for the payment */
+            $newPayment = []; /* Initialize the storer for the new payment data */
+            $customer = Socios::find($item['_id']); /* Get the customer */
+            $manual = $item['type'] == 'manual'; /* Provide a flag to determine if a payment is or not periodic */
+            /* If the new payment is not manual check if exists on the payments array of the customer */
+            $existsPeriodicPayment = false;
+            if (!$manual) {
+                foreach ($customer->payments as $payment) {
+                    /* Check on the periodic payments if the new periodic payment exists by interval and its confirmed */
+                    if ($payment['type'] == 'periodic' && $payment['interval'] == $item['interval'] && $payment['status'] == 'Confirmado') {
+                        $existsPeriodicPayment = true;
+                    }
                 }
             }
-            if (!$alreadyExists) {
-                /* On the front-end, the reactive mutations prevent that the data payment comes with usaved changes, to prevent possible incosistencies, always use the last payment data stored on the db */
-                $newPayment['rate'] = $customer['paymentData']['rate'];
-                $newPayment['amount'] = $customer['paymentData']['amount'];
-                $newPayment['paymenttype'] = $customer['paymentData']['paymenttype'];
-                $newPayment['interval'] = $request->interval;
-                $newPayment['iban'] = $customer['paymentData']['paymenttype'] == 'Domiciliación' ? $customer['paymentData']['iban'] : null;
-                $newPayment['ibanownerdni'] = $customer['paymentData']['paymenttype'] == 'Domiciliación' ? $customer['paymentData']['ibanownerdni'] : null;
-                $newPayment['ibanownername'] = $customer['paymentData']['paymenttype'] == 'Domiciliación' ? $customer['paymentData']['ibanownername'] : null;
+            /* If the periodic payment doesn't exists or is a manual payment */
+            if ((!$manual && !$existsPeriodicPayment) || $manual) {
+                $newPayment['payment_id'] = $customer['_id'] . '_' . $newDate . '_' . new \MongoDB\BSON\ObjectID();
+                $newPayment['type'] = $item['type'];
+                $newPayment['rate'] = $item['rate'];
+                $newPayment['amount'] = $item['amount'];
+                $newPayment['paymenttype'] = $item['paymenttype'];
+                $newPayment['interval'] = $item['interval'];
+                $newPayment['iban'] = $item['paymenttype'] == 'Domiciliación' ? $item['iban'] : null;
+                $newPayment['ibanownerdni'] = $item['paymenttype'] == 'Domiciliación' ? $item['ibanownerdni'] : null;
+                $newPayment['ibanownername'] = $item['paymenttype'] == 'Domiciliación' ? $item['ibanownername'] : null;
                 $newPayment['dategenerated'] = $newDate;
-                $newPayment['status'] = $request->status ? $request->status : 'Confirmado';
-                $newPayment['dateconfirmed'] = $newPayment['status'] != 'Pendiente' ? $newDate : null;
-                $customer->push('payments', $newPayment);
+                $newPayment['status'] = $item['status'];
+                $newPayment['dateconfirmed'] = $newPayment['status'] != 'Pendiente' ? new \MongoDB\BSON\UTCDateTime(new \DateTime($item['dateconfirmed'])) : null;
+                // $customer->push('payments', $newPayment);
                 return $newPayment;
-            } else {
+            } else if (!$manual && $existsPeriodicPayment) {
                 return response()->json([
                     'message' => 'Ya existe un pago registrado para este mes.',
                     'socio' => $customer, /* Necessary ? */
@@ -193,39 +228,47 @@ class PaymentsController extends Controller {
         }
     }
     /**
-     * Function to update the data of registered payments. Can be called individually (from payments or newPayments to confirm states) or massive from payments. Every payment stores the _id of the customer
+     * Function to update the data of registered payments. Can be called individually (from payments or newPayments to confirm states) or massive from payments
      *
      * @param Request { data, date, action } data: the current payment data to apply, date (optional): the new date value, action: the action required
      */
     public function updatePayments(Request $request) {
         $arr_updated = [];
-        if ($request->action == 'updating') {
-            /* If the date is provided transforms it to the mongo format */
-            $newFechaConfirmacion = $request->date == null ? $request->date : new \MongoDB\BSON\UTCDateTime(new \DateTime($request->date));
-        } else if ($request->action == 'confirmado' || $request->action == 'devuelto') {
-            $newFechaConfirmacion = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
-        }
+        // if ($request->action == 'updating') {
+        //     /* If the date is provided transforms it to the mongo format */
+        //     $newDateConfirmed = $request->date == null ? $request->date : new \MongoDB\BSON\UTCDateTime(new \DateTime($request->date));
+        // } else if ($request->action == 'confirmado' || $request->action == 'devuelto') {
+        //     $newDateConfirmed = new \MongoDB\BSON\UTCDateTime(new \DateTime('now'));
+        // }
         try {
             foreach($request->data as $el) {
-                $socio = Socios::find($el['_id']);
+                $customer = Socios::find($el['_id']);
+                /* If a update of a individual payment was requested */
                 if ($request->action == 'updating') {
-                    foreach($socio['payments'] as $idx => $pago) {
-                        if ($pago['interval'] == $el['interval']) {
-                            $pago['rate'] = $el['rate'];
-                            $pago['amount'] = (int) $el['amount'];
-                            $pago['paymenttype'] = $el['paymenttype'];
-                            $pago['status'] = $el['status'];
-                            $pago['iban'] = $el['paymenttype'] == 'Domiciliación' ? $el['iban'] : null;
-                            $pago['ibanownername'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownername'] : null;
-                            $pago['ibanownerdni'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownerdni'] : null;
-                            $pago['dateconfirmed'] = $newFechaConfirmacion; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
-                            $pago['_id'] = $el['_id'];
-                            $socio['payments.' . $idx] = $pago;
-                            $socio->save();
+                    $newDateConfirmed = ($el['dateconfirmed'] == '' || $el['dateconfirmed'] == null) ? '' : new \MongoDB\BSON\UTCDateTime(new \DateTime($el['dateconfirmed']));
+                    foreach($customer['payments'] as $idx => $payment) {
+                        if ($payment['payment_id'] == $el['payment_id']) {
+                            $payment['type'] = $el['type'];
+                            $payment['interval'] = $el['interval'];
+                            $payment['rate'] = $el['rate'];
+                            $payment['amount'] = (float) $el['amount'];
+                            $payment['status'] = $el['status'];
+                            $payment['paymenttype'] = $el['paymenttype'];
+                            $payment['iban'] = $el['paymenttype'] == 'Domiciliación' ? $el['iban'] : null;
+                            $payment['ibanownername'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownername'] : null;
+                            $payment['ibanownerdni'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownerdni'] : null;
+                            // $payment['dateconfirmed'] = $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
+                            $payment['dateconfirmed'] = $el['status'] == 'Pendiente' ? '' : $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
+                            $customer['payments.' . $idx] = $payment;
+                            // $customer->save();
+                            /* Add the id of the customer for the front end process */
+                            $payment['_id'] = $customer['_id'];
+                            array_push($arr_updated, $payment);
                             return [
                                 'message' => 'Se ha actualizado el pago.',
                                 'status' => 'success',
-                                'updated' => $pago,
+                                'updated' => $arr_updated,
+                                // 'updated' => $payment,
                             ];
                         }
                     }
@@ -233,21 +276,24 @@ class PaymentsController extends Controller {
                         'message' => 'No se ha actualizado ningún pago.',
                         'status' => 'danger',
                     ];
+                /* If a confirmation of state of a payment was requested, these actions are called massively of some payments on the front end */
                 } else if ($request->action == 'confirmado' || $request->action == 'devuelto') {
-                    foreach($socio['payments'] as $idx => $pago) {
-                        if ($pago['interval'] == $el['interval']) {
-                            $pago['status'] = ucFirst($request->action);
-                            $pago['dateconfirmed'] = $newFechaConfirmacion;
-                            $socio['payments.' . $idx] = $pago;
-                            $socio->save();
-                            $pago['_id'] =  $el['_id'];
-                            array_push($arr_updated, $pago);
+                    $newDateConfirmed = ($el['dateconfirmed'] == '' || $el['dateconfirmed'] == null) ? new \MongoDB\BSON\UTCDateTime(new \DateTime('now')) : new \MongoDB\BSON\UTCDateTime(new \DateTime($el['dateconfirmed']));
+                    foreach($customer['payments'] as $idx => $payment) {
+                        if ($payment['payment_id'] == $el['payment_id']) {
+                            $payment['status'] = ucFirst($request->action);
+                            $payment['dateconfirmed'] = $newDateConfirmed;
+                            $customer['payments.' . $idx] = $payment;
+                            // $customer->save();
+                            /* Add the id of the customer for the front end process */
+                            $payment['_id'] = $customer['_id'];
+                            array_push($arr_updated, $payment);
                         }
                     }
                 }
             }
             return [
-                'message' => sizeof($arr_updated) == 0 ? 'No se ha actualizado ningún pago.' : sizeof($arr_updated) == 1 ? 'Se ha actualizado el estado del pago.' : 'Se ha actualizado el estado de los pagos.',
+                'message' => sizeof($arr_updated) == 0 ? 'No se ha actualizado ningún pago.' : (sizeof($arr_updated) == 1 ? 'Se ha actualizado el estado del pago.' : 'Se ha actualizado el estado de los pagos.'),
                 'number' => sizeof($arr_updated),
                 'status' => 'success',
                 'title' => 'Actualización de pagos',
