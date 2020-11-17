@@ -144,11 +144,12 @@ if (token) {
 /* Before load the app is necessary to get all the customers data and pass it to vuex but this will happen only if a valid user ir logged in*/
 
 /* UNDER CONSTRUCTION */
-maintenance();
-function maintenance() {
-    store.dispatch('auth/logout');
-    router.push({ name: 'maintenance' });
-}
+// maintenance();
+// function maintenance() {
+//     store.dispatch('auth/logout');
+//     router.push({ name: 'maintenance' });
+// }
+
 if (store.getters['auth/isLoggedIn']) {
     store.dispatch('getCustomers')
         .then(() => {
