@@ -4,11 +4,12 @@
         :align-h="$route.name == 'home' ? 'center' : 'end'"
         :class="$route.name == 'home' ? ' in-home' : ''"
         no-gutters>
-        <b-navbar-nav class="ig-assets-nav p-0">
+        <b-navbar-nav class="ig-assets-nav mr-1 p-0">
             <b-nav-item
                 class="ig-asset-item"
                 id="nav-search"
-                v-b-modal.search-nav-modal>
+                v-b-modal.search-nav-modal
+                @click="closePops()">
                 <span
                     v-if="$route.name == 'home'">
                     <fa-icon class="mr-2" icon="search"></fa-icon>
@@ -43,7 +44,8 @@
             <b-nav-item
                 class="ig-asset-item"
                 id="nav-newpayment"
-                v-b-modal.payments-nav-modal>
+                v-b-modal.payments-nav-modal
+                @click="closePops()">
                 <span
                     v-if="$route.name == 'home'">
                     <fa-icon class="mr-2" icon="euro-sign"></fa-icon>
@@ -73,15 +75,16 @@
             @show="$manageScrollBar">
             <PaymentEverywhere></PaymentEverywhere>
         </b-modal>
-        <b-navbar-nav class="ig-assets-nav">
+        <b-navbar-nav class="ig-assets-nav ml-1">
             <b-nav-item
                 class="ig-asset-item"
                 id="nav-printfile"
-                v-b-modal.print-nav-modal>
+                v-b-modal.print-nav-modal
+                @click="closePops()">
                 <span
                     v-if="$route.name == 'home'">
                     <fa-icon class="mr-2" icon="print"></fa-icon>
-                    GENERA e IMPRIME recibos o circulares
+                    GENERA e IMPRIME recibos o documentos
                 </span>
                 <span
                     v-else>
@@ -109,6 +112,16 @@
         </b-modal>
     </b-row>
 </template>
+<script>
+    export default {
+        methods: {
+            closePops() {
+                this.$root.$emit('bv::hide::popover');
+                this.$root.$emit('bv::hide::tooltip')
+            }
+        }
+    }
+</script>
 <style>
     #payments-nav-modal.ig-custom-modal .modal-header,
     #print-nav-modal.ig-custom-modal .modal-header,
@@ -170,10 +183,14 @@
     .ig-asset-item {
         border-radius: .25rem;
         height: 100%;
-        margin: 0 1px;
+        /* margin: 0 1px; */
         padding: 0;
         transition: all .15s ease-in-out;
         width: 100%;
+    }
+    .in-home .ig-asset-item a > span {
+        display: block;
+        line-height: 1;
     }
     .ig-asset-item svg {
         height: 100%;
@@ -203,20 +220,18 @@
         line-height: 9px;
         margin-top: 10px;
         opacity: 0;
-        /* padding-top: 5px; */
         padding: 5px;
+        pointer-events: none;
         position: absolute;
         right: 50%;
         transition: all .3s ease-in-out;
-        transform: translate(50%, 10px);
+        transform: translate(50%, -74px);
         user-select: none;
         visibility: hidden;
     }
-    .scrolling .nav-desc {
-        background: rgba(255,255,255.1);
-    }
     .ig-assets-nav:hover .nav-desc {
-        transform: translate(50%, -7px);
+        transform: translate(50%, -77px);
+        padding-bottom: 1rem;
         opacity: 1;
         visibility: visible;
     }
@@ -247,19 +262,22 @@
         color: rgba(13, 0, 131, 1)!important;
     }
     #nav-newpayment:hover a {
-        color: rgba(164, 159, 209, 1)!important;
+        /* color: rgba(164, 159, 209, 1)!important; */
+        color: rgba(255, 255, 255, 1)!important;
     }
     #nav-printfile a {
         color: rgba(131, 0, 52, 1)!important;
     }
     #nav-printfile:hover a {
-        color: rgba(209, 159, 164, 1)!important;
+        /* color: rgba(209, 159, 164, 1)!important; */
+        color: rgba(255, 255, 255, 1)!important;
     }
     #nav-search a {
         color: rgba(118, 131, 0, 1)!important;
     }
     #nav-search:hover a {
-        color: rgba(204, 209, 159, 1)!important;
+        /* color: rgba(204, 209, 159, 1)!important; */
+        color: rgba(255, 255, 255, 1)!important;
     }
     #row-assets {
         border: 1px solid transparent; /* Prevent jumps when inline elements appears */
