@@ -5,7 +5,7 @@
     {{-- <link rel="prefetch" as="font" href="../fonts/Myriad_Pro_Bold_Condensed_Italic.ttf" type="font/ttf" crossorigin="anonymous"> --}}
     {{-- Bootstrap --}}
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" >
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" >
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
