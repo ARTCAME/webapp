@@ -16,6 +16,7 @@ const dictionary = {
             click: () => 'Selecciona una opción',
             confirmed: () => 'Las contraseñas no coinciden',
             date_custom_rule: () => 'Fecha inválida o fuera de rango',
+            decimal: () => 'Valor incorrecto',
             dnie: () => 'El dni o nie no es correcto',
             dniFounded: () => 'Este dni ya existe, no puedes dar de alta este dni',
             dniTutorFounded: () => 'Este dni es de un socio, seleccionalo para vincularlo',
@@ -29,9 +30,9 @@ const dictionary = {
             min: () => 'Mínimo 3 carácteres',
             min_value: () => 'Valor incorrecto',
             numeric: () => 'Este campo debe ser numérico',
+            picRequired: () => 'Añade una foto',
             regex: () => 'Formato incorrecto',
             required: () => 'Campo obligatorio',
-            picRequired: () => 'Añade una foto',
             uniqueEmail: () => 'Este e-mail ya está siendo utilizado',
             uniqueUsername: () => 'Este nombre de usuario ya está siendo utilizado',
             year: () => 'Año inválido',
@@ -43,6 +44,12 @@ Validator.localize(dictionary);
 Validator.extend('alpha_dash', {
     validate(value) {
         const reg = new RegExp(/[A-z-\s]/g)
+        return reg.test(value)
+    }
+})
+Validator.extend('decimal', {
+    validate(value) {
+        const reg = new RegExp(/^\d{1,4}((\,|\.)\d{1,2})?$/g)
         return reg.test(value)
     }
 })
