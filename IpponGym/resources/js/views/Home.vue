@@ -63,8 +63,7 @@
                 </b-form-group>
                 <b-button
                     size="sm"
-                    type="submit"
-                    :disabled="maintenance">Iniciar sesión</b-button>
+                    type="submit">Iniciar sesión</b-button>
             </b-form>
             <!-- Visible when the user is logged in -->
             <span
@@ -176,17 +175,19 @@ import Axios from 'axios';
              * Login the user
              */
             inLogin() {
-                this.logging = true;
-                this.login({ username: this.username, password: this.password })
-                    .then((response) => {
-                        this.logging = false;
-                    })
-                    .catch(error => {
-                        this.logging = false;
-                        return new Promise((resolve, reject) => {
-                            reject(error);
+                if (this.maintenance && this.username == root || !this.maintenance) {
+                    this.logging = true;
+                    this.login({ username: this.username, password: this.password })
+                        .then((response) => {
+                            this.logging = false;
                         })
-                    });
+                        .catch(error => {
+                            this.logging = false;
+                            return new Promise((resolve, reject) => {
+                                reject(error);
+                            })
+                        });
+                }
             },
             /**
              * Logout the user, this only can be achieved from the navbar (from here)
