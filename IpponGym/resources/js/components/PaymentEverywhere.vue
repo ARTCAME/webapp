@@ -51,7 +51,7 @@
                     class="ig-modal-return-btn"
                     size="sm"
                     variant="outline-secondary"
-                    @click="selectedData = null">
+                    @click="selectedData = null; searchResult = null">
                     Volver
                 </b-button>
                 <NewPayment

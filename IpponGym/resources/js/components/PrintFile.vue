@@ -22,14 +22,14 @@
                     :fields="searchFields"
                     :items="searchResult"
                     :pagination="15"
-                    @row-clicked="selected(...arguments)">
+                    @row-clicked="selectCustomer(...arguments)">
                     <template
                         #actions="row">
                         <b-button
                             class="ig-small-btn"
                             size="sm"
                             variant="outline-primary"
-                            @click="selected(row.row.item)">
+                            @click="selectCustomer(row.row.item)">
                             <span class="text">Usar</span>
                         </b-button>
                     </template>
@@ -51,7 +51,7 @@
                     class="ig-modal-return-btn"
                     size="sm"
                     variant="outline-secondary"
-                    @click="customer = null; paymentSelected = null">
+                    @click="customer = null; paymentSelected = null; searchResult = null">
                     Volver
                 </b-button>
                 <b-form-group
