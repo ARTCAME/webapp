@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-form @submit.prevent="$route.name == 'customers.edit' ? submitEdit() : $route.name == 'customers.new' ? submit() : null">
-            <b-alert
+            <!-- <b-alert
                 class="py-2"
                 id="edit-alert"
                 show
@@ -10,7 +10,7 @@
                 <h4 class="m-0">
                     Estás editando la ficha del socio. Recuerda guardar los cambios.
                 </h4>
-            </b-alert>
+            </b-alert> -->
             <b-skeleton-wrapper
                 :loading="loadingCustomer">
                 <!-- Loading skeleton -->
@@ -22,15 +22,12 @@
                                 <b-skeleton height="calc(40px + (70 - 40) * ((100vw - 300px) / (1600 - 300)))"></b-skeleton>
                                 <b-skeleton width="200px"></b-skeleton>
                             </b-form-group>
-                                <!-- <b-form-group>
-                                    <b-skeleton class="m-auto" height="200px" type="avatar" width="200px"></b-skeleton>
-                                </b-form-group> -->
                             <b-container class="col-sm" fluid>
                                 <b-row>
                                     <b-col xl="3">
                                         <b-skeleton class="m-auto" height="200px" type="avatar" width="200px"></b-skeleton>
                                     </b-col>
-                                    <b-col xl="9">
+                                    <b-col class="px-0 px-xl-1" xl="9">
                                         <b-row class="mb-2 mt-3 mt-xl-0">
                                             <b-col>
                                                 <b-skeleton width="100px"></b-skeleton>
@@ -70,35 +67,36 @@
                             </b-form-group>
                             <b-form-group>
                                 <b-row>
-                                    <b-col class="col-12 col-sm-6 col-lg-auto">
+                                    <b-col cols="12" sm="6" lg="auto">
                                         <b-skeleton class="mt-2 mt-lg-0" width="100px"></b-skeleton>
                                         <b-skeleton type="input" width="100%"></b-skeleton>
                                     </b-col>
-                                    <b-col class="col-12 col-sm-6 col-lg">
+                                    <b-col cols="12" sm="6" lg>
                                         <b-skeleton class="mt-2 mt-lg-0" width="100px"></b-skeleton>
                                         <b-skeleton type="input" width="100%"></b-skeleton>
                                     </b-col>
-                                    <b-col class="col-12 col-sm-6 col-lg">
+                                    <b-col cols="12" sm="6" lg>
                                         <b-skeleton class="mt-2 mt-lg-0" width="100px"></b-skeleton>
                                         <b-skeleton type="input" width="100%"></b-skeleton>
                                     </b-col>
-                                    <b-col class="col-12 col-sm-6 col-lg">
+                                    <b-col cols="12" sm="6" lg>
                                         <b-skeleton class="mt-2 mt-lg-0" width="100px"></b-skeleton>
                                         <b-skeleton type="input" width="100%"></b-skeleton>
                                     </b-col>
                                 </b-row>
                             </b-form-group>
                             <b-form-group>
-                                <b-row>
-                                    <b-col class="col-12 col-sm-4 col-lg">
+                                <b-skeleton height="calc(40px + (70 - 40) * ((100vw - 300px) / (1600 - 300)))"></b-skeleton>
+                                <b-row class="mt-3">
+                                    <b-col cols="12" sm="4" lg>
                                         <b-skeleton class="mt-2 mt-lg-0" width="100px"></b-skeleton>
                                         <b-skeleton type="input" width="100%"></b-skeleton>
                                     </b-col>
-                                    <b-col class="col-12 col-sm-4 col-lg">
+                                    <b-col cols="12" sm="4" lg>
                                         <b-skeleton class="mt-2 mt-lg-0" width="100px"></b-skeleton>
                                         <b-skeleton type="input" width="100%"></b-skeleton>
                                     </b-col>
-                                    <b-col class="col-12 col-sm-4 col-lg">
+                                    <b-col cols="12" sm="4" lg>
                                         <b-skeleton class="mt-2 mt-lg-0" width="100px"></b-skeleton>
                                         <b-skeleton type="input" width="100%"></b-skeleton>
                                     </b-col>
@@ -106,6 +104,14 @@
                             </b-form-group>
                             <b-form-group>
                                 <b-skeleton-img height="200px" no-aspect width="342px"></b-skeleton-img>
+                            </b-form-group>
+                            <b-form-group>
+                                <b-skeleton width="100px"></b-skeleton>
+                                <b-skeleton type="input"></b-skeleton>
+                            </b-form-group>
+                            <b-form-group>
+                                <b-skeleton width="100px"></b-skeleton>
+                                <b-skeleton type="input"></b-skeleton>
                             </b-form-group>
                         </b-card-body>
                     </b-card>
@@ -158,6 +164,22 @@
     <!-- Id y número de socio -->
                                 <!-- Shown on customers.profile and customers.edit pages -->
                                 <b-col class="px-0" xl="9">
+                                    <b-alert
+                                        class="py-1"
+                                        variant="info"
+                                        :show="isTutor(form._id).length > 0">
+                                        Este socio es tutor de
+                                        <b-link
+                                            class="unformated-link"
+                                            target="_blank"
+                                            title="Consulta la ficha del socio en una ventana nueva"
+                                            v-b-tooltip.top.hover.noninteractive
+                                            v-for="(child, index) in isTutor(form._id)"
+                                            :key="child._id"
+                                            :to="{ name: 'customers.profile', params: { id: child._id } }">
+                                            {{ child.name + (index == isTutor(form._id).length - 1 ? '' : ', ') }}
+                                        </b-link>
+                                    </b-alert>
                                     <b-form-row
                                         v-if="this.$route.params.id"
                                         :class="{ 'mb-4' : $route.name != 'customers.new' }">
@@ -184,11 +206,12 @@
                                     </b-form-row>
     <!-- Nombre y apellidos -->
                                     <b-form-group
+                                        class="badged-group"
                                         label="Nombre y apellidos"
                                         label-for="nombre">
                                         <b-form-input
-                                            autocomplete="false"
-                                            autofocus
+                                            autocomplete="off"
+                                            debounce="500"
                                             foundable="true"
                                             id="nombre"
                                             name="nombre"
@@ -224,6 +247,7 @@
                                         </span>
                                         <b-form-input
                                             autocomplete="off"
+                                            debounce="500"
                                             id="direccion"
                                             name="direccion"
                                             type="text"
@@ -244,72 +268,21 @@
                             </b-row>
                         </b-container>
     <!-- Teléfono -->
-                        <b-collapse
-                            :visible="!form.phones || form.phones.length == 0">
-                            <b-alert
-                                class="py-2"
-                                show
-                                variant="info">
-                                No has añadido ningún teléfono y es muy recomendable que el socio tenga por lo menos uno.
-                            </b-alert>
-                        </b-collapse>
-                        <PhoneBase
-                            ref="telefono"
-                            target="customer"
-                            v-for="(phone, index) in form.phones"
-                            :inPhone="phone"
-                            :isDisabled="isDisabled"
-                            :key="'customer_phone_' + index"
-                            :phoneIndex="index"
-                            @input="updateCustomerData({ field: 'phones', arrayIndex: index, newVal: $event, _id: form._id })"></PhoneBase>
-                        <!-- Shown on customer edit -->
-                        <b-row
-                            class="mb-4"
-                            no-gutters
-                            v-if="!isDisabled">
-                            <b-button
-                                class="ml-auto"
-                                size="sm"
-                                variant="ig-gradient"
-                                @click="addElement('phones', 'customer')">
-                                <fa-icon class="mr-2" icon="plus"></fa-icon>
-                                Añadir teléfono
-                            </b-button>
-                        </b-row>
+                        <!-- <TransitionExpand> -->
+                            <PhoneBase
+                                ref="telefono"
+                                target="customer"
+                                :inPhones="form.phones"
+                                :isDisabled="isDisabled"
+                                @input="updateCustomerData({ field: 'phones', arrayIndex: $event.arrayIndex, newVal: $event.newVal, _id: form._id })"></PhoneBase>
+                        <!-- </TransitionExpand> -->
     <!-- Email -->
-                        <b-collapse
-                            :visible="!form.phones || form.emails.length == 0">
-                            <b-alert
-                                class="py-2"
-                                show
-                                variant="info">
-                                No has añadido ningún email y es muy recomendable que el socio tenga por lo menos uno.
-                            </b-alert>
-                        </b-collapse>
                         <EmailBase
-                            emailGroup="emailSocioGroup"
                             ref="email"
                             target="customer"
-                            v-for="(email, emailIndex) in form.emails"
-                            :emailIndex="emailIndex"
-                            :inEmail="email"
+                            :inEmails="form.emails"
                             :isDisabled="isDisabled"
-                            :key="'customer_email_' + emailIndex"
-                            @input="updateCustomerData({ field: 'emails', arrayIndex: emailIndex, newVal: $event, _id: form._id })"></EmailBase>
-                        <!-- Shown on customer edit -->
-                        <b-row
-                            class="mb-4"
-                            no-gutters
-                            v-if="!isDisabled">
-                            <b-button
-                                class="ml-auto"
-                                size="sm"
-                                variant="ig-gradient"
-                                @click="addElement('emails', 'customer')">
-                                <fa-icon class="mr-2" icon="plus"></fa-icon>
-                                Añadir email
-                            </b-button>
-                        </b-row>
+                            @input="updateCustomerData({ field: 'emails', arrayIndex: $event.emailIndex, newVal: $event.email, _id: form._id })"></EmailBase>
     <!-- Sexo -->
                         <b-form-row no-gutters>
                             <b-form-group
@@ -340,6 +313,7 @@
                             <b-form-group class="col col-12 col-sm-6 col-lg" label="Fecha de nacimiento" label-for="fechanac">
                                 <!-- v-if="form != null" -->
                                 <b-form-input
+                                    debounce="500"
                                     id="fechanac"
                                     name="fechanac"
                                     type="date"
@@ -371,18 +345,18 @@
                                 class="col col-12 col-sm-6 col-lg"
                                 label="Dni"
                                 label-for="dni">
-                                <!-- v-if="form != null" -->
+                                <!-- The validation is discarted on the customers.profile because it makes a search unnecessary -->
                                 <b-form-input
                                     autocomplete="off"
+                                    debounce="500"
                                     id="dni"
                                     name="dni"
                                     type="text"
                                     v-model="dni"
-                                    v-validate="(underage != true ? 'required' : '') + '|dnie|lengthDnie|dniFounded:' + ($route.name != 'customers.new' ? getCustomerByField('dni', dni).filter(el => el._id != form._id).length : getCustomerByField('dni', dni).length)"
+                                    v-validate="(underage != true ? 'required' : '') + '|dnie|lengthDnie' + ($route.name != 'customers.profile' ? '|dniFounded:' + ($route.name != 'customers.new' ? getCustomerByField('dni', dni).filter(el => el._id != form._id).length : getCustomerByField('dni', dni).length) : '')"
                                     :class="{ 'is-invalid' : errors.has('dni') }"
                                     :disabled="isDisabled"
                                     @drop.prevent
-                                    @focusout="dni = dni.toUpperCase()"
                                     @keypress="$isAlphaNum($event)"
                                     @paste="dni = $isAlphaNum($event)"></b-form-input>
                                 <b-tooltip
@@ -392,7 +366,7 @@
                                     target="dni"
                                     trigger="hover"
                                     v-if="underage == true && !isDisabled">
-                                    Al ser menor, puede que el socio no tenga dni. Si es así puedes dejar este campo vacío e incluir solo el del tutor en los datos del tutor o poner aquí también el del tutor.
+                                    Al ser menor puedes dejar este campo vacío e incluir solo el del tutor en los datos del tutor o poner aquí también el del tutor
                                 </b-tooltip>
                                 <transition mode="out-in" name="liveFeedbacks">
                                     <b-form-invalid-feedback
@@ -412,39 +386,49 @@
                             </b-form-group>
                         </b-form-row>
     <!-- Tutor -->
-                        <!-- Shown when the customer is underage or if on customer edition/profile the tutor is filled -->
-                        <Tutor
-                            ref="tutor"
-                            v-if="underage == true || ($route.name == 'customers.edit' && form.tutor) || ($route.name == 'customers.profile' && form.tutor)"
-                            :isDisabled="isDisabled"
-                            :underage="underage"></Tutor>
+                        <!-- Shown when the customer is underage or if the tutor exists -->
+                        <TransitionExpand>
+                            <div
+                                v-if="underage == true || form.tutor">
+                                <Tutor
+                                    ref="tutor"
+                                    :isDisabled="isDisabled"
+                                    :underage="underage"></Tutor>
+                            </div>
+                        </TransitionExpand>
     <!-- Contacto -->
+                        <TransitionExpand>
+                            <div
+                                v-if="form.contacts && form.contacts.length > 0">
+                                <TransitionExpand group>
+                                    <Contact
+                                        ref="contacto"
+                                        v-for="(contact, index) in form.contacts"
+                                        :isDisabled="isDisabled"
+                                        :key="'contact_' + index"
+                                        :index="index"></Contact>
+                                </TransitionExpand>
+                            </div>
+                        </TransitionExpand>
                         <!-- Shown on customer edit -->
                         <b-row
-                            class="mb-2"
+                            class="my-2"
                             no-gutters
                             v-if="!isDisabled">
                             <b-button
                                 id="add-contacto"
-                                size="sm"
                                 variant="ig-gradient-reverse"
-                                @click="addElement('contacts', 'customer')">
-                                <fa-icon class="mr-2" icon="plus"></fa-icon>
+                                @click="addNewElement({ _id: form._id, element: 'contacts', entity: 'customer' })">
+                                <fa-icon class="mr-3" icon="plus"></fa-icon>
                                 Añadir persona de contacto
                             </b-button>
                         </b-row>
-                        <Contact
-                            ref="contacto"
-                            v-for="(contact, index) in form.contacts"
-                            :isDisabled="isDisabled"
-                            :key="'contact_' + index"
-                            :index=index></Contact>
     <!-- Gestión de pagos -->
-                        <b-form-group class="mt-5">
+                        <b-form-group class="mb-4 mt-5">
                             <h5 class="subtitle" md="4">Datos de pago</h5>
                             <!-- v-if="form != null" -->
                             <b-form-row>
-                                <b-col cols="12" md>
+                                <b-col >
                                     <b-form-group
                                         class="p-0"
                                         id="tarifas-group"
@@ -453,14 +437,22 @@
                                         <b-form-radio-group
                                             buttons
                                             button-variant="outline-secondary"
-                                            class="radio-selector w-100"
+                                            class="flex-wrap radio-selector radiocheckgroup-spaced w-100"
                                             id="tarifa"
                                             name="tarifa"
+                                            v-model="rate"
                                             v-validate="'required'"
-                                            :checked="rate"
                                             :class="{ 'is-invalid' : errors.has('tarifa') }"
-                                            :options="rates"
-                                            @change="rate = $event; $route.name != 'customers.profile' ? selectAmount() : ''"></b-form-radio-group>
+                                            @change="selectAmount($event)">
+                                            <b-form-radio
+                                                v-b-tooltip.hover.noninteractive
+                                                v-for="(v, k) in rates"
+                                                :key="k"
+                                                :title="!isDisabled ? (v != '' ? v + '€' : '') : ''"
+                                                :value="k">
+                                                {{ k }}
+                                            </b-form-radio>
+                                        </b-form-radio-group>
                                         <transition mode="out-in" name="liveFeedbacks">
                                             <b-form-invalid-feedback
                                                 v-if="errors.has('tarifa')">
@@ -469,16 +461,18 @@
                                         </transition>
                                     </b-form-group>
                                 </b-col>
-                                <b-col lg="2">
+                                <b-col cols="12" sm="2">
                                     <b-form-group label="Importe">
                                         <b-form-input
+                                            min="0"
                                             name="importe"
                                             type="number"
                                             step="0.01"
                                             v-model="amount"
-                                            v-validate="'required|between:10,99.99'"
+                                            v-validate="'required|decimal|between:0.1,9999.99'"
                                             :class="{ 'is-invalid' : errors.has('importe') }"
                                             :disabled="isDisabled || !rate.startsWith('Personalizada')"
+                                            @drop.prevent
                                             @keypress="$isNumberDecimal($event)"></b-form-input>
                                         <transition mode="out-in" name="liveFeedbacks">
                                             <b-form-invalid-feedback
@@ -518,101 +512,106 @@
                                     </b-form-group>
                                 </b-col>
                             </b-form-row>
-                            <transition appear name="fade-height">
-                                <b-form-row
+                            <TransitionExpand>
+                                <div
                                     v-if="paymenttype == 'Domiciliación'">
-                                    <b-col cols="12" md>
-                                        <b-form-group
-                                            label="IBAN"
-                                            label-for="iban">
-                                            <b-form-input
-                                                id="iban"
-                                                name="iban"
-                                                placeholder="ES00 0000 0000 0000 0000"
-                                                v-model="iban"
-                                                v-validate="'required|iban'"
-                                                :class="{ 'is-invalid' : errors.has('iban') }"
-                                                :disabled="isDisabled || paymenttype != 'Domiciliación'"></b-form-input>
-                                            <transition mode="out-in" name="liveFeedbacks">
-                                                <b-form-invalid-feedback
-                                                    v-for="error in errors.collect('iban')"
-                                                    :key="error">
-                                                    {{ error }}
-                                                </b-form-invalid-feedback>
-                                            </transition>
-                                        </b-form-group>
-                                    </b-col>
-                                    <b-col cols="12" md>
-                                        <b-form-group
-                                            label="Dni del titular"
-                                            label-for="ibanownerdni">
-                                            <!-- V-validate deshabilitado para pruebas  |dnie|lengthDnie' -->
-                                            <b-form-input
-                                                id="ibanownerdni"
-                                                name="ibanownerdni"
-                                                v-model="ibanownerdni"
-                                                v-validate="'required'"
-                                                :class="{ 'is-invalid' : errors.has('ibanownerdni') }"
-                                                :disabled="isDisabled || paymenttype != 'Domiciliación'"
-                                                @drop.prevent
-                                                @focusout="ibanownerdni ? (ibanownerdni = ibanownerdni.toUpperCase()) : ''"
-                                                @keypress="$isAlphaNum($event)"
-                                                @paste="ibanownerdni = $isAlphaNum($event)"></b-form-input>
-                                            <transition mode="out-in" name="liveFeedbacks">
-                                                <b-form-invalid-feedback
-                                                    v-for="error in errors.collect('ibanownerdni')"
-                                                    :key="error">
-                                                    {{ error }}
-                                                </b-form-invalid-feedback>
-                                            </transition>
-                                        </b-form-group>
-                                    </b-col>
-                                    <b-col cols="12" lg="6">
-                                        <b-form-group
-                                            label="Titular de la cuenta"
-                                            label-for="ibanownername">
-                                            <b-form-input
-                                                id="ibanownername"
-                                                name="ibanownername"
-                                                v-model="ibanownername"
-                                                v-validate="'required|alpha_dash'"
-                                                :class="{ 'is-invalid' : errors.has('ibanownername') }"
-                                                :disabled="isDisabled || paymenttype != 'Domiciliación'"
-                                                @drop.prevent
-                                                @keypress="$isAlphaDash($event)"
-                                                @paste="ibanownername = $isAlphaDash($event)"></b-form-input>
-                                            <transition mode="out-in" name="liveFeedbacks">
-                                                <b-form-invalid-feedback
-                                                    v-for="error in errors.collect('ibanownername')"
-                                                    :key="error">
-                                                    {{ error }}
-                                                </b-form-invalid-feedback>
-                                            </transition>
-                                        </b-form-group>
-                                    </b-col>
-                                    <b-col
-                                        cols="auto"
-                                        v-if="!isDisabled">
-                                        <span
-                                            class="d-block"
-                                            v-b-tooltip.hover.bottom.noninteractive
-                                            :title="dni == '' || name == '' ? 'Debes rellenar el nombre y dni del socio' : ''">
-                                            <b-button
-                                                id="btn-ibanowner"
-                                                variant="ig-outline-green"
-                                                :disabled="dni == '' || name == ''"
-                                                @click="fillIbanData()">Usar dni y nombre del socio</b-button>
-                                        </span>
-                                    </b-col>
-                                </b-form-row>
-                            </transition>
+                                    <b-form-row>
+                                        <b-col cols="12" md>
+                                            <b-form-group
+                                                label="IBAN"
+                                                label-for="iban">
+                                                <b-form-input
+                                                    debounce="500"
+                                                    id="iban"
+                                                    name="iban"
+                                                    placeholder="ES00 0000 0000 0000 0000"
+                                                    v-model="iban"
+                                                    v-validate="'required|iban'"
+                                                    :class="{ 'is-invalid' : errors.has('iban') }"
+                                                    :disabled="isDisabled || paymenttype != 'Domiciliación'"></b-form-input>
+                                                <transition mode="out-in" name="liveFeedbacks">
+                                                    <b-form-invalid-feedback
+                                                        v-for="error in errors.collect('iban')"
+                                                        :key="error">
+                                                        {{ error }}
+                                                    </b-form-invalid-feedback>
+                                                </transition>
+                                            </b-form-group>
+                                        </b-col>
+                                        <b-col cols="12" md>
+                                            <b-form-group
+                                                label="Dni del titular"
+                                                label-for="ibanownerdni">
+                                                <!-- V-validate deshabilitado para pruebas  |dnie|lengthDnie' -->
+                                                <b-form-input
+                                                    debounce="500"
+                                                    id="ibanownerdni"
+                                                    name="ibanownerdni"
+                                                    v-model="ibanownerdni"
+                                                    v-validate="'required'"
+                                                    :class="{ 'is-invalid' : errors.has('ibanownerdni') }"
+                                                    :disabled="isDisabled || paymenttype != 'Domiciliación'"
+                                                    @drop.prevent
+                                                    @keypress="$isAlphaNum($event)"
+                                                    @paste="ibanownerdni = $isAlphaNum($event)"></b-form-input>
+                                                <transition mode="out-in" name="liveFeedbacks">
+                                                    <b-form-invalid-feedback
+                                                        v-for="error in errors.collect('ibanownerdni')"
+                                                        :key="error">
+                                                        {{ error }}
+                                                    </b-form-invalid-feedback>
+                                                </transition>
+                                            </b-form-group>
+                                        </b-col>
+                                        <b-col cols="12" lg="6">
+                                            <b-form-group
+                                                label="Titular de la cuenta"
+                                                label-for="ibanownername">
+                                                <b-form-input
+                                                    debounce="500"
+                                                    id="ibanownername"
+                                                    name="ibanownername"
+                                                    v-model="ibanownername"
+                                                    v-validate="'required|alpha_dash'"
+                                                    :class="{ 'is-invalid' : errors.has('ibanownername') }"
+                                                    :disabled="isDisabled || paymenttype != 'Domiciliación'"
+                                                    @drop.prevent
+                                                    @keypress="$isAlphaDash($event)"
+                                                    @paste="ibanownername = $isAlphaDash($event)"></b-form-input>
+                                                <transition mode="out-in" name="liveFeedbacks">
+                                                    <b-form-invalid-feedback
+                                                        v-for="error in errors.collect('ibanownername')"
+                                                        :key="error">
+                                                        {{ error }}
+                                                    </b-form-invalid-feedback>
+                                                </transition>
+                                            </b-form-group>
+                                        </b-col>
+                                        <b-col
+                                            cols="auto"
+                                            v-if="!isDisabled">
+                                            <span
+                                                class="d-block"
+                                                v-b-tooltip.hover.bottom.noninteractive
+                                                :title="dni == '' || name == '' ? 'Debes rellenar el nombre y dni del socio' : ''">
+                                                <b-button
+                                                    class="align-unlabeled-lg"
+                                                    variant="ig-outline-green"
+                                                    :disabled="dni == '' || name == ''"
+                                                    @click="fillIbanData()">Usar dni y nombre del socio</b-button>
+                                            </span>
+                                        </b-col>
+                                    </b-form-row>
+                                </div>
+                            </TransitionExpand>
                         </b-form-group>
     <!-- Pagos -->
                         <!-- When the customer doesn't have payments show an alert -->
-                        <b-form-group>
+                        <b-form-group
+                            :class="hasPayments ? 'mb-0' : 'mb-3'">
                             <h5 md="4" class="subtitle">Gestión de pagos</h5>
                             <b-alert
-                                class="py-2"
+                                class="py-1"
                                 show
                                 variant="info"
                                 v-if="hasPayments && $route.name == 'customers.edit' && !isDisabled">
@@ -620,45 +619,33 @@
                             </b-alert>
                             <Payments
                                 v-if="hasPayments"
-                                :customer_id="form._id"
+                                :parentId="form._id"
+                                :filters="['status', 'interval', 'type', 'paymenttype', 'creationdate', 'confirmationdate']"
                                 :isDisabled="isDisabled"
                                 :tableFields="paymentsTableFields"
-                                :tableItems="form.payments"></Payments>
+                                :itemsPerPage="10"></Payments>
                             <span
                                 v-else-if="!hasPayments">
-                                <b-alert class="py-2" show variant="secondary">
+                                <b-alert class="py-1" show variant="secondary">
                                     El socio aún no tiene pagos, en cuanto se generen los verás aquí.
                                 </b-alert>
                             </span>
                         </b-form-group>
     <!-- Cinturones -->
-                        <transition appear name="fade-height">
-                            <b-form-group
-                                id="main-edit-cinturones"
-                                v-if="rate.includes('Karate') || hasBelts">
-                                <h5 md="4" class="subtitle">Histórico de cinturones</h5>
-                                <span
-                                    v-if="$route.name != 'customers.new'">
-                                    <b-alert
-                                        class="py-2"
-                                        show
-                                        variant="info"
-                                        v-if="isDisabled == false && $route.name == 'customers.edit'">
-                                        Los cambios que hagas a los grados se guardan al aplicarlos.
-                                    </b-alert>
+                        <TransitionExpand>
+                            <!-- Shown if the customer has a grade acquired or if the rate includes karate -->
+                            <div
+                                v-if="rate.includes('Karate') || form.belts">
+                                <b-form-group
+                                    class="mb-4"
+                                    id="main-edit-cinturones">
+                                    <h5 md="4" class="subtitle">Histórico de grados</h5>
                                     <BeltsRow
-                                        :belts="form.belts"
                                         :customer="form"
                                         :isDisabled="isDisabled"></BeltsRow>
-                                </span>
-                                <span
-                                    v-else-if="$route.name == 'customers.new'">
-                                    <b-alert class="py-2" show variant="secondary">
-                                        Una vez guardes la ficha del socio podrás editar los grados.
-                                    </b-alert>
-                                </span>
-                            </b-form-group>
-                        </transition>
+                                </b-form-group>
+                            </div>
+                        </TransitionExpand>
     <!-- Firma y documentos -->
                         <b-form-group>
                             <h5 md="4" class="subtitle">Firma y documentos</h5>
@@ -667,7 +654,7 @@
                                 show
                                 variant="danger"
                                 v-if="$route.name == 'customers.new'">
-                                La firma del socio es imprescindible para recibosfa y documentos, <u>inclúyela siempre</u>
+                                La firma del socio es imprescindible para recibos y documentos, <u>inclúyela siempre</u>
                                 <span
                                     v-if="underage">
                                     <br><br>
@@ -687,7 +674,7 @@
                                 <u>Importante: El socio se dio de alta como menor por lo que está vinculado a un tutor, a día de hoy ya no es menor pero existe un tutor y la firma puede estar vinculada a él. Recuerda que debes actualizar la firma si estuviera vinculada al tutor y borrar los datos del tutor si ya no fueran necesarios</u>
                             </b-alert>
                             <b-row>
-                                <b-col class="col-12 col-md-6 mb-4">
+                                <b-col class="col-12 col-md-6 mb-4 mb-md-0">
                                     <WacomSign
                                         ref="wacomsign"
                                         :isDisabled="isDisabled"
@@ -728,13 +715,13 @@
                                             <b-form-group
                                                 class="d-inline-block"
                                                 v-b-tooltip.hover.noninteractive
-                                                :title="RPaccept == false ? 'El socio no ha dado su consentimiento' : printRightsProtect == true ? 'Descargando...' : 'Descargar'">
+                                                :title="RPaccept == false ? 'No hay nada que imprimir: el socio no ha dado su consentimiento' : RPaccept == null ? 'El socio no ha confirmado esta opción' : printRightsProtect == true ? 'Descargando...' : 'Descargar consentimiento expreso'">
                                                 <b-button
                                                     class="btn-fa-tiny"
                                                     size="sm"
                                                     variant="outline-primary"
                                                     v-if="$route.name != 'customers.new'"
-                                                    :disabled="printRightsProtect || RPaccept == false"
+                                                    :disabled="printRightsProtect || (RPaccept == false || RPaccept == null)"
                                                     @click="printFile('RP')">
                                                     <b-spinner
                                                         small
@@ -780,13 +767,13 @@
                                             <b-form-group
                                                 class="d-inline-block"
                                                 v-b-tooltip.hover.noninteractive
-                                                :title="RIaccept == false ? 'El socio no ha dado su consentimiento' : printRightsImage == true ? 'Descargando...' : 'Descargar'">
+                                                :title="RIaccept == false ? 'No hay nada que imprimir: el socio no ha dado su consentimiento' : RIaccept == null ? 'El socio no ha confirmado esta opción' : printRightsImage == true ? 'Descargando...' : 'Descargar cesión de imagen'">
                                                 <b-button
                                                     class="btn-fa-tiny"
                                                     size="sm"
                                                     variant="outline-primary"
                                                     v-if="$route.name != 'customers.new'"
-                                                    :disabled="printRightsImage || RIaccept == false"
+                                                    :disabled="printRightsImage || (RIaccept == false || RIaccept == null)"
                                                     @click="printFile('RI')">
                                                     <b-spinner
                                                         small
@@ -801,6 +788,14 @@
                                     </b-row>
                                 </b-col>
                             </b-row>
+                        </b-form-group>
+                        <b-form-group>
+                            <h5 md="4" class="subtitle">Notas</h5>
+                                <NotesBase
+                                    target="customer"
+                                    :_id="form._id"
+                                    :inNotes="form.notes"
+                                    :isDisabled="isDisabled"></NotesBase>
                         </b-form-group>
                         <!-- Hided printable docs -->
                         <div
@@ -829,26 +824,48 @@
                         Validar
                     </b-button>
                 </b-col> -->
+                <b-col cols="auto">
+                    <b-button
+                        variant="outline-secondary"
+                        v-if="$route.name == 'customers.new'"
+                        @click="CLEAR_FORM('form'); $ChangeText('empty-form-btn-text', '¡Vaciado!', 2500)">
+                        <fa-icon class="d-inline-block mr-2" icon="eraser"></fa-icon>
+                        <span id="empty-form-btn-text">
+                            Vaciar formulario
+                        </span>
+                    </b-button>
+                </b-col>
                 <b-col>
                     <b-row align-h="end" no-gutters>
-                        <transition-group name="slide-fade">
-                            <b-button
-                                key="mf-btn-submit"
-                                type="submit"
-                                variant="ig-solid-green"
-                                v-if="$route.name == 'customers.edit' || $route.name == 'customers.new'">
-                                <fa-icon class="d-inline-block mr-2" icon="save"></fa-icon>
+                        <b-button
+                            key="mf-btn-submit"
+                            type="submit"
+                            variant="ig-solid-green"
+                            v-if="$route.name == 'customers.edit' || $route.name == 'customers.new'">
+                            <b-spinner
+                                small
+                                type="grow"
+                                v-if="submitting == true"></b-spinner>
+                            <fa-icon
+                                icon="save"
+                                v-else></fa-icon>
+                            <span class="d-inline-block ml-2">
                                 Guardar
-                            </b-button>
-                            <b-button
-                                class="ml-2"
-                                key="mf-btn-edit"
-                                v-if="$route.name == 'customers.edit' || $route.name == 'customers.profile'"
-                                :variant="$route.name == 'customers.edit' ? 'warning' : 'primary'"
-                                @click="manageEditBtn()">
+                            </span>
+                        </b-button>
+                        <b-button
+                            class="ml-2"
+                            key="mf-btn-edit"
+                            v-if="$route.name == 'customers.edit' || $route.name == 'customers.profile'"
+                            :disabled="submitting"
+                            :variant="$route.name == 'customers.edit' ? 'warning' : 'primary'"
+                            @click="manageEditBtn()">
+                            <fa-icon
+                                :icon="$route.name == 'customers.edit' ? 'sync-alt' : 'edit'"></fa-icon>
+                            <span class="d-inline-block ml-2">
                                 {{ $route.name == 'customers.edit' ? 'Cancelar la edición': 'Editar al socio' }}
-                            </b-button>
-                        </transition-group>
+                            </span>
+                        </b-button>
                     </b-row>
                 </b-col>
             </b-row>
@@ -856,11 +873,11 @@
     </div>
 </template>
 <script>
-    import { http } from '../utils/http';
     import html2canvas from 'html2canvas';
+    import { http } from '../utils/http';
     import jsPDF from 'jspdf';
-    import NProgress from 'nprogress';
     import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
+    import NProgress from 'nprogress';
     /**
      * Map the keys passed to mount their vuex getters and setters
      *
@@ -876,11 +893,17 @@
                     return this.form[key];
                 },
                 set(value) {
-                    /* The id will be null on customers.new page, its managed at vuex */
+                    /* Uppercase the texts values */
+                    if (['address', 'dni', 'name'].includes(key)) {
+                        value = value.toUpperCase();
+                    }
+                    /* The id will be null on customers.new page, this is managed at vuex */
                     this.updateCustomerData({ _id: this.form._id, field: key, newVal: value });
                     /* A customer has be at minium 3 years old */
                     if (key == 'dateofbirth') {
-                        this.underage == true && this.form.tutor == null && this.ADD_TUTOR(this.form);
+                        /* Depending on if the customer is or not underage the tutor has to be shown or/and delete if its status is unmutated */
+                        this.underage == true && !this.form.tutor && this.addNewElement({ _id: this.form._id, element: 'tutor', entity: 'customer' });
+                        this.underage == false && this.form.tutor && JSON.stringify(this.getDefaultState('tutor')) === JSON.stringify(this.form.tutor) && this.DEL_OBJ_KEY({ state: this.form, target: 'tutor' });
                     }
                 }
             }
@@ -903,13 +926,18 @@
                     return this.form[object][key];
                 },
                 set(value) {
-                    /* The id will be null on customers.new page, its managed at vuex */
-                    this.updateCustomerData({ _id: this.form._id, objectKey: object, field: key, newVal: value });
-                    // this.UPDATE_FIELD({ target: this.form[object], field: key, newVal: value });
-                    /* The legal accepts or declines needs to add the current date */
-                    if (object == 'rightsImage' || object == 'rightsProtect' || object == 'rightsUnderage') {
-                        this.updateCustomerData({ _id: this.form._id, objectKey: object, field: 'date', newVal: this.$moment().format('DD-MM-YYYY HH:MM:SS') });
+                    /* Uppercase the texts values */
+                    if (['ibanownername', 'ibanownerdni'].includes(key)) {
+                        value = value.toUpperCase();
                     }
+                    /* The id will be null on customers.new page, this is managed at vuex */
+                    this.updateCustomerData({ _id: this.form._id, objectKey: object, field: key, newVal: value });
+                    /* The legal accepts or declines needs to add the current date */
+                    (object == 'rightsImage' || object == 'rightsProtect' || object == 'rightsUnderage') && this.updateCustomerData({ _id: this.form._id, objectKey: object, field: 'date', newVal: this.$moment().format('DD-MM-YYYY HH:mm:ss') });
+                    /* If the rate includes karate the form must have the belts if not has it already */
+                    key == 'rate' && value.includes('Karate') && !this.form.belts && this.addNewElement({ _id: this.form._id, element: 'belts', entity: 'customer' });
+                    /* If the rate doesn't include karate and the belts are added but remains in its pristine status delete it */
+                    key == 'rate' && !value.includes('Karate') && this.form.belts && (JSON.stringify(this.getDefaultState('belts')) === JSON.stringify(this.form.belts)) && this.DEL_OBJ_KEY({ state: this.form, target: 'belts' });
                 }
             }
         });
@@ -925,36 +953,29 @@
                 ], /* Options to gender selector */
                 isDisabled: false, /* Flag to determine the disable state of the editable fields, on edit always is loaded as true */
                 loadingCustomer: true, /* Flag to activate/deactivate the form skeleton */
+                newNote: null, /* V-model for a new note */
                 paymentsTableFields: [
                     { key: 'rate', label: 'Tarifa', sortable: true, },
                     { key: 'amount', label: 'Importe', sortable: true, },
                     { key: 'paymenttype', label: 'Forma de pago', sortable: true, },
-                    { key: 'iban', label: 'Iban', sortable: true, },
-                    { key: 'ibanownername', label: 'IBAN Titular', sortable: true, oneditField: true, },
-                    { key: 'ibanownerdni', label: 'IBAN Dni', sortable: true, oneditField: true, },
                     { key: 'interval', label: 'Periodo', sortable: true, },
                     { key: 'status', label: 'Estado', sortable: true, },
-                    { key: 'dateconfirmed', label: 'Confirmado', sortable: true, },
-                    { key: 'editRow', label: 'editRow', label: '', class: 'tableEditRow text-center'},
+                    { key: 'actions', label: 'Acciones', class: 'text-center'},
                 ], /* Payment table fields */
-                paymentTypes: [
-                    { value: 'Domiciliación', text: 'Domiciliación' },
-                    { value: 'Tarjeta', text: 'Tarjeta' },
-                    { value: 'Efectivo', text: 'Efectivo' },
-                ], /* Options to the checkbox of the payment types */
+                paymentTypes: [ 'Domiciliación', 'Tarjeta', 'Efectivo' ], /* Options to the checkbox of the payment types */
                 printRightsImage: false, /* Flag to improve userx on print */
                 printRightsProtect: false, /* Flag to improve userx on print */
                 printRightsUnderage: false, /* Flag to improve userx on print */
-                rates: [
-                    { value: 'Karate 1', text: 'Karate 1' }, /* 24 */
-                    { value: 'Karate 2', text: 'Karate 2' }, /* 34 */
-                    { value: 'Karate 3', text: 'Karate 3' }, /* 38 */
-                    { value: 'GYM 1', text: 'GYM 1' }, /* 24 */
-                    { value: 'GYM 2', text: 'GYM 2' }, /* 35 */
-                    { value: 'GYM Libre', text: 'GYM Libre' }, /* 40 */
-                    { value: 'Personalizada + Karate', text: 'Personalizada + Karate' }, /* 0 */
-                    { value: 'Personalizada + GYM', text: 'Personalizada + GYM' }, /* 0 */
-                ], /* Options to the checkbox of the rate types */
+                rates: {
+                    'Karate 1': 24,
+                    'Karate 2': 34,
+                    'Karate 3': 38,
+                    'GYM 1': 24,
+                    'GYM 2': 35,
+                    'GYM Libre': 40,
+                    'Personalizada + Karate': '',
+                    'Personalizada + GYM': ''
+                },
                 selectedBelts: [], /* Grades selected to delete */
                 submitting: false, /* Flag to avoid alert the customer at the page leave */
                 yesno: [
@@ -967,6 +988,8 @@
             /* If we are on a customer edit */
             if (to.name == 'customers.edit') {
                 next(vm => {
+                    /* Change the submit flag */
+                    vm.submitting = false;
                     /* Set the skeleton flag */
                     vm.loadingCustomer = true;
                     /* Enable the editable fields of the form */
@@ -978,7 +1001,7 @@
                         vm.CLEAR_FORM('editform');
                     }
                     /* Load the customer */
-                    vm.fetchEditForm(vm.$route.params.id)
+                    vm.initEditForm(vm.$route.params.id)
                         .then(() => {
                             /* Start vee-validate stopped */
                             vm.$validator.resume();
@@ -991,6 +1014,8 @@
             /* If we are seeing a existing customer */
             } else if (to.name == 'customers.profile') {
                 next(vm => {
+                    /* Change the submit flag */
+                    vm.submitting = false;
                     /* Set the skeleton flag */
                     vm.loadingCustomer = true;
                     /* Disable all the editable fields of the form */
@@ -1002,7 +1027,7 @@
                         vm.CLEAR_FORM('editform');
                     }
                     /* Load the customer */
-                    vm.fetchEditForm(vm.$route.params.id)
+                    vm.initEditForm(vm.$route.params.id)
                         .then(() => {
                             /* Start vee-validate stopped @beforeRouteLeave */
                             vm.$validator.resume();
@@ -1015,6 +1040,8 @@
             /* If are creating a new customer */
             } else if (to.name == 'customers.new') {
                 next(vm => {
+                    /* Change the submit flag */
+                    vm.submitting = false;
                     /* Pause the validations before load the new customer to prevent validation errors at assign the validation again to the reusable components */
                     vm.$validator.pause();
                     /* Start vee-validate stopped @beforeRouteLeave */
@@ -1029,21 +1056,26 @@
             }
         },
         beforeRouteLeave(to, from, next) {
-            /* Stops the webcam and sign components */
-            this.$refs.webcamcomponent && this.$refs.webcamcomponent.cancel();
-            // this.$refs.wacomsign.disconnect();
-            /* Confirm the left with the user */
-            let answer = true;
-            if (!this.submitting && from.name != 'customers.profile') {
-                answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
-                if (!answer) {
-                    next(false);
-                }
-            }
-            if (answer) {
-                /* Pause the validations before leave the page to prevent errors at assign the validation again to the reusable components */
-                this.$validator.pause();
+            /* The confirm must not be shown on 404 redirections */
+            if (to.name == '404') {
                 next();
+            } else {
+                /* Stops the webcam and sign components */
+                this.$refs.webcamcomponent && this.$refs.webcamcomponent.cancel();
+                // this.$refs.wacomsign.disconnect();
+                /* Confirm the left with the user */
+                let answer = true;
+                if (!this.submitting && from.name != 'customers.profile') {
+                    answer = confirm('No has guardado los cambios, ¿seguro que quieres salir?');
+                    if (!answer) {
+                        next(false);
+                    }
+                }
+                if (answer) {
+                    /* Pause the validations before leave the page to prevent errors at assign the validation again to the reusable components */
+                    this.$validator.pause();
+                    next();
+                }
             }
         },
         beforeRouteUpdate (to, from, next) {
@@ -1069,13 +1101,9 @@
                         this.isDisabled = true;
                     }
                     /* Load the editform state */
-                    this.fetchEditForm(to.params.id)
+                    this.initEditForm(to.params.id)
                         .then((response) => {
-                            // if (response == '404') {
-                            //     next('/404');
-                            // } else {
-                                next();
-                            // }
+                            next();
                             /* Set the skeleton flag */
                             this.loadingCustomer = false;
                             this.$validator.resume();
@@ -1083,13 +1111,10 @@
                 }
                 if (to.name == 'customers.new') {
                     /* Load the new customer form */
-                    this.fetchForm(to.params.id)
+                    this.initForm(to.params.id)
                         .then((response) => {
-                            // if (response == '404') {
-                            //     next('/404');
-                            // } else {
-                                next();
-                            // }
+                            console.log('setting form form on route update')
+                            next();
                             /* Set the skeleton flag */
                             this.loadingCustomer = false;
                             this.$validator.resume();
@@ -1105,16 +1130,15 @@
             window.addEventListener('load', this.stackRadios);
         },
         computed: {
-            /* Mount the vuex getters and setters to the local form fields (the childrens has its computations too */
-            // ...computeBaseFields(['active', 'address', 'dateofbirth', 'dni', 'gender', 'name', 'notes', 'rightsImage', 'rightsProtect', 'rightsUnderage']),
-// COMPROBAR FUNCIONAMIENTO, AÑADIR AL COMPUTE QUE CUANDO SEA LAS KEIS ACCEPT SE AÑADA LA FECHA
-            ...computeBaseFields(['active', 'address', 'dateofbirth', 'dni', 'gender', 'name', 'notes']),
+            /* Mount the vuex getters and setters to the local form fields (the childrens has its computations too) */
+            ...computeBaseFields(['active', 'address', 'dateofbirth', 'dni', 'gender', 'name', /* 'notes' */]),
+            /* The paymentData unused is necessary? */
             ...computeObjectFields(['rate', 'amount', 'paymenttype', 'iban', 'ibanownername', 'ibanownerdni',], 'paymentData'),
             ...computeObjectFields(['RIaccept', 'date'], 'rightsImage'),
             ...computeObjectFields(['RPaccept', 'date'], 'rightsProtect'),
             ...computeObjectFields(['RUaccept', 'date'], 'rightsUnderage'),
             /* Mapping vuex */
-            ...mapGetters(['getCustomerByField', 'getCustomerById', 'getDefaultState']),
+            ...mapGetters(['getCustomerByField', 'getCustomerById', 'getDefaultState', 'isTutor']),
             ...mapState({
                 newCustomerForm: state => state.form,
                 editCustomerForm: state => state.editform,
@@ -1133,7 +1157,7 @@
              * @returns {Boolean} Boolean that indicates if the current customer has or not any belt reached
              */
             hasBelts() {
-                return this.form.belts.some(belt => belt.date != null);
+                return this.form.belts && this.form.belts.some(belt => belt.date != null);
             },
             /**
              * Determine if the current form state has payments registered
@@ -1141,7 +1165,7 @@
              * @returns {Boolean} Boolean that indicates if the current customer has or not any payment registered
              */
             hasPayments() {
-                return this.form.payments.length > 0;
+                return this.form.payments && this.form.payments.length > 0;
             },
             /**
              * Determines if the current dateofbirth selected is between 3 and 18
@@ -1171,18 +1195,8 @@
         },
         methods: {
             /* Mapping vuex */
-            ...mapActions(['addNewCustomer', 'addNewElement', 'delFormElement', 'deleteBelts', 'getAllCustomers', 'fetchEditForm', 'fetchForm', 'setCustomerEdited', 'updateCustomerData']),
-            ...mapMutations(['ADD_TUTOR', 'CLEAR_FORM', 'UPDATE_FIELD']),
-            /**
-             * Call to the mutation that add dynamic elements to the form
-             *
-             * @param {String} element: the name of the element to add
-             * @param {String} entity: the name of the entity to add on it the element
-             */
-            addElement(element, entity) {
-                const _id = this.form._id != null ? this.form._id : null;
-                this.addNewElement({ _id: _id, element: element, entity: entity });
-            },
+            ...mapActions(['addNewCustomer', 'addNewElement', 'delFormElement', 'deleteBelts', 'getAllCustomers', 'initEditForm', 'initForm', 'setCustomerEdited', 'updateCustomerData']),
+            ...mapMutations(['ADD_FORM_ELEMENT', 'ADD_TUTOR', 'CLEAR_FORM', 'DEL_OBJ_KEY', 'UPDATE_FIELD']),
             /**
              * Prevent leave the page with changes unsaved
              *
@@ -1201,52 +1215,14 @@
                 }
             },
             /**
-             * On delete belts (set its date as null) commit it at vuex, the api save is do it at the save of the edit or new customer
-             */
-            async beltsDelete() {
-                try {
-                    const response = await this.deleteBelts({ id: this.form._id, selectedBelts: this.selectedBelts});
-                    this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
-                } catch(error) {
-                    this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoFo@BeDe', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
-                }
-                /* Reset the inputs and selectors involved */
-                this.beltsResetFields();
-            },
-            /**
-             * Reset the values that manages the belts modifications
-             */
-            beltsResetFields() {
-                /* Empty the selected belts array */
-                this.selectedBelts = [];
-                /* Set the v-model of the belts date to its initial value */
-                this.beltsNewDate = '';
-            },
-            /**
-             * Commit the new date selected on vuex for the belts selecteds
-             */
-            async beltsUpdate() {
-                try {
-                    const response = await http.post('/api/updateBelts', ({ id: this.form._id, belts: this.selectedBelts, date: this.$moment(this.beltsNewDate).format('DD-MM-YYYY') }));
-                    this.UPDATE_FIELD({ target: this.form, field: 'belts', newVal: response.data.updatedBelts });
-                    this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
-                    /* Trigger a modification on the localStorage to propagate the changes on other windows */
-                    localStorage.setItem('customer_updated', this.form._id);
-                    localStorage.removeItem('customer_updated');
-                } catch(error) {
-                    this.$showToast('danger', 'No se ha podido completar la operación. Código de error: FESoFo@BeUp', 'Ha ocurrido un error')
-                    console.error(error.response ? error.response.data : error);
-                }
-                /* Reset the inputs and selectors involved */
-                this.beltsResetFields();
-            },
-            /**
              * Fill the iban owner data with the customer data
              */
             fillIbanData() {
-                this.ibanownername = this.name;
+                this.ibanownername = this.name; /* Maybe is not uppercase */
                 this.ibanownerdni = this.dni;
+                if (this.iban == '' || this.iban == null) {
+                    this.$validator.validate('iban');
+                }
             },
             /**
              * Prompt to the user a confirm message when the edition of the customer wants to be cancelled
@@ -1273,6 +1249,7 @@
                     const variable = file == 'RI' ? 'printRightsImage' : 'printRightsProtect';
                     /* Active the flag to userx and disallow multiple downloads */
                     this[variable] = true;
+                    this.$showToast('success', 'En breve se iniciará la descarga del fichero', 'Descarga de fichero solicitada');
                     this.$html2print(filename, this.$refs['printableMF' + file])
                         .then(() => {
                             /* Restore the flag to userx and disallow multiple downloads */
@@ -1289,44 +1266,25 @@
             /**
              * Sets the value of the amount field based on the rate selected, the custome rates (personalizadas) let the amount field editable
              */
-            selectAmount() {
-                switch(this.rate) {
-                    case 'Karate 1':
-                        this.amount = 24;
-                        break;
-                    case 'Karate 2':
-                        this.amount = 34;
-                        break;
-                    case 'Karate 3':
-                        this.amount = 38;
-                        break;
-                    case 'GYM 1':
-                        this.amount = 24;
-                        break;
-                    case 'GYM 2':
-                        this.amount = 35;
-                        break;
-                    case 'GYM Libre':
-                        this.amount = 40;
-                        break;
-                    default:
-                        this.amount = '';
-                }
+            selectAmount(ev) {
+                this.amount = this.rates[ev];
             },
             /**
              * Manages the stacking of the radio selectors
              */
             stackRadios() {
                 if (!this.loadingCustomer) {
-                    if (window.innerWidth < 870) {
-                        document.getElementById('tarifa').classList.add('btn-group-vertical');
+                    // if (window.innerWidth < 870) {
+                    if (window.innerWidth < 470) {
+                        // document.getElementById('tarifa').classList.add('btn-group-vertical');
                         document.getElementById('tipoPago').classList.add('btn-group-vertical');
-                        document.getElementById('tarifa').classList.remove('btn-group');
+                        // document.getElementById('tarifa').classList.remove('btn-group');
                         document.getElementById('tipoPago').classList.remove('btn-group');
-                    } else if (window.innerWidth >= 870 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
-                        document.getElementById('tarifa').classList.remove('btn-group-vertical');
+                    // } else if (window.innerWidth >= 870 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
+                    } else if (window.innerWidth >= 470 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
+                        // document.getElementById('tarifa').classList.remove('btn-group-vertical');
                         document.getElementById('tipoPago').classList.remove('btn-group-vertical');
-                        document.getElementById('tarifa').classList.add('btn-group');
+                        // document.getElementById('tarifa').classList.add('btn-group');
                         document.getElementById('tipoPago').classList.add('btn-group');
                     }
                 }
@@ -1335,13 +1293,14 @@
              * Submits the form
              */
             submit() {
-                /* Change the submit flag to avoid alert the customer at the page leave */
+                /* Change the submit flag */
                 this.submitting = true;
                 /* First of all validate de form (at the backend it will be validated too) */
                 this.$validator.validateAll()
                     .then(async result => {
                         /* If the form isn't shows modal and mark the incorrect fields */
                         if (!result) {
+                            this.submitting = false;
                             this.$bvModal.msgBoxOk('Se han encontrado ' + this.errors.all().length + ' errores en el formulario. Revisa los campos marcados.', {
                                 buttonSize: 'sm',
                                 centered: true,
@@ -1371,6 +1330,7 @@
                                         this.$showToast(response.data.status, response.data.message, response.data.title);
                                     });
                             } catch(error) {
+                                this.submitting = false;
                                 if (error.response) {
                                     let message = error.response.data.message;
                                     /* Check if a validation errors occurs on the backend */
@@ -1401,6 +1361,7 @@
                             }
                         }
                     });
+                this.submitting = false;
             },
             /**
              * Searches the empty fields (phones, emails and contacts) and delete it if there are on their pristine state (empty). Also, check if a contact(s) or tutor are customers too and leave at vuex only their id and notes, the rest of data remains linked and will be setted when the profile of the main customer will be loaded. Vee-validate redound on this because it will prevent to leave empty fields too.
@@ -1431,12 +1392,16 @@
                             this.delFormElement({ _id: this.form._id, field: 'contacts', index: i });
                             i--;
                         } else {
+                            console.log(contactToSave)
                             this.UPDATE_FIELD({ target: this.form.contacts, field: this.index, newVal: contactToSave });
                         }
                     }
                 }
                 /* If we have added a tutor clean it up */
-                if (this.form.tutor) {
+                /* If the tutor has its pristine state and the customer is not underage, delete the tutor */
+                if (this.underage == false && this.form.tutor && JSON.stringify(this.getDefaultState('tutor')) === JSON.stringify(this.form.tutor)) {
+                    this.DEL_OBJ_KEY({ state: this.form, target: 'tutor' });
+                } else if (this.form.tutor) {
                     let tutorToSave = {};
                     /* If we have id store only leave it as reference, also store the notes because there are not of the linked customer */
                     if (this.form.tutor._id) {
@@ -1448,10 +1413,6 @@
                         this.submitCleanEmpties('phones', this.form.tutor.phones, 'tutor');
                         this.submitCleanEmpties('emails', this.form.tutor.emails, 'tutor');
                         tutorToSave = this.form.tutor;
-                    }
-                    /* If the tutor has its pristine state and the customer is not underage, delete the tutor */
-                    if (JSON.stringify(this.getDefaultState('tutor')) === JSON.stringify(tutorToSave) && this.underage == false) {
-                        tutorToSave = null;
                     }
                     this.UPDATE_FIELD({ target: this.form, field: 'tutor', newVal: tutorToSave });
                 }
@@ -1476,6 +1437,7 @@
              * Saves the existing customer changes
              */
             submitEdit() {
+                /* Change the submit flag */
                 this.submitting = true;
                 /* First of all validate de form (at the backend it will be validated too) */
                 this.$validator.validateAll()
@@ -1504,6 +1466,7 @@
                                     this.$showToast(response.data.status, response.data.message, response.data.title);
                                 })
                                 .catch(error =>{
+                                    this.submitting = false;
                                     if (error.response) {
                                         let message = error.response.data.message;
                                         /* Check if a validation errors occurs on the backend */
@@ -1563,22 +1526,27 @@
                 $validator: this.$validator,
             }
         },
-        watch: {
-            isDisabled(newValue, oldValue) {
-                if (newValue == true) {
-                    /* If we leave the edition we need to reset the selectable fields of the belts asignation */
-                    this.beltsResetFields();
-                }
-            }
-        },
     }
 </script>
 <style>
+    .ig-add-button {
+        overflow: hidden;
+        max-width: 40px;
+        transition: max-width 1s ease;
+        white-space: nowrap;
+    }
+    .ig-add-button.expanded,
+    .ig-add-button:hover {
+        max-width: 600px;
+    }
     #tarifas-group label.btn {
         padding: 0.375rem 0.5rem!important
     }
 </style>
 <style scoped>
+    .badged-group {
+        position: relative;
+    }
     .card-body {
         overflow: hidden;
     }
@@ -1592,19 +1560,7 @@
     .tiny-radio-selector .btn.btn-sm {
         line-height: 1;
     }
-    #edit-alert {
-        opacity: 75%;
-        position: fixed;
-        transition: .15s;
-        top: 64px;
-        z-index: 999;
-    }
     #tarifa {
         white-space: nowrap;
-    }
-    @media screen and (min-width: 990px) {
-        #btn-ibanowner {
-            margin-top: calc(25px + .5rem); /* Vertical align with the labeled elements */
-        }
     }
 </style>
