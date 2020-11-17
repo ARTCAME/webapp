@@ -12,7 +12,8 @@
             show
             scrollable
             v-if="isLoggedIn && (authenticatedRole == 'tester' || authenticatedRole == 'root') && $route.name != '404' && $route.name != 'wiki'"
-            @hidden="unwantNews(); $manageScrollBar()"
+            @hidden="$manageScrollBar()"
+            @close="unwantNews()"
             @show="$manageScrollBar">
             <template
                 #modal-title>
@@ -56,6 +57,10 @@
                     v-if="$route.name != '404' && $route.name != 'wiki' && $route.name != 'maintenance'"
                     @click="$bvModal.show('welcome-home-modal')">
                     <fa-icon icon="newspaper"></fa-icon>
+                    <b-badge
+                        class="btn-alert-badge"
+                        variant="danger"
+                        v-if="showNewsBadge">!</b-badge>
                 </b-button>
             </transition>
             <transition appear name="wzd-launcher-appear">
@@ -80,6 +85,7 @@
         data() {
             return {
                 scrollToTop: false,
+                showNewsBadge: true,
                 wantNews: false,
             }
         },
@@ -144,6 +150,7 @@
              * Function executed when the welcome modal is closed to disable this shown on future logins or page changing
              */
             unwantNews() {
+                this.showNewsBadge = false
                 http.post('/api/unwantNews', { username: this.authenticatedUser });
             }
         },
@@ -203,7 +210,7 @@
         left: .5rem;
         line-height: 30px;
         opacity: .4;
-        overflow: hidden;
+        /* overflow: hidden; */
         padding: 0;
         position: fixed;
         text-align: center;
@@ -216,6 +223,16 @@
     #tester-news:hover {
         opacity: 1;
         transform: scale(1);
+    }
+    .btn-alert-badge {
+        left: -5px!important;
+        position: absolute!important;
+        top: -10px!important;
+        transition: .3s ease;
+    }
+    #tester-news:hover .btn-alert-badge  {
+        left: -6px!important;
+        top: -11px!important;
     }
     #to-top {
         background: linear-gradient(65deg, rgba(0, 50, 131, .95) 0, rgba(0, 131, 81, .95) 70%);
