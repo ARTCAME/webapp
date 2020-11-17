@@ -175,7 +175,7 @@ import Axios from 'axios';
              * Login the user
              */
             inLogin() {
-                if (this.maintenance && this.username == root || !this.maintenance) {
+                if (this.maintenance && this.username == 'root' || !this.maintenance) {
                     this.logging = true;
                     this.login({ username: this.username, password: this.password })
                         .then((response) => {
