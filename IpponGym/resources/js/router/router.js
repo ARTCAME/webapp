@@ -114,16 +114,16 @@ const router = new Router ({
             }
         },
         /* MAINTENANCE */
-        {
-            path: '*',
-            name: 'maintenance',
-            component: UnderConstruct
-        },
-        {
-            path: '/*',
-            name: 'maintenance',
-            component: UnderConstruct
-        },
+        // {
+        //     path: '*',
+        //     name: 'maintenance',
+        //     component: UnderConstruct
+        // },
+        // {
+        //     path: '/*',
+        //     name: 'maintenance',
+        //     component: UnderConstruct
+        // },
     ],
     scrollBehavior (to, from, savedPosition) {
         //https://router.vuejs.org/guide/advanced/scroll-behavior.html
