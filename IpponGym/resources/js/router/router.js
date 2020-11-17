@@ -114,11 +114,11 @@ const router = new Router ({
             }
         },
         /* MAINTENANCE */
-        {
-            path: '/mantenimiento',
-            name: 'maintenance',
-            component: UnderConstruct
-        },
+        // {
+        //     path: '/mantenimiento',
+        //     name: 'maintenance',
+        //     component: UnderConstruct
+        // },
         // {
         //     path: '*',
         //     name: 'maintenance',
@@ -142,7 +142,7 @@ const router = new Router ({
     },
 })
 import { http } from '../utils/http';
-const maintenance = true;
+const maintenance = false;
 router.beforeEach(async (to, from, next) => {
     if (maintenance && store.getters['auth/authenticatedRole'] == 'root' || !maintenance) {
         if (store.getters['auth/isLoggedIn']) {
