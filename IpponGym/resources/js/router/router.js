@@ -163,8 +163,8 @@ router.beforeEach(async (to, from, next) => {
         } else {
             next();
         }
-    } else {
-        router.push({ name: 'maintenance' });
+    } else if (maintenance && store.getters['auth/authenticatedRole'] != 'root') {
+        next();
     }
 })
 router.afterEach(() => {
