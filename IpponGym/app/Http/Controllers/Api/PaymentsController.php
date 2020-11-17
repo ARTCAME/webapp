@@ -70,7 +70,7 @@ class PaymentsController extends Controller {
             }
             // DELETE THE EMPTY ARRAYS
             foreach ($arrKeys as $key) {
-                if (count($customer[$key]) == 0) {
+                if (isset($customer[$key]) && sizeof($customer[$key]) == 0) {
                     $customer->unset($key);
                     $wasUpdated = true;
                 }
@@ -84,7 +84,7 @@ class PaymentsController extends Controller {
                     }
                 }
                 foreach (['phones', 'emails'] as $key) {
-                    if (count($customer[$key]) == 0) {
+                    if (isset($customer[$key]) && sizeof($customer[$key]) == 0) {
                         $customer->unset($key);
                         $wasUpdated = true;
                     }
