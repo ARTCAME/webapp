@@ -1,5 +1,6 @@
 <template>
     <div
+        class="printable-ctn"
         v-if="customer != null">
         <Header></Header>
         <h4 class="mt-3">Autorización para la publicación de imágenes</h4>
@@ -20,7 +21,7 @@
         <p>
             <span
                 v-if="getUnderage(customer._id) && customer.tutor">
-                &emsp;Don/Doña <u>  {{ customer.tutor.name}}  </u> con DNI <u>  {{ customer.tutor.dni }}  </u> como padre/madre o tutor del menor <u>  {{ customer.name}}  </u> autorizo a Sergio Pérez Silva en nombre de IPPONGYM a un uso pedagógico/comercial de mis datos personales facilitados dentro de la relación comercial con nuestra empresa y para poder ser publicados en:
+                &emsp;Don/Doña <u>  {{ customer.tutor.name ? customer.tutor.name : 'Nombre del tutor no disponible' }}  </u> con DNI <u>  {{ customer.tutor.dni ? customer.tutor.dni : 'Dni del tutor no disponible' }}  </u> como padre/madre o tutor del menor <u>  {{ customer.name}}  </u> autorizo a Sergio Pérez Silva en nombre de IPPONGYM a un uso pedagógico/comercial de mis datos personales facilitados dentro de la relación comercial con nuestra empresa y para poder ser publicados en:
             </span>
             <span
                 v-else>
@@ -34,7 +35,7 @@
             &emsp;&emsp;· Fotografías para revistas o publicaciones de ámbito relacionado con nuestro sector.
         </p>
         <Footer
-            id="sign-row-RI"
+            :id="getUnderage(customer._id) ? 'sign-row-RI-tutor' : 'sign-row-RI'"
             :docDate="customer.rightsProtect.date"
             :name="getUnderage(customer._id) && customer.tutor ? customer.tutor.name : customer.name"
             :sign="customer.sign"></Footer>
@@ -59,6 +60,9 @@
 </script>
 <style scoped>
 #sign-row-RI {
-    transform: translateY(253px) /* Reposition the sign based on the disposition of the rest of elements */
+    transform: translateY(253px); /* Reposition the sign based on the disposition of the rest of elements */
+}
+#sign-row-RI-tutor {
+    transform: translateY(228px); /* Reposition the sign based on the disposition of the rest of elements */
 }
 </style>
