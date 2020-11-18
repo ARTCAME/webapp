@@ -45,14 +45,14 @@ var wizardEventController =
 
   stop : function()
   {
-    if( !scriptIsRunning )
-    {
-      print("Script not running");
-    }
-    else
-    {
+    // if( !scriptIsRunning )
+    // {
+    //   print("Script not running");
+    // }
+    // else
+    // {
       stopScript();
-    }
+    // }
   },
 
   script_Completed : function(stopScriptNow)
@@ -78,6 +78,7 @@ var wizardEventController =
 // Function called to start off the wizard session
  function wizardStart(numScreens)
 {
+    console.log('wizardStart')
   numScreenDisplays = numScreens;
 
   if(!wgssSignatureSDK.running)
