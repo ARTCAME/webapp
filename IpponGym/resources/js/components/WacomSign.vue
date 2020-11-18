@@ -23,18 +23,30 @@
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
-            :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'success'"
+            :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-primary'"
             @click="capture()">
             <!-- :disabled="capturable.value" -->
-            <!--  -->
-            <!-- @click="capture()"> -->
             <fa-icon
                 class="mr-2"
                 icon="signature"
                 v-if="!capturable.value"></fa-icon>
             <span>
+                <!-- v-if="!signatureOk"> -->
                 {{ capturable.message}}
+                <!-- Ha ocurrido un error, pulsa para reintentar -->
             </span>
+            <!-- <span
+                v-else-if="underage == null">
+                Falta la fecha de nacimiento
+            </span>
+            <span
+                v-else-if="underage == true">
+                {{ !form.tutor ? 'Falta datos del tutor' : form.tutor.name == '' ? 'Falta nombre del tutor' : ((!form.tutor.dni && !form.dni) || ((errors.has('dni') && form.dni) || (errors.has('tutor-dni') && form.tutor.dni))) ? 'Falta dni del tutor' : 'Capturar firma' }}
+            </span>
+            <span
+                v-else-if="underage == false">
+                {{ !form.name ? 'Falta nombre del socio' : !form.dni ? 'Falta dni del socio' : 'Capturar firma' }}
+            </span> -->
         </b-button>
         <!-- Is not infomation necessary to the user -->
         <!-- <div
@@ -79,12 +91,8 @@
                 if (!this.signatureOk) {
                     message = 'Ha ocurrido un error, pulsa para reintentar';
                 }
-/* ESTO VA? */
-                if (wgssSignatureSDK && wgssSignatureSDK.running) {
-                    message = 'Finalizar captura';
-                }
                 return {
-                    value: this.underage == null || (this.underage == true && (!this.form.tutor || !this.form.tutor.name || (!this.form.tutor.dni && !this.form.dni) || errorsDni || errorsTutorDni)) || (this.underage == false && (!this.form.name || !this.form.dni || errorsDni)),
+                    value: this.underage == null || (this.underage == true && (!this.form.tutor || !this.form.tutor.name || !this.form.tutor.dni || this.errors.items.filter(error => error.field == 'dni').length > 0 || errorsTutorDni || !this.form.dni)) || (this.underage == false && (!this.form.name || !this.form.dni || errorsDni)),
                     message: message,
                 };
             },
@@ -230,27 +238,6 @@
                 await this.$validator.validateAll();
                 return this.errors.all().length;
             },
-/* ESTO VA? */
-            async xx() {
-                await wizardEventController.body_onload();
-                sigObj && await sigObj.PutSigText(this.sign, onPutSigText);
-                this.capture();
-
-
-                // if (!wgssSignatureSDK.running) {
-                //     /* Load the wacom api */
-                //     if (this.$route.name != 'customers.profile') {
-                //         if (wizardEventController != undefined) {
-                //             await wizardEventController.body_onload();
-                //         }
-                //     } else {
-                //         sigObj && await sigObj.PutSigText(this.sign, onPutSigText);
-                //     }
-                //     this.capture();
-                // } else if (wgssSignatureSDK && wgssSignatureSDK.running) {
-                //     wizardEventController.stop();
-                // }
-            }
         },
         mounted() {
             /* Load the wacom api */
