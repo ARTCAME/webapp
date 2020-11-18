@@ -610,11 +610,6 @@ li.page-item {
 #ls-mutation-alert .close {
     height: 100%!important;
 }
-#main-container {
-    margin: 0 auto;
-    max-width: 90%;
-    width: 90%!important;
-}
 
 /* ANIMATIONS */
 @keyframes shakeColor {
