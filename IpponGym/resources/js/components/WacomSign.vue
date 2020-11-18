@@ -232,7 +232,7 @@
             },
 /* ESTO VA? */
             async xx() {
-                this.capture();
+                await wizardEventController.body_onload();
 
                 // if (!wgssSignatureSDK.running) {
                 //     /* Load the wacom api */
