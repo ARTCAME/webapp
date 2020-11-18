@@ -257,9 +257,9 @@
         mounted() {
             /* Load the wacom api */
             if (this.$route.name != 'customers.profile') {
-                if (wizardEventController != undefined) {
+                // if (wizardEventController != undefined) {
                     // wizardEventController.body_onload();
-                }
+                // }
             } else {
                 // sigObj && sigObj.PutSigText(this.sign, this.onPutSigText);
             }
