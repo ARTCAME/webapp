@@ -24,7 +24,8 @@
             size="sm"
             v-if="!isDisabled"
             :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-primary'"
-            @click="capture()">
+            @click="xx()">
+            <!-- @click="capture()"> -->
             <!-- :disabled="capturable.value" -->
             <fa-icon
                 class="mr-2"
@@ -144,12 +145,12 @@
                 function onGetInitialHash() {
                     // const name = self.underage == true && self.form.tutor ? self.form.tutor.name : self.form.name;
                     const name = 'foo';
-                    dynCapt.Capture(sigCtl, name, "Comprendo las indicaciones dadas por IPPONGYM", hash, null, onDynCaptCapture);
                     if (self.underage && !self.form.tutor) {
                         print('Faltan los datos del tutor.');
                     } else if (name == null) {
                         print('No se puede registrar la firma, faltan datos del firmante.')
                     }
+                    dynCapt.Capture(sigCtl, name, "Comprendo las indicaciones dadas por IPPONGYM", hash, null, onDynCaptCapture);
                 }
                 /* Treat the signature caption */
                 function onDynCaptCapture(dynCaptV, SigObjV, status) {
@@ -239,15 +240,21 @@
                 await this.$validator.validateAll();
                 return this.errors.all().length;
             },
+            async xx() {
+                if (wizardEventController != undefined) {
+                    await wizardEventController.body_onload();
+                    this.capture();
+                }
+            }
         },
         mounted() {
             /* Load the wacom api */
             if (this.$route.name != 'customers.profile') {
-                if (wizardEventController != undefined) {
-                    wizardEventController.body_onload();
-                }
+            //     if (wizardEventController != undefined) {
+            //         wizardEventController.body_onload();
+            //     }
             } else {
-                sigObj && sigObj.PutSigText(this.sign, onPutSigText);
+                // sigObj && sigObj.PutSigText(this.sign, this.onPutSigText);
             }
         },
         props: [
