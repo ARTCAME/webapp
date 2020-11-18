@@ -20,11 +20,18 @@
         </transition>
         <b-button
             class="d-block ml-md-0 mx-auto my-2"
+            id="power-wacom-btn"
+            size="sm"
+            variant="primary"
+            @click="turnOnWacom()">
+        </b-button>
+        <b-button
+            class="d-block ml-md-0 mx-auto my-2"
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
             :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-primary'"
-            @click="xx()">
+            @click="capture()">
             <!-- @click="capture()"> -->
             <!-- :disabled="capturable.value" -->
             <fa-icon
@@ -240,19 +247,22 @@
                 await this.$validator.validateAll();
                 return this.errors.all().length;
             },
-            async xx() {
-                // if (wizardEventController != undefined) {
-                    // const y = await wizardEventController();
-                    const x = await body_onload();
-                    print('.....');
-                    print(x);
-                    // print(y);
-                    print('.....');
-                    // await start();
-                    // await wizardEventController.start_stop(1);
-                    this.capture();
-                // }
+            async turnOnWacom() {
+                await body_onload();
             }
+            // async xx() {
+            //     // if (wizardEventController != undefined) {
+            //         // const y = await wizardEventController();
+            //         const x = await body_onload();
+            //         print('.....');
+            //         print(x);
+            //         // print(y);
+            //         print('.....');
+            //         // await start();
+            //         // await wizardEventController.start_stop(1);
+            //         this.capture();
+            //     // }
+            // }
         },
         mounted() {
             /* Load the wacom api */
