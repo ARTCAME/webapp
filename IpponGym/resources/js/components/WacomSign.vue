@@ -259,7 +259,7 @@
                     wizardEventController.body_onload();
                 }
             } else {
-                // sigObj && sigObj.PutSigText(this.sign, onPutSigText);
+                sigObj && sigObj.PutSigText(this.sign, onPutSigText);
             }
         },
         props: [
