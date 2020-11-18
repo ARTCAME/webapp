@@ -24,7 +24,7 @@
             size="sm"
             v-if="!isDisabled"
             :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'success'"
-            @click="xx()">
+            @click="capture()">
             <!-- :disabled="capturable.value" -->
             <!--  -->
             <!-- @click="capture()"> -->
@@ -256,7 +256,7 @@
             /* Load the wacom api */
             if (this.$route.name != 'customers.profile') {
                 if (wizardEventController != undefined) {
-                    // wizardEventController.body_onload();
+                    wizardEventController.body_onload();
                 }
             } else {
                 // sigObj && sigObj.PutSigText(this.sign, onPutSigText);
