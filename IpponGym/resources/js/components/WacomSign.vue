@@ -33,31 +33,16 @@
                 id="capture-btn"
                 size="sm"
                 v-if="!isDisabled"
+                :disabled="capturable.value"
                 :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-success'"
                 @click="capture()">
-                <!-- @click="capture()"> -->
-                <!-- :disabled="capturable.value" -->
                 <fa-icon
                     class="mr-2"
                     icon="signature"
                     v-if="!capturable.value"></fa-icon>
                 <span>
-                    <!-- v-if="!signatureOk"> -->
                     {{ capturable.message}}
-                    <!-- Ha ocurrido un error, pulsa para reintentar -->
                 </span>
-                <!-- <span
-                    v-else-if="underage == null">
-                    Falta la fecha de nacimiento
-                </span>
-                <span
-                    v-else-if="underage == true">
-                    {{ !form.tutor ? 'Falta datos del tutor' : form.tutor.name == '' ? 'Falta nombre del tutor' : ((!form.tutor.dni && !form.dni) || ((errors.has('dni') && form.dni) || (errors.has('tutor-dni') && form.tutor.dni))) ? 'Falta dni del tutor' : 'Capturar firma' }}
-                </span>
-                <span
-                    v-else-if="underage == false">
-                    {{ !form.name ? 'Falta nombre del socio' : !form.dni ? 'Falta dni del socio' : 'Capturar firma' }}
-                </span> -->
             </b-button>
         </b-row>
         <!-- Is not infomation necessary to the user -->
@@ -258,23 +243,11 @@
                 this.isWacomOn = true;
                 if (this.localWgssRun) {
                     this.isWacomOn = false;
-                    return wizardEventController.start_stop();
+                    // EL WIZARD NO TIENE NADA ACTIVO SE HACE TODO EN WGSS
+                    return wizardEventController.stop();
                 }
                 wizardEventController.body_onload();
             }
-            // async xx() {
-            //     // if (wizardEventController != undefined) {
-            //         // const y = await wizardEventController();
-            //         const x = await body_onload();
-            //         print('.....');
-            //         print(x);
-            //         // print(y);
-            //         print('.....');
-            //         // await start();
-            //         // await wizardEventController.start_stop(1);
-            //         this.capture();
-            //     // }
-            // }
         },
         mounted() {
             /* Load the wacom api */
