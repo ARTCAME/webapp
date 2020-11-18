@@ -127,7 +127,7 @@ export default {
      * @return {Array} Array of customers that have the tax compatible with belts or in his history has one or more belts reached
      */
     getCustomersWithBelts: state => {
-        return state.customers.filter(customer => ['Karate','Personalizada + Karate', 'Dirigidas + Karate'].includes(customer.paymentData.rate) || (customer.belts && customer.belts.some(belt => belt.date != null)));
+        return state.customers.filter(customer => (['Karate','Personalizada + Karate', 'Dirigidas + Karate'].includes(customer.paymentData.rate) && customer.belts) || (customer.belts && customer.belts.some(belt => belt.date != null)));
     },
     /**
      * @return Array of customers that have one or more payments
