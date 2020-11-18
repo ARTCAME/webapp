@@ -243,8 +243,8 @@
             async xx() {
                 if (wizardEventController != undefined) {
                     await wizardEventController.body_onload();
-                    await start();
-                    // await wizardEventController.start_stop();
+                    // await start();
+                    await wizardEventController.start_stop(1);
                     this.capture();
                 }
             }
