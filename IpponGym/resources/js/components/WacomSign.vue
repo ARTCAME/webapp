@@ -241,17 +241,17 @@
                 return this.errors.all().length;
             },
             async xx() {
-                if (wizardEventController != undefined) {
-                    const y = await wizardEventController();
+                // if (wizardEventController != undefined) {
+                    // const y = await wizardEventController();
                     const x = await body_onload();
                     print('.....');
                     print(x);
-                    print(y);
+                    // print(y);
                     print('.....');
                     // await start();
                     // await wizardEventController.start_stop(1);
                     this.capture();
-                }
+                // }
             }
         },
         mounted() {
