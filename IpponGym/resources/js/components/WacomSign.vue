@@ -24,8 +24,8 @@
             size="sm"
             v-if="!isDisabled"
             :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-primary'"
-            @click="capture()">
-            <!-- @click="xx()"> -->
+            @click="xx()">
+            <!-- @click="capture()"> -->
             <!-- :disabled="capturable.value" -->
             <fa-icon
                 class="mr-2"
@@ -244,8 +244,8 @@
                 if (wizardEventController != undefined) {
                     await wizardEventController.body_onload();
                     // await start();
-                    await wizardEventController.start_stop(1);
-                    this.capture();
+                    // await wizardEventController.start_stop(1);
+                    // this.capture();
                 }
             }
         },
@@ -253,7 +253,7 @@
             /* Load the wacom api */
             if (this.$route.name != 'customers.profile') {
                 if (wizardEventController != undefined) {
-                    wizardEventController.body_onload();
+                    // wizardEventController.body_onload();
                 }
             } else {
                 // sigObj && sigObj.PutSigText(this.sign, this.onPutSigText);
