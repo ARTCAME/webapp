@@ -14,11 +14,11 @@
 /* wizardEventController is the main event handler for the wizard script */
 var wizardEventController =
 {
-  body_onload : function()
+  body_onload : async function()
   {
     return new Promise((resolve, reject) => {
-        clearTextBox();
-        actionWhenRestarted();
+        await clearTextBox();
+        await actionWhenRestarted();
         resolve();
     })
   },
@@ -250,6 +250,8 @@ var wizardEventController =
 /* This function is called if connection with the SigCaptX service has to be re-initiated because for whatever reason it has stopped or failed */
 function actionWhenRestarted(callback)
 {
+    return new Promise((resolve, reject) => {
+
   wgssSignatureSDK = null;
   sigObj = null;
   sigCtl = null;
@@ -422,6 +424,7 @@ function actionWhenRestarted(callback)
       callback();
     }
   }
+})
 }
 
 // Function called to stop the wizard script
