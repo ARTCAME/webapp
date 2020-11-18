@@ -241,7 +241,7 @@
                         sigObj && await sigObj.PutSigText(this.sign, onPutSigText);
                     }
                     this.capture();
-                } else if (wgssSignatureSDK.running) {
+                } else if (wgssSignatureSDK && wgssSignatureSDK.running) {
                     wizardEventController.stop();
                 }
             }
