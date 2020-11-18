@@ -142,7 +142,8 @@
                 }
                 /* If the hash value has been calculated successfully next steps is to capture the signature */
                 function onGetInitialHash() {
-                    const name = self.underage == true && self.form.tutor ? self.form.tutor.name : self.form.name;
+                    // const name = self.underage == true && self.form.tutor ? self.form.tutor.name : self.form.name;
+                    const name = 'foo';
                     dynCapt.Capture(sigCtl, name, "Comprendo las indicaciones dadas por IPPONGYM", hash, null, onDynCaptCapture);
                     if (self.underage && !self.form.tutor) {
                         print('Faltan los datos del tutor.');
