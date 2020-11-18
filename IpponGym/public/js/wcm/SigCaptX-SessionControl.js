@@ -15,7 +15,7 @@
 var wizardEventController = async function body_onload() {
     return new Promise((resolve, reject) => {
         clearTextBox();
-        await actionWhenRestarted();
+        actionWhenRestarted();
         resolve();
     })
 }
