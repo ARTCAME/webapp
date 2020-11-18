@@ -232,19 +232,21 @@
             },
 /* ESTO VA? */
             async xx() {
-                if (!wgssSignatureSDK.running) {
-                    /* Load the wacom api */
-                    if (this.$route.name != 'customers.profile') {
-                        if (wizardEventController != undefined) {
-                            await wizardEventController.body_onload();
-                        }
-                    } else {
-                        sigObj && await sigObj.PutSigText(this.sign, onPutSigText);
-                    }
-                    this.capture();
-                } else if (wgssSignatureSDK && wgssSignatureSDK.running) {
-                    wizardEventController.stop();
-                }
+                this.capture();
+
+                // if (!wgssSignatureSDK.running) {
+                //     /* Load the wacom api */
+                //     if (this.$route.name != 'customers.profile') {
+                //         if (wizardEventController != undefined) {
+                //             await wizardEventController.body_onload();
+                //         }
+                //     } else {
+                //         sigObj && await sigObj.PutSigText(this.sign, onPutSigText);
+                //     }
+                //     this.capture();
+                // } else if (wgssSignatureSDK && wgssSignatureSDK.running) {
+                //     wizardEventController.stop();
+                // }
             }
         },
         mounted() {
