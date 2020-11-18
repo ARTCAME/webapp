@@ -247,6 +247,7 @@ var wizardEventController =
 /* This function is called if connection with the SigCaptX service has to be re-initiated because for whatever reason it has stopped or failed */
 function actionWhenRestarted(callback)
 {
+    return new Promise((resolve, reject) => {
     console.log('actionrestarted')
   wgssSignatureSDK = null;
   sigObj = null;
@@ -282,37 +283,51 @@ function actionWhenRestarted(callback)
 
   function onDetectRunning()
   {
+    return new Promise((resolve, reject) => {
+
     if (wgssSignatureSDK.running)
     {
       print("Signature SDK Service detected.");
       clearTimeout(timeout);
       start();
+      resolve();
     }
     else
     {
       print("Signature SDK Service not detected.");
+      reject();
     }
+})
   }
 
   function start()
   {
-    if (wgssSignatureSDK.running)
-    {
-      print("Checking components ...");
-      sigCtl = new wgssSignatureSDK.SigCtl(onSigCtlConstructor);
-    }
+    return new Promise((resolve, reject) => {
+
+        if (wgssSignatureSDK.running)
+        {
+        print("Checking components ...");
+        sigCtl = new wgssSignatureSDK.SigCtl(onSigCtlConstructor);
+        resolve();
+        }
+    })
   }
 
   function onSigCtlConstructor(sigCtlV, status)
   {
-    if(wgssSignatureSDK.ResponseStatus.OK == status)
-    {
-      sigCtl.PutLicence(LICENCEKEY, onSigCtlPutLicence);
-    }
-    else
-    {
-      print("SigCtl constructor error: " + status);
-    }
+    return new Promise((resolve, reject) => {
+
+        if(wgssSignatureSDK.ResponseStatus.OK == status)
+        {
+        sigCtl.PutLicence(LICENCEKEY, onSigCtlPutLicence);
+        resolve();
+        }
+        else
+        {
+        print("SigCtl constructor error: " + status);
+        reject();
+        }
+    })
   }
 
   function onDynCaptConstructor(dynCaptV, status)
@@ -329,15 +344,20 @@ function actionWhenRestarted(callback)
 
   function onSigCtlPutLicence(sigCtlV, status)
   {
-    if (wgssSignatureSDK.ResponseStatus.OK == status)
-    {
-      dynCapt = new wgssSignatureSDK.DynamicCapture(onDynCaptConstructor);
-    }
-    else
-    {
-      print("SigCtl constructor error: " + status);
-    }
+      return new Promise((resolve, reject) => {
+        if (wgssSignatureSDK.ResponseStatus.OK == status)
+        {
+            resolve();
+        dynCapt = new wgssSignatureSDK.DynamicCapture(onDynCaptConstructor);
+        }
+        else
+        {
+        print("SigCtl constructor error: " + status);
+        reject();
+        }
+    })
   }
+
 
   function onWizCtlConstructor(wizCtlV, status)
   {
@@ -349,15 +369,20 @@ function actionWhenRestarted(callback)
 
   function onGetSignature(sigCtlV, sigObjV, status)
   {
-    if(wgssSignatureSDK.ResponseStatus.OK == status)
-    {
-      sigObj = sigObjV;
-      sigCtl.GetProperty("Component_FileVersion", onSigCtlGetFileVersion);
-    }
-    else
-    {
-      print("SigCapt GetSignature error: " + status);
-    }
+    return new Promise((resolve, reject) => {
+
+        if(wgssSignatureSDK.ResponseStatus.OK == status)
+        {
+        sigObj = sigObjV;
+        sigCtl.GetProperty("Component_FileVersion", onSigCtlGetFileVersion);
+        resolve();
+        }
+        else
+        {
+        print("SigCapt GetSignature error: " + status);
+        reject();
+        }
+    })
   }
 
   function onGetSigCaptXVersion(version, status)
@@ -371,15 +396,19 @@ function actionWhenRestarted(callback)
 
   function onSigCtlGetFileVersion(sigCtlV, property, status)
   {
-    if(wgssSignatureSDK.ResponseStatus.OK == status)
-    {
-      print("DLL: flSigCOM.dll  v" + property.text);
-      dynCapt.GetProperty("Component_FileVersion", onDynCaptGetFileVersion);
-    }
-    else
-    {
-      print("SigCtl GetProperty error: " + status);
-    }
+      return new Promise((resolve, reject) => {
+        if(wgssSignatureSDK.ResponseStatus.OK == status)
+        {
+        print("DLL: flSigCOM.dll  v" + property.text);
+        dynCapt.GetProperty("Component_FileVersion", onDynCaptGetFileVersion);
+        resolve();
+        }
+        else
+        {
+        print("SigCtl GetProperty error: " + status);
+        reject()
+        }
+    })
   }
 
   function onDynCaptGetFileVersion(dynCaptV, property, status)
@@ -425,6 +454,7 @@ function actionWhenRestarted(callback)
       callback();
     }
   }
+})
 }
 
 // Function called to stop the wizard script
