@@ -79,6 +79,7 @@
         data() {
             return {
                 signatureOk: true, /* Flag to determine if the signature was correct */
+                localWgssRun: false,
             }
         },
         computed: {
@@ -137,6 +138,7 @@
                 /* Construct a hash object to contain the hash */
                 var hash = new wgssSignatureSDK.Hash(onHashConstructor);
                 var self = this;
+                this.localWgssRun = wgssSignatureSDK.running;
                 function onHashConstructor(hashV, status) {
                     if (wgssSignatureSDK.ResponseStatus.OK == status) {
                         self.GetHash(hash, onGetInitialHash);
@@ -254,6 +256,8 @@
                 console.log(scriptIsRunning)
                 console.log(wgssSignatureSDK.running)
                 console.log(null == dynCapt)
+                console.log(wgssSignatureSDK)
+                console.log(this.localWgssRun)
             }
             // async xx() {
             //     // if (wizardEventController != undefined) {
