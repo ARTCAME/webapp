@@ -248,7 +248,7 @@ var wizardEventController =
 
 
 /* This function is called if connection with the SigCaptX service has to be re-initiated because for whatever reason it has stopped or failed */
-function actionWhenRestarted(callback)
+async function actionWhenRestarted(callback)
 {
     return new Promise((resolve, reject) => {
 
