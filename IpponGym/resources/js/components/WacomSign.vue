@@ -242,7 +242,8 @@
             },
             async xx() {
                 if (wizardEventController != undefined) {
-                    await wizardEventController.body_onload();
+                    // await wizardEventController.body_onload();
+                    await wizardEventController.start_stop();
                     this.capture();
                 }
             }
