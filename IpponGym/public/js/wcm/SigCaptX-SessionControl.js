@@ -16,8 +16,11 @@ var wizardEventController =
 {
   body_onload : function()
   {
-    clearTextBox();
-    actionWhenRestarted();
+      return new Promise((resolve, reject) => {
+        clearTextBox();
+        actionWhenRestarted();
+        resolve();
+      })
   },
 
   start_stop : function(numScreens)
