@@ -18,46 +18,48 @@
                 El cliente debe firmar
             </small>
         </transition>
-        <b-button
-            class="d-inline-block ml-md-0 mx-auto my-2"
-            id="power-wacom-btn"
-            size="sm"
-            variant="primary"
-            v-if="!isDisabled"
-            @click="turnOnWacom()">
-            Encender tablet
-        </b-button>
-        <b-button
-            class="d-inline-block ml-md-0 mx-auto my-2"
-            id="capture-btn"
-            size="sm"
-            v-if="!isDisabled"
-            :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-primary'"
-            @click="capture()">
-            <!-- @click="capture()"> -->
-            <!-- :disabled="capturable.value" -->
-            <fa-icon
-                class="mr-2"
-                icon="signature"
-                v-if="!capturable.value"></fa-icon>
-            <span>
-                <!-- v-if="!signatureOk"> -->
-                {{ capturable.message}}
-                <!-- Ha ocurrido un error, pulsa para reintentar -->
-            </span>
-            <!-- <span
-                v-else-if="underage == null">
-                Falta la fecha de nacimiento
-            </span>
-            <span
-                v-else-if="underage == true">
-                {{ !form.tutor ? 'Falta datos del tutor' : form.tutor.name == '' ? 'Falta nombre del tutor' : ((!form.tutor.dni && !form.dni) || ((errors.has('dni') && form.dni) || (errors.has('tutor-dni') && form.tutor.dni))) ? 'Falta dni del tutor' : 'Capturar firma' }}
-            </span>
-            <span
-                v-else-if="underage == false">
-                {{ !form.name ? 'Falta nombre del socio' : !form.dni ? 'Falta dni del socio' : 'Capturar firma' }}
-            </span> -->
-        </b-button>
+        <b-row id="capture-btns-row" no-gutters>
+            <b-button
+                class="col ml-md-0 mx-auto my-2"
+                id="power-wacom-btn"
+                size="sm"
+                variant="outline-primary"
+                v-if="!isDisabled"
+                @click="turnOnWacom()">
+                {{ this.localWgssRun ? 'Apagar tablet' : 'Encender tablet' }}
+            </b-button>
+            <b-button
+                class="col ml-md-0 mx-auto my-2"
+                id="capture-btn"
+                size="sm"
+                v-if="!isDisabled"
+                :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-success'"
+                @click="capture()">
+                <!-- @click="capture()"> -->
+                <!-- :disabled="capturable.value" -->
+                <fa-icon
+                    class="mr-2"
+                    icon="signature"
+                    v-if="!capturable.value"></fa-icon>
+                <span>
+                    <!-- v-if="!signatureOk"> -->
+                    {{ capturable.message}}
+                    <!-- Ha ocurrido un error, pulsa para reintentar -->
+                </span>
+                <!-- <span
+                    v-else-if="underage == null">
+                    Falta la fecha de nacimiento
+                </span>
+                <span
+                    v-else-if="underage == true">
+                    {{ !form.tutor ? 'Falta datos del tutor' : form.tutor.name == '' ? 'Falta nombre del tutor' : ((!form.tutor.dni && !form.dni) || ((errors.has('dni') && form.dni) || (errors.has('tutor-dni') && form.tutor.dni))) ? 'Falta dni del tutor' : 'Capturar firma' }}
+                </span>
+                <span
+                    v-else-if="underage == false">
+                    {{ !form.name ? 'Falta nombre del socio' : !form.dni ? 'Falta dni del socio' : 'Capturar firma' }}
+                </span> -->
+            </b-button>
+        </b-row>
         <!-- Is not infomation necessary to the user -->
         <!-- <div
             v-show="!signatureOk"> -->
@@ -78,8 +80,9 @@
     export default {
         data() {
             return {
+                isWacomOn: false, /* Flag to improve ux on the start/stop wacom */
+                localWgssRun: false, /* Stores the local value of the running state on the wgssSigCaptX script */
                 signatureOk: true, /* Flag to determine if the signature was correct */
-                localWgssRun: false,
             }
         },
         computed: {
@@ -252,12 +255,12 @@
                 return this.errors.all().length;
             },
             turnOnWacom() {
+                this.isWacomOn = true;
+                if (this.localWgssRun) {
+                    this.isWacomOn = false;
+                    return wizardEventController.stop();
+                }
                 wizardEventController.body_onload();
-                console.log(scriptIsRunning)
-                console.log(wgssSignatureSDK.running)
-                console.log(null == dynCapt)
-                console.log(wgssSignatureSDK)
-                console.log(this.localWgssRun)
             }
             // async xx() {
             //     // if (wizardEventController != undefined) {
@@ -297,10 +300,10 @@
         font-size: 80%;
         width: 100%;
     }
-    #capture-btn {
+    #capture-btns-row {
         width: 342px;
     }
-    #capture-btn * {
+    #capture-btns-row * {
         font-size: 0.875rem!important
     }
     #imageBox {
