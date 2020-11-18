@@ -12,61 +12,65 @@
 ***************************************************************************/
 
 /* wizardEventController is the main event handler for the wizard script */
-var wizardEventController =
-{
-    body_onload = async () => {
-        clearTextBox();
-        await actionWhenRestarted();
-    },
-//   body_onload : function()
+var wizardEventController = async function body_onload() {
+    clearTextBox();
+    await actionWhenRestarted();
+}
+// var wizardEventController =
+// {
+//     body_onload: async function {
+//         clearTextBox();
+//         await actionWhenRestarted();
+//     },
+// //   body_onload : function()
+// //   {
+// //     clearTextBox();
+// //     actionWhenRestarted();
+// //   },
+
+//   start_stop : function(numScreens)
 //   {
-//     clearTextBox();
-//     actionWhenRestarted();
+//     if( scriptIsRunning )
+//     {
+//       wizardEventController.stop();
+//     }
+//     else
+//     {
+//       wizardStart(numScreens);
+//     }
 //   },
 
-  start_stop : function(numScreens)
-  {
-    if( scriptIsRunning )
-    {
-      wizardEventController.stop();
-    }
-    else
-    {
-      wizardStart(numScreens);
-    }
-  },
+//   stop : function()
+//   {
+//     if( !scriptIsRunning )
+//     {
+//       print("Script not running");
+//     }
+//     else
+//     {
+//       stopScript();
+//     }
+//   },
 
-  stop : function()
-  {
-    if( !scriptIsRunning )
-    {
-      print("Script not running");
-    }
-    else
-    {
-      stopScript();
-    }
-  },
+//   script_Completed : function(stopScriptNow)
+//   {
+//     print("Script completed");
+//     if (stopScriptNow)
+//     {
+//       stopScript();
+//     }
+//     else
+//     {
+//       showSignature();
+//     }
+//   },
 
-  script_Completed : function(stopScriptNow)
-  {
-    print("Script completed");
-    if (stopScriptNow)
-    {
-      stopScript();
-    }
-    else
-    {
-      showSignature();
-    }
-  },
-
-  script_Cancelled : function()
-  {
-    print("Script cancelled");
-    wizardEventController.stop();
-  }
-}
+//   script_Cancelled : function()
+//   {
+//     print("Script cancelled");
+//     wizardEventController.stop();
+//   }
+// }
 
 // Function called to start off the wizard session
  function wizardStart(numScreens)
