@@ -245,7 +245,7 @@
                     await wizardEventController.body_onload();
                     // await start();
                     // await wizardEventController.start_stop(1);
-                    // this.capture();
+                    this.capture();
                 }
             }
         },
