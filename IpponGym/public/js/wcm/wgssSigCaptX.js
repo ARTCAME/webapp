@@ -342,7 +342,8 @@ function WacomGSS_SignatureSDK(_onDetectRunning, service_port)
                    "KeepAlive": 1
                  };
     JSONreq.getJSON(server_url + "wacom.js", data, function (){});
-    setTimeout(sigsdkptr.keepAlive, 2000);
+    setTimeout(sigsdkptr.keepAlive, 60000);
+    // setTimeout(sigsdkptr.keepAlive, 2000);
   }
 
   function onGetSession(server_data)
@@ -352,7 +353,8 @@ function WacomGSS_SignatureSDK(_onDetectRunning, service_port)
       sigsdkptr.session = server_data.session
       sigsdkptr.running = true;
       _onDetectRunning();
-      setTimeout(sigsdkptr.keepAlive, 2000);
+      setTimeout(sigsdkptr.keepAlive, 60000);
+    //   setTimeout(sigsdkptr.keepAlive, 2000);
     }
     else
     {
