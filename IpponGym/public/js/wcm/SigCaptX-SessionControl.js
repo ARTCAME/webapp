@@ -387,7 +387,7 @@ function actionWhenRestarted(callback)
     {
       print("DLL: flSigCapt.dll v" + property.text);
       print("Test application ready.");
-      print("Press 'Capture' or 'Start Wizard' to capture a signature.");
+    //   print("Press 'Capture' or 'Start Wizard' to capture a signature.");
       if('function' === typeof callback)
       {
         callback();
@@ -413,7 +413,7 @@ function actionWhenRestarted(callback)
     //We don't check the status for compatibility with older version
     //Older versions gave an error status when closing an idle WizCtl
     print("Test application ready.");
-    print("Press 'Start Wizard' to capture a signature.");
+    // print("Press 'Start Wizard' to capture a signature.");
     if('function' === typeof callback)
     {
       callback();
