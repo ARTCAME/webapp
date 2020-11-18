@@ -384,20 +384,25 @@ function actionWhenRestarted(callback)
 
   function onDynCaptGetFileVersion(dynCaptV, property, status)
   {
-    if(wgssSignatureSDK.ResponseStatus.OK == status)
-    {
-      print("DLL: flSigCapt.dll v" + property.text);
-      print("Test application ready.");
-    //   print("Press 'Capture' or 'Start Wizard' to capture a signature.");
-      if('function' === typeof callback)
-      {
-        callback();
-      }
-    }
-    else
-    {
-      print("DynCapt GetProperty error: " + status);
-    }
+      return new Promise((resolve, reject) => {
+        if(wgssSignatureSDK.ResponseStatus.OK == status)
+        {
+          print("DLL: flSigCapt.dll v" + property.text);
+          print("Test application ready.");
+        //   print("Press 'Capture' or 'Start Wizard' to capture a signature.");
+        resolve();
+          if('function' === typeof callback)
+          {
+            callback();
+          }
+        }
+        else
+        {
+            reject();
+          print("DynCapt GetProperty error: " + status);
+        }
+
+      })
   }
 
   function onWizCtlGetProperty(wizCtlV, property, status)
