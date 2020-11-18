@@ -14,15 +14,15 @@
 /* wizardEventController is the main event handler for the wizard script */
 var wizardEventController =
 {
-  body_onload : async function()
-  {
-      return new Promise((resolve, reject) => {
-        await clearTextBox();
-        await actionWhenRestarted()
-        resolve();
-
-      })
-  },
+    body_onload = async () => {
+        clearTextBox();
+        await actionWhenRestarted();
+    },
+//   body_onload : function()
+//   {
+//     clearTextBox();
+//     actionWhenRestarted();
+//   },
 
   start_stop : function(numScreens)
   {
@@ -252,7 +252,6 @@ var wizardEventController =
 function actionWhenRestarted(callback)
 {
     return new Promise((resolve, reject) => {
-    console.log('actionrestarted')
   wgssSignatureSDK = null;
   sigObj = null;
   sigCtl = null;
@@ -287,51 +286,37 @@ function actionWhenRestarted(callback)
 
   function onDetectRunning()
   {
-    return new Promise((resolve, reject) => {
-
     if (wgssSignatureSDK.running)
     {
       print("Signature SDK Service detected.");
       clearTimeout(timeout);
       start();
-      resolve();
     }
     else
     {
       print("Signature SDK Service not detected.");
-      reject();
     }
-})
   }
 
   function start()
   {
-    return new Promise((resolve, reject) => {
-
-        if (wgssSignatureSDK.running)
-        {
-        print("Checking components ...");
-        sigCtl = new wgssSignatureSDK.SigCtl(onSigCtlConstructor);
-        resolve();
-        }
-    })
+    if (wgssSignatureSDK.running)
+    {
+      print("Checking components ...");
+      sigCtl = new wgssSignatureSDK.SigCtl(onSigCtlConstructor);
+    }
   }
 
   function onSigCtlConstructor(sigCtlV, status)
   {
-    return new Promise((resolve, reject) => {
-
-        if(wgssSignatureSDK.ResponseStatus.OK == status)
-        {
-        sigCtl.PutLicence(LICENCEKEY, onSigCtlPutLicence);
-        resolve();
-        }
-        else
-        {
-        print("SigCtl constructor error: " + status);
-        reject();
-        }
-    })
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      sigCtl.PutLicence(LICENCEKEY, onSigCtlPutLicence);
+    }
+    else
+    {
+      print("SigCtl constructor error: " + status);
+    }
   }
 
   function onDynCaptConstructor(dynCaptV, status)
@@ -348,20 +333,15 @@ function actionWhenRestarted(callback)
 
   function onSigCtlPutLicence(sigCtlV, status)
   {
-      return new Promise((resolve, reject) => {
-        if (wgssSignatureSDK.ResponseStatus.OK == status)
-        {
-            resolve();
-        dynCapt = new wgssSignatureSDK.DynamicCapture(onDynCaptConstructor);
-        }
-        else
-        {
-        print("SigCtl constructor error: " + status);
-        reject();
-        }
-    })
+    if (wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      dynCapt = new wgssSignatureSDK.DynamicCapture(onDynCaptConstructor);
+    }
+    else
+    {
+      print("SigCtl constructor error: " + status);
+    }
   }
-
 
   function onWizCtlConstructor(wizCtlV, status)
   {
@@ -373,20 +353,15 @@ function actionWhenRestarted(callback)
 
   function onGetSignature(sigCtlV, sigObjV, status)
   {
-    return new Promise((resolve, reject) => {
-
-        if(wgssSignatureSDK.ResponseStatus.OK == status)
-        {
-        sigObj = sigObjV;
-        sigCtl.GetProperty("Component_FileVersion", onSigCtlGetFileVersion);
-        resolve();
-        }
-        else
-        {
-        print("SigCapt GetSignature error: " + status);
-        reject();
-        }
-    })
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      sigObj = sigObjV;
+      sigCtl.GetProperty("Component_FileVersion", onSigCtlGetFileVersion);
+    }
+    else
+    {
+      print("SigCapt GetSignature error: " + status);
+    }
   }
 
   function onGetSigCaptXVersion(version, status)
@@ -400,42 +375,33 @@ function actionWhenRestarted(callback)
 
   function onSigCtlGetFileVersion(sigCtlV, property, status)
   {
-      return new Promise((resolve, reject) => {
-        if(wgssSignatureSDK.ResponseStatus.OK == status)
-        {
-        print("DLL: flSigCOM.dll  v" + property.text);
-        dynCapt.GetProperty("Component_FileVersion", onDynCaptGetFileVersion);
-        resolve();
-        }
-        else
-        {
-        print("SigCtl GetProperty error: " + status);
-        reject()
-        }
-    })
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      print("DLL: flSigCOM.dll  v" + property.text);
+      dynCapt.GetProperty("Component_FileVersion", onDynCaptGetFileVersion);
+    }
+    else
+    {
+      print("SigCtl GetProperty error: " + status);
+    }
   }
 
   function onDynCaptGetFileVersion(dynCaptV, property, status)
   {
-      return new Promise((resolve, reject) => {
-        if(wgssSignatureSDK.ResponseStatus.OK == status)
-        {
-          print("DLL: flSigCapt.dll v" + property.text);
-          print("Test application ready.");
-        //   print("Press 'Capture' or 'Start Wizard' to capture a signature.");
-        resolve();
-          if('function' === typeof callback)
-          {
-            callback();
-          }
-        }
-        else
-        {
-            reject();
-          print("DynCapt GetProperty error: " + status);
-        }
-
-      })
+    if(wgssSignatureSDK.ResponseStatus.OK == status)
+    {
+      print("DLL: flSigCapt.dll v" + property.text);
+      print("Test application ready.");
+    //   print("Press 'Capture' or 'Start Wizard' to capture a signature.");
+      if('function' === typeof callback)
+      {
+        callback();
+      }
+    }
+    else
+    {
+      print("DynCapt GetProperty error: " + status);
+    }
   }
 
   function onWizCtlGetProperty(wizCtlV, property, status)
