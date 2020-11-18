@@ -252,6 +252,8 @@
             turnOnWacom() {
                 wizardEventController.body_onload();
                 console.log(scriptIsRunning)
+                console.log(wgssSignatureSDK.running)
+                console.log(null == dynCapt)
             }
             // async xx() {
             //     // if (wizardEventController != undefined) {
