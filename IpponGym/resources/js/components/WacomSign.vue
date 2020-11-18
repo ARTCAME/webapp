@@ -19,14 +19,16 @@
             </small>
         </transition>
         <b-button
-            class="d-block ml-md-0 mx-auto my-2"
+            class="d-inline-block ml-md-0 mx-auto my-2"
             id="power-wacom-btn"
             size="sm"
             variant="primary"
+            v-if="!isDisabled"
             @click="turnOnWacom()">
+            Encender tablet
         </b-button>
         <b-button
-            class="d-block ml-md-0 mx-auto my-2"
+            class="d-inline-block ml-md-0 mx-auto my-2"
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
@@ -247,8 +249,9 @@
                 await this.$validator.validateAll();
                 return this.errors.all().length;
             },
-            async turnOnWacom() {
-                await body_onload();
+            turnOnWacom() {
+                wizardEventController.body_onload();
+                console.log(scriptIsRunning)
             }
             // async xx() {
             //     // if (wizardEventController != undefined) {
