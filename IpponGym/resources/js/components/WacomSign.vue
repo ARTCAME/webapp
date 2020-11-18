@@ -24,8 +24,9 @@
             size="sm"
             v-if="!isDisabled"
             :disabled="capturable.value"
-            :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-success'"
-            @click="capture()">
+            :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'success'"
+            @click="xx()">
+            <!-- @click="capture()"> -->
             <fa-icon
                 class="mr-2"
                 icon="signature"
@@ -65,9 +66,6 @@
                 const errorsDni = this.errors.items.filter(error => error.field == 'dni').length > 0;
                 const errorsTutorDni = this.errors.items.filter(error => error.field == 'tutor-dni').length > 0
                 let message = 'Capturar firma';
-                if (!this.signatureOk) {
-                    message = 'Ha ocurrido un error, pulsa para reintentar';
-                }
                 if (this.underage == null) {
                     message = 'Falta la fecha de nacimiento';
                 }
@@ -77,8 +75,15 @@
                 if (this.underage == false) {
                     message = !this.form.name ? 'Falta el nombre del socio' : !this.form.dni ? 'Falta el dni del socio' : errorsDni ? 'Revisa el dni' : 'Capturar firma';
                 }
+                if (!this.signatureOk) {
+                    message = 'Ha ocurrido un error, pulsa para reintentar';
+                }
+/* ESTO VA? */
+                if (wgssSignatureSDK && wgssSignatureSDK.running) {
+                    message = 'Finalizar captura';
+                }
                 return {
-                    value: this.underage == null || (this.underage == true && (!this.form.tutor || !this.form.tutor.name || !this.form.tutor.dni || this.errors.items.filter(error => error.field == 'dni').length > 0 || errorsTutorDni || !this.form.dni)) || (this.underage == false && (!this.form.name || !this.form.dni || errorsDni)),
+                    value: this.underage == null || (this.underage == true && (!this.form.tutor || !this.form.tutor.name || (!this.form.tutor.dni && !this.form.dni) || errorsDni || errorsTutorDni)) || (this.underage == false && (!this.form.name || !this.form.dni || errorsDni)),
                     message: message,
                 };
             },
@@ -224,15 +229,31 @@
                 await this.$validator.validateAll();
                 return this.errors.all().length;
             },
+/* ESTO VA? */
+            async xx() {
+                if (!wgssSignatureSDK.running) {
+                    /* Load the wacom api */
+                    if (this.$route.name != 'customers.profile') {
+                        if (wizardEventController != undefined) {
+                            await wizardEventController.body_onload();
+                        }
+                    } else {
+                        sigObj && await sigObj.PutSigText(this.sign, onPutSigText);
+                    }
+                    this.capture();
+                } else if (wgssSignatureSDK.running) {
+                    wizardEventController.stop();
+                }
+            }
         },
         mounted() {
             /* Load the wacom api */
             if (this.$route.name != 'customers.profile') {
                 if (wizardEventController != undefined) {
-                    wizardEventController.body_onload();
+                    // wizardEventController.body_onload();
                 }
             } else {
-                sigObj && sigObj.PutSigText(this.sign, onPutSigText);
+                // sigObj && sigObj.PutSigText(this.sign, onPutSigText);
             }
         },
         props: [
