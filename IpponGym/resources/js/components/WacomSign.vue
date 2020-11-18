@@ -233,6 +233,7 @@
 /* ESTO VA? */
             async xx() {
                 await wizardEventController.body_onload();
+                sigObj && await sigObj.PutSigText(this.sign, onPutSigText);
                 this.capture();
 
 
