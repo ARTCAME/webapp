@@ -18,9 +18,9 @@
                 El cliente debe firmar
             </small>
         </transition>
-        <b-row id="capture-btns-row" no-gutters>
+        <b-row class="ml-md-0 mx-auto my-2" id="capture-btns-row" no-gutters>
             <b-button
-                class="col ml-md-0 mx-auto my-2"
+                class="col mr-2"
                 id="power-wacom-btn"
                 size="sm"
                 variant="outline-primary"
@@ -29,7 +29,7 @@
                 {{ this.localWgssRun ? 'Apagar tablet' : 'Encender tablet' }}
             </b-button>
             <b-button
-                class="col ml-md-0 mx-auto my-2"
+                class="col"
                 id="capture-btn"
                 size="sm"
                 v-if="!isDisabled"
@@ -103,7 +103,7 @@
                     message = !this.form.name ? 'Falta el nombre del socio' : !this.form.dni ? 'Falta el dni del socio' : errorsDni ? 'Revisa el dni' : 'Capturar firma';
                 }
                 if (!this.signatureOk) {
-                    message = 'Ha ocurrido un error, pulsa para reintentar';
+                    message = 'Reintentar';
                 }
                 return {
                     value: this.underage == null || (this.underage == true && (!this.form.tutor || !this.form.tutor.name || !this.form.tutor.dni || this.errors.items.filter(error => error.field == 'dni').length > 0 || errorsTutorDni || !this.form.dni)) || (this.underage == false && (!this.form.name || !this.form.dni || errorsDni)),
@@ -258,7 +258,7 @@
                 this.isWacomOn = true;
                 if (this.localWgssRun) {
                     this.isWacomOn = false;
-                    return wizardEventController.stop();
+                    return wizardEventController.start_stop();
                 }
                 wizardEventController.body_onload();
             }
