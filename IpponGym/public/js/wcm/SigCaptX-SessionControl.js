@@ -18,10 +18,9 @@ var wizardEventController =
   {
       return new Promise((resolve, reject) => {
         clearTextBox();
-        actionWhenRestarted().then(()=>{
+        actionWhenRestarted()
         resolve();
 
-        });
       })
   },
 
