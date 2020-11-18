@@ -12,7 +12,7 @@
 ***************************************************************************/
 
 /* wizardEventController is the main event handler for the wizard script */
-var wizardEventController = async function body_onload() {
+/* var wizardEventController =  */async function body_onload() {
     return new Promise((resolve, reject) => {
         clearTextBox();
         actionWhenRestarted();
