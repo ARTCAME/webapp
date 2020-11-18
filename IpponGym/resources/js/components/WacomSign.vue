@@ -242,7 +242,10 @@
             },
             async xx() {
                 if (wizardEventController != undefined) {
-                    await wizardEventController.body_onload();
+                    const x = await wizardEventController.body_onload();
+                    print('.....');
+                    print(x);
+                    print('.....');
                     // await start();
                     // await wizardEventController.start_stop(1);
                     this.capture();
