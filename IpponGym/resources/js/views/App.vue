@@ -1,5 +1,6 @@
 <template>
     <div id="wrapper">
+    <!-- News modal -->
         <b-modal
             class="nav-modals"
             button-size="sm"
@@ -21,8 +22,23 @@
             </template>
             <News></News>
         </b-modal>
+         <div
+            class="mb-2"
+            id="main-container"
+            ref="container">
+            <NavBar
+                v-if="$route.name != 'home' && $route.name != '404' && $route.name != 'wiki' && $route.name != 'maintenance'"></NavBar>
+            <transition appear mode="out-in" name="fade">
+                <router-view></router-view>
+            </transition>
+            <transition appear mode="out-in" name="launcher-appear">
+                <DocLauncher
+                    v-if="isLoggedIn && $route.name != '404' && $route.name != 'wiki' && $route.name != 'maintenance'"></DocLauncher>
+            </transition>
+         </div>
+
         <!-- On the home or 404 page don't show the navbar and the behaviour inherit by the ref or main-container id cannot be applied -->
-        <div
+        <!-- <div
             v-if="$route.name == 'home'  || $route.name == '404'">
             <transition appear mode="out-in" name="fade">
                 <router-view></router-view>
@@ -31,30 +47,29 @@
                 <DocLauncher
                     v-if="isLoggedIn && $route.name != '404' && $route.name != 'wiki'"></DocLauncher>
             </transition>
-        </div>
+        </div> -->
         <!-- The ref allows to the bottomAlert plugin to work properly -->
-        <div
+        <!-- <div
             class="mb-2"
             id="main-container"
             ref="container"
             v-if="$route.name != 'home' && $route.name != '404'">
             <NavBar
                 v-if="$route.name != 'home' && $route.name != '404' && $route.name != 'wiki' && $route.name != 'maintenance'"></NavBar>
-            <!-- <navigation-bar-component v-if="this.$route.name != 'home' && this.$route.name != '404'"></navigation-bar-component> -->
             <transition appear mode="out-in" name="fade">
                 <router-view></router-view>
             </transition>
             <transition appear name="launcher-appear">
                 <DocLauncher
                     v-if="$route.name != '404' && $route.name != 'wiki' && $route.name != 'maintenance'"></DocLauncher>
-                    <!-- v-if="$route.name != 'home' && $route.name != '404' && $route.name != 'wiki'"></DocLauncher> -->
-            </transition>
+            </transition> -->
+    <!-- News launcher -->
             <transition appear name="launcher-appear">
                 <b-button
                     id="tester-news"
                     title="Novedades"
                     v-b-tooltip.hover.right.noninteractive
-                    v-if="$route.name != '404' && $route.name != 'wiki' && $route.name != 'maintenance'"
+                    v-if="isLoggedIn && ($route.name != '404' && $route.name != 'wiki' && $route.name != 'maintenance')"
                     @click="$bvModal.show('welcome-home-modal')">
                     <fa-icon icon="newspaper"></fa-icon>
                     <b-badge
@@ -63,6 +78,7 @@
                         v-if="showNewsBadge">!</b-badge>
                 </b-button>
             </transition>
+    <!-- Scroll top button -->
             <transition appear name="wzd-launcher-appear">
                 <div
                     id="to-top"
@@ -200,6 +216,17 @@
     @import url('../../css/transitions.css');
     @import url('../../css/styles.css');
 
+    .btn-alert-badge {
+        left: -5px!important;
+        position: absolute!important;
+        top: -10px!important;
+        transition: .3s ease;
+    }
+    #main-container {
+        margin: 0 auto;
+        max-width: 90%;
+        width: 90%!important;
+    }
     #tester-news {
         background: rgba(0, 131, 81, 1);
         border: rgba(0, 131, 81, 1);
@@ -223,12 +250,6 @@
     #tester-news:hover {
         opacity: 1;
         transform: scale(1);
-    }
-    .btn-alert-badge {
-        left: -5px!important;
-        position: absolute!important;
-        top: -10px!important;
-        transition: .3s ease;
     }
     #tester-news:hover .btn-alert-badge  {
         left: -6px!important;
