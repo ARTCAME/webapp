@@ -40,7 +40,7 @@
         <!-- <div
             v-show="!signatureOk"> -->
         <div
-            v-show="false">
+            v-show="true">
             <small
                 class="text-danger">
                 Ha ocurrido un error, <u v-b-toggle.logs><small>ver logs</small></u>
