@@ -23,9 +23,10 @@
             id="capture-btn"
             size="sm"
             v-if="!isDisabled"
-            :disabled="capturable.value"
             :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'success'"
             @click="xx()">
+            <!-- :disabled="capturable.value" -->
+            <!--  -->
             <!-- @click="capture()"> -->
             <fa-icon
                 class="mr-2"
