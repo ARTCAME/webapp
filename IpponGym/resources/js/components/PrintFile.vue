@@ -1,12 +1,5 @@
 <template>
     <div class="modal-asset-container">
-        <!-- Invoke the wizard -->
-        <transition appear name="fade">
-            <wizard
-                name="wzd-modal-documents"
-                v-show="customer != null"
-                :steps="wmodaldocuments"></wizard>
-        </transition>
         <transition appear mode="out-in" name="fade">
             <!-- Shown if no customer is selected -->
             <div
@@ -44,7 +37,6 @@
             </div>
             <!-- Shown when a customer has been selected -->
             <div
-                data-v-step="wzd-modal-documents-0"
                 key="pf-selected-data"
                 v-else>
                 <b-button
@@ -495,7 +487,6 @@
                     { key: 'rate', label: 'Tarifa', },
                     { key: 'use', label: '', class: 'text-center', },
                 ], /* Fields to the pending payments table */
-                wmodaldocuments: null, /* Will be fetched with the wizard steps */
             }
         },
         computed: {
@@ -523,10 +514,6 @@
             underage() {
                 return this.getUnderage(this.customer._id);
             },
-        },
-        created() {
-            /* Initialize the wizard steps content */
-            this.wmodaldocuments = WzdSteps.wmodaldocuments;
         },
         methods: {
             ...mapActions(['fetchCustomerImages']),
