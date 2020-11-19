@@ -1,8 +1,14 @@
+@font-face {
+    font-family: 'myriad';
+    src: url('fonts/Myriad_Pro_Bold_Condensed_Italic.ttf');
+}
+
 // Body
 $body-bg: #f8fafc;
 
 // Typography
-$font-family-sans-serif: 'Nunito', sans-serif;
+// $font-family-sans-serif: 'Nunito', sans-serif;
+$font-family-sans-serif: 'myriad', sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
