@@ -1,9 +1,5 @@
 <template>
     <div class="modal-asset-container">
-        <!-- Invoke the wizard -->
-        <wizard
-            name="wzd-modal-search"
-            :steps=wmodalsearch></wizard>
         <b-form-group class="mb-0">
             <h5 class="subtitle subtitle-sub">Busca al socio</h5>
         </b-form-group>
@@ -49,12 +45,7 @@
                     { key: 'dni', label: 'DNI', sortable: true, class: 'text-center' },
                     { key: 'actions', label: '', class: 'text-center' },
                 ], /* Table fields to the search engine results table */
-                wmodalsearch: null, /* Stores the imported wizard steps */
             }
-        },
-        created() {
-            /* Initialize the wizard steps content */
-            this.wmodalsearch = WzdSteps.wmodalsearch;
         },
         methods: {
             /**
