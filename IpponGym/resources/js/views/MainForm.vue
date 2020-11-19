@@ -414,7 +414,7 @@
                         </TransitionExpand>
                         <!-- Shown on customer edit -->
                         <b-row
-                            class="my-2"
+                            class="my-3"
                             no-gutters
                             v-if="!isDisabled">
                             <b-button
@@ -426,7 +426,7 @@
                             </b-button>
                         </b-row>
     <!-- Gestión de pagos -->
-                        <b-form-group class="mb-4 mt-5">
+                        <b-form-group class="my-4">
                             <h5 class="subtitle" md="4">Datos de pago</h5>
                             <!-- v-if="form != null" -->
                             <b-form-row>
@@ -1295,8 +1295,6 @@
              * Submits the form
              */
             submit() {
-                /* Change the submit flag */
-                this.submitting = true;
                 /* First of all validate de form (at the backend it will be validated too) */
                 this.$validator.validateAll()
                     .then(async result => {
@@ -1311,6 +1309,8 @@
                                 title: 'Hay campos incorrectos',
                             });
                         } else {
+                            /* Change the submit flag */
+                            this.submitting = true;
                             try {
                                 /* Clean the form to store it */
                                 this.submitCleanData();
