@@ -121,7 +121,7 @@ class PaymentsController extends Controller {
      */
     public static function monthlyPayments() {
         /* Get the active customers */
-        $customers = DB::collection('customers')->where('active', true)->get(); /* The db customers */
+        $customers = DB::collection('customers')->where('active', true)->get(); /* The db active customers */
         $newPayment = []; /* Will store the already generated payment data or the new payment data */
         $date = new \MongoDB\BSON\UTCDateTime(new \DateTime('now')); /* Current date */
         $filename = date('Y_m_d_H-i-s') . '_Remesa_.csv'; /* Csv filename */
@@ -157,7 +157,7 @@ class PaymentsController extends Controller {
                     if ($payment['type'] === 'periodic') {
                         $alreadyGenerated = true;
                     }
-                    /* If the payment is pending add it to the csvData */
+                    /* If the payment exists and the status is pending add it to the csvData */
                     if ($payment['status'] === 'Pendiente') {
                         $newPayment = $payment;
                         $newPayment['customerName'] = $customer['name']; /* Assign the name of the customer to add it to the csv row */
