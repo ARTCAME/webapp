@@ -35,7 +35,7 @@
                     class="py-1"
                     show
                     variant="secondary">
-                    Cuando exista alguna nota las verás aquí
+                    Cuando exista alguna nota la verás aquí
                 </b-alert>
             </div>
             <div
