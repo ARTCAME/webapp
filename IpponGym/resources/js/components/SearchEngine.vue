@@ -10,7 +10,6 @@
                         autocomplete="off"
                         autofocus
                         debounce="200"
-                        data-v-step="wzd-modal-search-0"
                         id="search"
                         name="search"
                         type="search"
