@@ -18,7 +18,7 @@
                 El cliente debe firmar
             </small>
         </transition>
-        <b-row class="ml-md-0 mx-auto my-2" id="capture-btns-row" no-gutters>
+        <b-row class="capture-btns-row ml-md-0 mx-auto my-2" no-gutters>
             <b-row
                 class="w-100"
                 no-gutters
@@ -65,7 +65,7 @@
                 Borrar firma
             </b-button>
             <b-button
-                class="col mr-2"
+                class="col"
                 id="power-wacom-btn"
                 size="sm"
                 v-if="!isDisabled"
@@ -74,6 +74,8 @@
                 @click="turnOnWacom()">
                 {{ !capturable ? 'Revisa campos pendientes' : isWacomOn ? 'Apagar tablet' : 'Encender tablet' }}
             </b-button>
+        </b-row>
+        <b-row class="capture-btns-row ml-md-0 mx-auto my-2" no-gutters>
             <b-button
                 class="col"
                 id="capture-btn"
@@ -86,9 +88,7 @@
                     class="mr-2"
                     icon="signature"
                     v-if="capturable && isWacomOn"></fa-icon>
-                <span>
-                    {{ capturable ? isWacomOn ? 'Capturar firma' : 'Enciende la tablet' : 'Revisa pasos pendientes' }}
-                </span>
+                Capturar firma
             </b-button>
         </b-row>
         <!-- Is not infomation necessary to the user -->
@@ -285,7 +285,6 @@
                     return;
                 }
                 const resp = await body_onload();
-                console.log(resp);
                 this.isWacomOn = wgssSignatureSDK && wgssSignatureSDK.running;
             }
         },
@@ -307,17 +306,17 @@
     }
 </script>
 <style>
+    .capture-btns-row {
+        width: 342px;
+    }
+    .capture-btns-row * {
+        font-size: 0.875rem!important
+    }
     .fake-invalid-feedback {
         display: block;
         color: rgba(220, 53, 69, 1);
         font-size: 80%;
         width: 100%;
-    }
-    #capture-btns-row {
-        width: 342px;
-    }
-    #capture-btns-row * {
-        font-size: 0.875rem!important
     }
     #imageBox {
         border: 1px solid rgba(180, 180, 180, 1);
