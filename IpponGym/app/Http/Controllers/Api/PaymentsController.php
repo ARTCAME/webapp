@@ -240,7 +240,7 @@ class PaymentsController extends Controller {
             $manual = $item['type'] == 'manual'; /* Provide a flag to determine if a payment is or not periodic */
             /* If the new payment is not manual check if exists on the payments array of the customer */
             $existsPeriodicPayment = false;
-            if (!$manual) {
+            if (!$manual && isset($customer->payments)) {
                 foreach ($customer->payments as $payment) {
                     /* Check on the periodic payments if the new periodic payment exists by interval and its confirmed */
                     if ($payment['type'] == 'periodic' && $payment['interval'] == $item['interval'] && $payment['status'] == 'Confirmado') {
