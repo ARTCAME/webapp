@@ -72,7 +72,7 @@
     export default {
         data() {
             return {
-                showNewsBadge: true,
+                showNewsBadge: null,
                 wantNews: false,
             }
         },
@@ -94,7 +94,8 @@
                 http.get('api/showNews', { params: { username: this.authenticatedUser } })
                     .then(response => {
                         /* Will be a boolean */
-                        this.wantNews =  response.data;
+                        this.wantNews = response.data;
+                        this.showNewsBadge = response.data;
                         /* If the modal is needed to be show, show it */
                         if (this.wantNews) {
                             setTimeout(() => {
