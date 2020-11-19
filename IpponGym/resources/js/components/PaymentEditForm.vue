@@ -406,7 +406,14 @@
                                 @click.once="delPayment()"
                                 @hidden="$manageScrollBar(true)"
                                 @show="$manageScrollBar(true)">
-                                Borrar el pago
+                                <b-spinner
+                                    grow
+                                    small
+                                    v-if="deleting"></b-spinner>
+                                <span
+                                    v-else>
+                                    Borrar el pago
+                                </span>
                             </b-button>
                         </transition>
                     </b-col>
@@ -512,6 +519,7 @@
     export default {
         data() {
             return {
+                deleting: false, /* Flag to +ux the delete payment button */
                 editingItem: Object.assign({}, this.toEditItem), /* Stores a local copy of element passed from the parent */
                 print: false, /* Flag to print a bill on save */
                 rates: {
@@ -609,6 +617,7 @@
              * @param {Object} row: contains the row from the table with the customer data that will be deleted
              */
             delPayment() {
+                this.deletePayment(this.editingItem)
                 /* Confirm to the user that the action can not be undoed */
                 this.$bvModal.msgBoxConfirm('Estás seguro de que quieres borrar el pago?', {
                     title: 'ATENCIÓN',
@@ -623,6 +632,7 @@
                 })
                 .then(async value => {
                     if (value) {
+                        this.deleting = true;
                         try {
                             const response = await this.deletePayment(this.editingItem)
                             /* Show a message to the user when the process is correct */
@@ -632,10 +642,11 @@
                                     okTitle: 'Aceptar',
                                     size: 'sm',
                                 })
-                                .then(() =>
+                                .then(() => {
                                     /* The parent manages the modal close */
-                                    this.$emit('delete')
-                                );
+                                    this.$emit('delete');
+                                    this.deleting = false;
+                                });
                         } catch (error) {
                             this.$bvModal.msgBoxOk('No se ha podido completar la operación. Código de error: FEPaEdFo@DePa', {
                                 buttonSize: 'sm',
@@ -645,10 +656,11 @@
                                 size: 'sm',
                                 title: 'ERROR',
                             })
-                            .then(() =>
+                            .then(() => {
                                 /* The parent manages the modal close */
                                 this.$emit('delete')
-                            );
+                                this.deleting = false;
+                            });
                             console.error(error.response ? error.response.data : error);
                         }
                     }
