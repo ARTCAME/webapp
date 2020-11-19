@@ -269,15 +269,11 @@
             async turnOnWacom() {
                 if (wgssSignatureSDK) {
                     this.isWacomOn = false;
-                    console.log('stopping')
                     wgssSignatureSDK.keepAlive = null;
                     wgssSignatureSDK.sigsdkptr = null;
                     wgssSignatureSDK = null;
-                    return /* wizardEventController.stop(); */
+                    return;
                 }
-                console.log('starting');
-                // const x = await wizardEventController.body_onload();
-                // wizardEventController.body_onload()
                 const resp = await body_onload();
                 console.log(resp);
                 this.isWacomOn = wgssSignatureSDK && wgssSignatureSDK.running;
@@ -285,13 +281,13 @@
         },
         mounted() {
             /* Load the wacom api */
-            if (this.$route.name != 'customers.profile') {
-                // if (wizardEventController != undefined) {
-                    // wizardEventController.body_onload();
-                // }
-            } else {
-                // sigObj && sigObj.PutSigText(this.sign, this.onPutSigText);
-            }
+            // if (this.$route.name != 'customers.profile') {
+            //     if (wizardEventController != undefined) {
+            //         wizardEventController.body_onload();
+            //     }
+            // } else {
+            //     sigObj && sigObj.PutSigText(this.sign, this.onPutSigText);
+            // }
         },
         props: [
             'form', /* Is the form object from the vuex store currently used */
