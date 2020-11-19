@@ -1,12 +1,5 @@
 <template>
     <div class="modal-asset-container">
-        <!-- Invoke the wizard
-        <transition appear name="fade">
-            <wizard
-                name="wzd-modal-payments"
-                v-show="selectedData != null"
-                :steps=wmodalpayments></wizard>
-        </transition> -->
         <transition mode="out-in" name="fade">
             <!-- Shown only if a customer wasn't selected -->
             <div
@@ -75,12 +68,7 @@
                     { key: 'dni', label: 'DNI', sortable: true, class: 'text-center' },
                     { key: 'actions', label: '', sortable: true, },
                 ], /* Table fields */
-                wmodalpayments: null, /* Stores the imported wizard steps */
             }
-        },
-        created() {
-            /* Initialize the wizard steps content */
-            this.wmodalpayments = WzdSteps.wmodalpayments;
         },
         methods: {
             /**
