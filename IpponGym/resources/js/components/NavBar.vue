@@ -119,7 +119,6 @@
             </span>
             <b-navbar
                 id="ig-tools-navbar"
-                :data-v-step="$route.name == 'payments.index' ? 'wzd-main-pagos-5' : $route.name == 'belts.index' ? 'wzd-main-cinturones-6' : ''"
                 :toggleable="$route.name == 'payments.index' || $route.name == 'belts.index' ? 'sm' : false">
                 <b-row align-h="between" align-v="start" class="nav-container" no-gutters>
                     <b-col class="my-auto" id="col-tools">
