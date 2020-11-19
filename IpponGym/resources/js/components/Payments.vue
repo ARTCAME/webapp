@@ -1,22 +1,6 @@
 
 <template>
     <div>
-        <!-- Show only in main payments and when a no other parent exists -->
-        <span
-            v-if="$route.name == 'payments.index' && !parentId && !parentItems">
-            <Wizard
-                name="wzd-pagos-confirming"
-                v-show="confirming"
-                :steps=wpcSteps></Wizard>
-            <Wizard
-                name="wzd-pagos-download"
-                v-show="manualDownload"
-                :steps=wpdSteps></Wizard>
-            <Wizard
-                name="wzd-main-pagos"
-                v-show="!confirming && !manualDownload"
-                :steps=wmpSteps></Wizard>
-        </span>
         <TransitionExpand>
             <div
                 v-if="$route.name == 'payments.index' && rowsSelected.length > 200">
@@ -32,7 +16,7 @@
         <b-collapse
             id="collapse-information-confirm"
             :visible="confirming">
-            <h5 data-v-step="wzd-pagos-confirming-0" class="subtitle subtitle-sub" md="4">
+            <h5 class="subtitle subtitle-sub" md="4">
                 Confirmación de estado de pagos domiciliados
             </h5>
             <b-row align-h="start" class="mb-2" no-gutters>
@@ -43,7 +27,6 @@
                             buttons
                             button-variant="outline-secondary"
                             class="col col-12 col-sm mb-1 mr-1 px-0 "
-                            data-v-step="wzd-pagos-confirming-2"
                             key="trans-radio-new-state"
                             size="sm"
                             v-model="newStateSelected"
@@ -70,7 +53,6 @@
                             <!-- It will be disabled when the user hasn't selected a new state for the payment or if he hasn't select a row in the table or if a row in the table is being edited or if the flag wich controls the download of the file is actived -->
                             <b-button
                                 class="w-100"
-                                data-v-step="wzd-pagos-confirming-3"
                                 size="sm"
                                 :disabled="!newStateSelected || rowsSelected.length == 0 || csvDownloadConfirmation"
                                 :variant="csvDownloadConfirmation == false && (newStateSelected && rowsSelected.length > 0) ? 'success' : 'outline-success'"
@@ -135,7 +117,7 @@
         <b-collapse
             id="collapse-information-manual"
             :visible="manualDownload">
-            <h5 class="subtitle subtitle-sub" data-v-step="wzd-pagos-download-0" md="4">
+            <h5 class="subtitle subtitle-sub" md="4">
                 Descarga manual de fichero de remesa para los pagos pendientes
             </h5>
             <b-row class="mb-2" no-gutters>
@@ -150,7 +132,6 @@
                         <!-- Disabled when any row on the table has been selected or if the edition of some row is actived or if the process of manual download hasn't been started of if the flag wich controls the download of the file is true -->
                         <b-button
                             class="w-100"
-                            data-v-step="wzd-pagos-download-2"
                             size="sm"
                             key="trans-btn-save-confirm"
                             :disabled="rowsSelected.length == 0 || !manualDownload || csvDownloadManual"
@@ -321,7 +302,6 @@
             <b-col>
                 <b-form-tags
                     class="filter-form-tags p-0"
-                    data-v-step="wzd-main-pagos-3"
                     no-outer-focus
                     v-model="filterTags">
                     <template>
@@ -624,7 +604,6 @@
         </b-row>
         <b-row
             class="mb-2 row-busqueda-table"
-            data-v-step="wzd-main-pagos-2"
             no-gutters>
             <b-col class="mt-1 mr-1 px-0" cols="12" sm>
                 <b-form-input
@@ -699,7 +678,6 @@
                     </b-button>
                 </span>
                 <span
-                    data-v-step="wzd-main-pagos-4"
                     class="d-inline-block"
                     tabindex="0"
                     v-b-tooltip.hover.noninteractive.topleft
@@ -725,8 +703,7 @@
             </b-col>
         </b-row>
         <!-- Main table -->
-        <div
-            :data-v-step="confirming ? 'wzd-pagos-confirming-1' : manualDownload ? 'wzd-pagos-download-1' : 'wzd-main-pagos-0'">
+        <div>
             <b-table
                 bordered
                 id="paymentsTable"
@@ -1187,9 +1164,6 @@
                 printItem: null, /* The item used to print a bill */
                 rowsSelected: [], /* Stores the selected rows of the table to manage some conditional rendering and states */
                 paymentsSearch: '', /* v-model for the table input search */
-                wmpSteps: null, /* Steps for vue-tour, will be filled with external data */
-                wpcSteps: null, /* Steps for vue-tour, will be filled with external data */
-                wpdSteps: null, /* Steps for vue-tour, will be filled with external data */
             }
         },
         /**
@@ -1326,10 +1300,6 @@
             // window.addEventListener('resize', () => { this.$forceUpdate() });
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
-            /* Initialize the imported information for the wizard steps */
-            this.wmpSteps = WzdSteps.wmpSteps;
-            this.wpcSteps = WzdSteps.wpcSteps;
-            this.wpdSteps = WzdSteps.wpdSteps;
         },
         destroyed() {
             /* Destroy de listeners */
