@@ -19,35 +19,69 @@
             </small>
         </transition>
         <b-row class="ml-md-0 mx-auto my-2" id="capture-btns-row" no-gutters>
+            <b-row
+                class="w-100"
+                no-gutters
+                v-if="!isDisabled">
+                <TransitionExpand>
+                    <div
+                        class="w-100"
+                        v-if="!capturable || !isWacomOn">
+                        <b-alert
+                            class="py-1 text-left"
+                            show>
+                            Para poder firmar deberás revisar los pasos pendientes:
+                            <br>
+                            <span v-if="underage == null">
+                                - Falta la fecha de nacimiento
+                                <br>
+                            </span>
+                            <span v-if="(underage == true && form.tutor && (!form.tutor.name || existsErrors('tutor-name'))) || ((underage == false || underage == null) && (existsErrors('name') || !form.name))">
+                                - Falta el nombre del {{ underage == true ? 'tutor' : 'socio' }}
+                                <br>
+                            </span>
+                            <span v-if="(underage == true && form.tutor && ((!form.tutor.dni || existsErrors('tutor-dni')) && (!form.dni || existsErrors('dni')))) || ((underage == false || underage == null) && (existsErrors('dni') || !form.dni))">
+                                - Falta el dni del {{ underage == true ? 'tutor' : 'socio' }}
+                                <br>
+                            </span>
+                            <span
+                                v-if="!isWacomOn"
+                                @click="$giveShortFocus(['power-wacom-btn'])">
+                                <br>
+                                - Enciende la tablet
+                            </span>
+                        </b-alert>
+                    </div>
+                </TransitionExpand>
+            </b-row>
             <b-button
                 class="col mr-2"
                 id="power-wacom-btn"
                 size="sm"
-                variant="outline-primary"
                 v-if="!isDisabled"
+                :disabled="!capturable"
+                :variant="isWacomOn ? 'outline-danger' : 'outline-primary'"
                 @click="turnOnWacom()">
-                {{ this.localWgssRun ? 'Apagar tablet' : 'Encender tablet' }}
+                {{ !capturable ? 'Revisa campos pendientes' : isWacomOn ? 'Apagar tablet' : 'Encender tablet' }}
             </b-button>
             <b-button
                 class="col"
                 id="capture-btn"
                 size="sm"
                 v-if="!isDisabled"
-                :disabled="capturable.value"
-                :variant="!signatureOk ? 'danger' : capturable.value ? 'outline-secondary' : 'outline-success'"
+                :disabled="!capturable || !isWacomOn"
+                :variant="!capturable || !isWacomOn ? 'outline-secondary' : 'outline-success'"
                 @click="capture()">
                 <fa-icon
                     class="mr-2"
                     icon="signature"
-                    v-if="!capturable.value"></fa-icon>
+                    v-if="capturable && isWacomOn"></fa-icon>
                 <span>
-                    {{ capturable.message}}
+                    {{ capturable ? isWacomOn ? 'Capturar firma' : 'Enciende la tablet' : 'Revisa pasos pendientes' }}
                 </span>
             </b-button>
         </b-row>
         <!-- Is not infomation necessary to the user -->
-        <!-- <div
-            v-show="!signatureOk"> -->
         <div
             v-show="false">
             <small
@@ -66,34 +100,15 @@
         data() {
             return {
                 isWacomOn: false, /* Flag to improve ux on the start/stop wacom */
-                localWgssRun: false, /* Stores the local value of the running state on the wgssSigCaptX script */
                 signatureOk: true, /* Flag to determine if the signature was correct */
             }
         },
         computed: {
             /**
-             * @returns {Object} with the message and the disabled/capturable boolean status for the capture sign button
+             * @returns {Boolean} to determine if the sign is capturable
              */
             capturable() {
-                const errorsDni = this.errors.items.filter(error => error.field == 'dni').length > 0;
-                const errorsTutorDni = this.errors.items.filter(error => error.field == 'tutor-dni').length > 0
-                let message = 'Capturar firma';
-                if (this.underage == null) {
-                    message = 'Falta la fecha de nacimiento';
-                }
-                if (this.underage == true) {
-                    message = !this.form.tutor ? 'Faltan datos del tutor' : this.form.tutor.name == '' ? 'Falta el nombre del tutor' : ((!this.form.tutor.dni && !this.form.dni) || ((errorsDni && this.form.dni) || (errorsTutorDni && this.form.tutor.dni))) ? 'Revisa el dni del tutor' : 'Capturar firma';
-                }
-                if (this.underage == false) {
-                    message = !this.form.name ? 'Falta el nombre del socio' : !this.form.dni ? 'Falta el dni del socio' : errorsDni ? 'Revisa el dni' : 'Capturar firma';
-                }
-                if (!this.signatureOk) {
-                    message = 'Reintentar';
-                }
-                return {
-                    value: this.underage == null || (this.underage == true && (!this.form.tutor || !this.form.tutor.name || !this.form.tutor.dni || this.errors.items.filter(error => error.field == 'dni').length > 0 || errorsTutorDni || !this.form.dni)) || (this.underage == false && (!this.form.name || !this.form.dni || errorsDni)),
-                    message: message,
-                };
+                return !(this.underage == null || ((this.underage == true && this.form.tutor && (((!this.form.tutor.dni ||this. existsErrors('tutor-dni')) && (!this.form.dni || this.existsErrors('dni'))) || (!this.form.tutor.name || this.existsErrors('tutor-name')))) || (this.underage == false && ((this.existsErrors('name') || !this.form.name) || (this.existsErrors('dni') || !this.form.dni)))));
             },
             /**
              * Is the v-model for the sign element
@@ -126,7 +141,6 @@
                 /* Construct a hash object to contain the hash */
                 var hash = new wgssSignatureSDK.Hash(onHashConstructor);
                 var self = this;
-                this.localWgssRun = wgssSignatureSDK.running;
                 function onHashConstructor(hashV, status) {
                     if (wgssSignatureSDK.ResponseStatus.OK == status) {
                         self.GetHash(hash, onGetInitialHash);
@@ -202,6 +216,16 @@
                 }
             },
             /**
+             * Faking that should be done by vee erros.has() but is not working
+             *
+             * @param {String} field: the name of the field to check
+             *
+             * @returns {Boolean} Boolean that reveals if exists vee errors
+             */
+            existsErrors(field) {
+                return this.errors.items.filter(error => error.field == field).length > 0
+            },
+            /**
              * Calculates a hash value using the first and last names on the HTML form
              */
             GetHash(hash, callback) {
@@ -239,14 +263,24 @@
                 await this.$validator.validateAll();
                 return this.errors.all().length;
             },
-            turnOnWacom() {
-                this.isWacomOn = true;
-                if (this.localWgssRun) {
+            /**
+             * Turns on the wacom on demain
+             */
+            async turnOnWacom() {
+                if (wgssSignatureSDK) {
                     this.isWacomOn = false;
-                    // EL WIZARD NO TIENE NADA ACTIVO SE HACE TODO EN WGSS
-                    return wizardEventController.stop();
+                    console.log('stopping')
+                    wgssSignatureSDK.keepAlive = null;
+                    wgssSignatureSDK.sigsdkptr = null;
+                    wgssSignatureSDK = null;
+                    return /* wizardEventController.stop(); */
                 }
-                wizardEventController.body_onload();
+                console.log('starting');
+                // const x = await wizardEventController.body_onload();
+                // wizardEventController.body_onload()
+                const resp = await body_onload();
+                console.log(resp);
+                this.isWacomOn = wgssSignatureSDK && wgssSignatureSDK.running;
             }
         },
         mounted() {
