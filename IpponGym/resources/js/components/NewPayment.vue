@@ -5,15 +5,7 @@
             id="previous-pending-modal"
             no-close-on-backdrop
             no-close-on-esc
-            size="lg"
-            @hide="activeWizard = false">
-            <!-- Invoke the wizard -->
-            <transition appear name="fade-delayed">
-                <wizard
-                    name="wzd-modal-payments-previouspending"
-                    v-show="previousPending.length > 0 && activeWizard"
-                    :steps=wmodalpayments_previouspending></wizard>
-            </transition>
+            size="lg">
             <template #modal-header>
                 <h5>Revisa los pagos pendientes</h5>
             </template>
@@ -73,7 +65,6 @@
 </template>
 
 <script>
-    import * as WzdSteps from './wzdsteps/modalpayments';
     import { mapActions, mapGetters } from 'vuex';
     import NProgress from 'nprogress';
     export default {
@@ -105,7 +96,6 @@
                     { key: 'rate', label: 'Tarifa', },
                     { key: 'actions', label: '', },
                 ], /* Fields to the pending payments table */
-                wmodalpayments_previouspending: WzdSteps.wmodalpayments_previouspending,
             }
         },
         computed: {
@@ -124,10 +114,6 @@
             previousPending() {
                 return this.getFilteredPaymentsById(this._id, null, null, ['Pendiente'], null, ['manual', 'periodic'], null, null);
             },
-        },
-        created() {
-            /* Initialize the wizard steps content */
-            // this.wmodalpayments_previouspending = WzdSteps.wmodalpayments_previouspending;
         },
         methods: {
             ...mapActions(['addPayment', 'updatePaymentData']),
