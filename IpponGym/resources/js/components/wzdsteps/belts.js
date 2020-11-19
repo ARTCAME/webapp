@@ -64,7 +64,7 @@ export const wcdSteps = [
 export const wmcSteps = [
     {
         target: '[data-v-step="wzd-main-cinturones-0"]',
-        content: 'En esta tabla verás los socios que tienen una tarifa que incluye karate actualmente. Desde aquí podrás consultar, modificar o seleccionar los socios y sus grados, usar los seleccionados para descargar archivos de grado para generar diplomas u otorgar nuevos grados a los socios que los hayan conseguido.',
+        content: 'En esta tabla verás los socios que tienen una tarifa que incluye karate o que han obtenido algún grado. Desde aquí podrás consultar, modificar o seleccionar los socios y sus grados, usar los seleccionados para descargar archivos de grado para generar diplomas u otorgar nuevos grados a los socios que los hayan conseguido.',
         offset: '-135',
         params: {
             placement: 'top',
@@ -80,7 +80,7 @@ export const wmcSteps = [
     },
     {
         target: '[data-v-step="wzd-main-cinturones-2"]',
-        content: 'Aquí verás los filtros aplicados en la tabla. Los filtros aplicados aparecerán aquí y si este campo se encuentra vacío es que estás viendo todos los datos sin aplicar ningún filtro.',
+        content: 'Los filtros aplicados aparecerán aquí y si este campo se encuentra vacío es que estás viendo todos los datos sin aplicar ningún filtro. La tabla muestra por defecto los socios en estado Activo, si quieres ver los socios inactivos activa la opción disponible al final de la tabla.',
         offset: '-135',
         params: {
             placement: 'bottom',
@@ -88,15 +88,15 @@ export const wmcSteps = [
     },
     {
         target: '[data-v-step="wzd-main-cinturones-3"]',
-        content: 'Puedes acceder a la ficha del socio pulsando sobre el identificador de socio.',
+        content: 'Pulsando sobre el nombre del socio podrás acceder a su ficha y consultar todos sus datos.',
         offset: '-135',
         params: {
-            placement: 'bottom'
+            placement: 'top',
         }
     },
     {
         target: '[data-v-step="wzd-main-cinturones-4"]',
-        content: 'Desde el nombre del socio o desde el grado actual podrás acceder a ver el histórico de grados. En el histórico verás la fecha en que se otorgó cada grado y si no hay fecha es que el socio tiene pendiente conseguirlo. Además, en el histórico de grados podrás acceder a editar los grados individualmente.',
+        content: 'Pulsando sobre el botón de detalles (o también desde la columna Grado actual o Siguiente grado) accederás a los detalles del socio donde verás todos sus grados otorgados y podrás editarlos.',
         offset: '-135',
         params: {
             placement: 'left'
