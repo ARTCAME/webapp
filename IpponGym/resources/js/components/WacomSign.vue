@@ -58,6 +58,16 @@
                 class="col mr-2"
                 id="power-wacom-btn"
                 size="sm"
+                variant="outline-secondary"
+                v-if="!isDisabled"
+                :disabled="!sign"
+                @click="sign = ''">
+                Borrar firma
+            </b-button>
+            <b-button
+                class="col mr-2"
+                id="power-wacom-btn"
+                size="sm"
                 v-if="!isDisabled"
                 :disabled="!capturable"
                 :variant="isWacomOn ? 'outline-danger' : 'outline-primary'"
@@ -70,7 +80,7 @@
                 size="sm"
                 v-if="!isDisabled"
                 :disabled="!capturable || !isWacomOn"
-                :variant="!capturable || !isWacomOn ? 'outline-secondary' : 'outline-success'"
+                :variant="!capturable || !isWacomOn ? 'outline-secondary' : 'success'"
                 @click="capture()">
                 <fa-icon
                     class="mr-2"
@@ -156,8 +166,8 @@
                 }
                 /* If the hash value has been calculated successfully next steps is to capture the signature */
                 function onGetInitialHash() {
-                    // const name = self.underage == true && self.form.tutor ? self.form.tutor.name : self.form.name;
-                    const name = 'foo';
+                    const name = self.underage == true && self.form.tutor ? self.form.tutor.name : self.form.name;
+                    // const name = 'foo';
                     if (self.underage && !self.form.tutor) {
                         print('Faltan los datos del tutor.');
                     } else if (name == null) {
