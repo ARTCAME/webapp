@@ -121,13 +121,13 @@ class PaymentsController extends Controller {
      */
     public static function monthlyPayments() {
         /* Get the active customers */
-        $customers = DB::collection('customers')->where('active', true)->get(); /* The db active customers */
-        $newPayment = []; /* Will store the already generated payment data or the new payment data */
+        $customers = DB::collection('customers')->where('active', true)->get(); /* The db active only customers */
         $date = new \MongoDB\BSON\UTCDateTime(new \DateTime('now')); /* Current date */
         $filename = date('Y_m_d_H-i-s') . '_Remesa_.csv'; /* Csv filename */
         $csvoutput = fopen($filename, 'w'); /* Csv file pointer */
-        $csvData = []; /* The csv data to add to the csv file */
+        $csvData = []; /* The csv data of the bank payments to add to the csv file */
 
+        /* Function to generate the csv data for the bank payments */
         $generateCsvData = function($payment) use(&$csvData) {
             /* Search the payment iban on the csv data array to combine or not the data with a previous same iban payment */
             $searchIban = array_search($payment['iban'], array_column($csvData, 'iban'));
@@ -147,27 +147,34 @@ class PaymentsController extends Controller {
                 }
             }
         };
+
+        /* Iterate over all the active customers */
         foreach ($customers as $customer) {
+            $newPayment = []; /* Will store the new payment data for the customer */
             $auxPaymentData = $customer['paymentData'];
             /* Iterate over the customer payments to check if has a payment for the current period. On the periodic payments the period will be the interval, on the manual payments the period can be the interval or if it is null the dategenerated */
             $alreadyGenerated = false; /* Flag to avoid generate a new payment if a periodic was previosly generated for this customer*/
-            foreach ($customer['payments'] as $payment) {
-                if ($payment['paymenttype'] === 'Domiciliación' && (($payment['type'] === 'periodic' && $payment['interval'] === date('Y-m')) || ($payment['type'] === 'manual' && ($payment['interval'] === date('Y-m') || ($payment['interval'] == null && $payment['dategenerated']->toDateTime()->format('Y-m') === date('Y-m')))))) {
-                    /* If the payment is periodic, activate the flag to avoid creating a new payment for this customer. Just in case, the manuals doesn't count */
-                    if ($payment['type'] === 'periodic') {
-                        $alreadyGenerated = true;
-                    }
-                    /* If the payment exists and the status is pending add it to the csvData */
-                    if ($payment['status'] === 'Pendiente') {
-                        $newPayment = $payment;
-                        $newPayment['customerName'] = $customer['name']; /* Assign the name of the customer to add it to the csv row */
-                        $generateCsvData($newPayment);
+            /* If the customer has payments, if not the payment will be created directly */
+            if (isset($customer['payments'])) {
+                foreach ($customer['payments'] as $payment) {
+                    if ((($payment['type'] === 'periodic' && $payment['interval'] === date('Y-m')) || ($payment['type'] === 'manual' && ($payment['interval'] === date('Y-m') || ($payment['interval'] == null && $payment['dategenerated']->toDateTime()->format('Y-m') === date('Y-m')))))) {
+                        /* If the payment is periodic, activate the flag to avoid creating a new payment for this customer. Just in case, the manuals doesn't count */
+                        if ($payment['type'] === 'periodic') {
+                            $alreadyGenerated = true;
+                        }
+                        /* If the payment exists and the status is pending and the payment mode is via bank add it to the csvData of the bank payments */
+                        if ($payment['status'] === 'Pendiente' && $payment['paymenttype'] === 'Domiciliación') {
+                            $auxPayment = $payment;
+                            $auxPayment['customerName'] = $customer['name']; /* Assign the name of the customer to add it to the csv row */
+                            $generateCsvData($auxPayment);
+                        }
                     }
                 }
             }
             /* If doesn't exists a payment registered for this month we create and save it on the customer based on the last payments attributes, here we create all the non manual created monthly payments, later treat the inbank payments to generate the csv bank data */
             if (!$alreadyGenerated) {
                 $newPayment['payment_id'] = $customer['_id'] . '_' . $date . '_' . new \MongoDB\BSON\ObjectID();
+                $newPayment['type'] = 'periodic';
                 $newPayment['rate'] = $auxPaymentData['rate'];
                 $newPayment['amount'] = $auxPaymentData['amount'];
                 $newPayment['paymenttype'] = $auxPaymentData['paymenttype'];
@@ -184,11 +191,11 @@ class PaymentsController extends Controller {
                 $auxCustomer = Socios::find($customer['_id']);
                 $auxCustomer->push('payments', $newPayment);
                 $auxCustomer->save();
-                $newPayment['customerName'] = $customer['name']; /* Assign the name of the customer to add it to the csv row */
                 /* Manage utf8 characters */
                 fprintf($csvoutput, chr(0xEF).chr(0xBB).chr(0xBF));
                 /* If the new payment is via bank add it to the csvData */
                 if ($newPayment['paymenttype'] === 'Domiciliación') {
+                    $newPayment['customerName'] = $customer['name']; /* Assign the name of the customer to add it to the csv row */
                     $generateCsvData($newPayment);
                 }
             }
