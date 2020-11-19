@@ -279,7 +279,7 @@ export default {
             const relatedCustomer = getters.getCustomerById(customer.tutor._id);
             TUTOR_KEYS.forEach(key => customer.tutor[key] = relatedCustomer[key]);
         }
-        if (customer.contacts.length > 0 && customer.contacts.some(contact => contact._id)) {
+        if (customer.contacts && customer.contacts.length > 0 && customer.contacts.some(contact => contact._id)) {
             customer.contacts.forEach((contact, index) => {
                 if (contact._id) {
                     const relatedCustomer = getters.getCustomerById(contact._id);
