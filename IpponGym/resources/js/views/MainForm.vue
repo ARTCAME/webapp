@@ -269,15 +269,17 @@
                         </b-container>
     <!-- Teléfono -->
                         <!-- <TransitionExpand> -->
-                            <PhoneBase
-                                ref="telefono"
-                                target="customer"
-                                :inPhones="form.phones"
-                                :isDisabled="isDisabled"
-                                @input="updateCustomerData({ field: 'phones', arrayIndex: $event.arrayIndex, newVal: $event.newVal, _id: form._id })"></PhoneBase>
+                        <PhoneBase
+                            class="mt-2"
+                            ref="telefono"
+                            target="customer"
+                            :inPhones="form.phones"
+                            :isDisabled="isDisabled"
+                            @input="updateCustomerData({ field: 'phones', arrayIndex: $event.arrayIndex, newVal: $event.newVal, _id: form._id })"></PhoneBase>
                         <!-- </TransitionExpand> -->
     <!-- Email -->
                         <EmailBase
+                            class="mt-2"
                             ref="email"
                             target="customer"
                             :inEmails="form.emails"
