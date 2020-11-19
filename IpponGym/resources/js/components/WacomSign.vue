@@ -56,7 +56,7 @@
             </b-row>
             <b-button
                 class="col mr-2"
-                id="power-wacom-btn"
+                id="delete-sign-btn"
                 size="sm"
                 variant="outline-secondary"
                 v-if="!isDisabled"
