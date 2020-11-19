@@ -362,13 +362,13 @@ export default {
      */
     async initEditForm({ commit, getters, dispatch, }, id) {
         try {
-            /* The form starts with a copy of the customer, preventing the propagation of the changes maded on the form before store it */
-            // let customer =  Object.assign({}, getters.getCustomerById(id));
-            let customer =  JSON.parse(JSON.stringify(getters.getCustomerById(id)));
+            let customer =  getters.getCustomerById(id);
             /* Check if the customer exists or thrown an error */
-            if (Object.keys(customer).length == 0 || !customer) {
+            if (!customer || Object.keys(customer).length == 0) {
                 throw new ExceptionCustomerDoesNotExist('No existe el socio solicitado: ' + id);
             }
+            /* The form starts with a copy of the customer, preventing the propagation of the changes maded on the form before store it */
+            customer =  JSON.parse(JSON.stringify(customer));
             customer = await dispatch('fetchCustomerImages', { customer: customer, sign: true, image: true });
             await commit('FETCH_FORM', { customer: customer, form: 'editform' });
             setTimeout(() => NProgress.done(true), 500);
@@ -388,13 +388,13 @@ export default {
      */
     async initForm({ commit, getters, dispatch }, id) {
         try {
-            /* The form starts with a copy of the customer, preventing the propagation of the changes maded on the form before store it */
-            // let customer =  Object.assign({}, getters.getCustomerById(id));
-            let customer =  JSON.parse(JSON.stringify(getters.getCustomerById(id)));
+            let customer =  getters.getCustomerById(id);
             /* Check if the customer exists or thrown an error */
-            if (Object.keys(customer).length == 0 || !customer) {
+            if (!customer || Object.keys(customer).length == 0) {
                 throw new ExceptionCustomerDoesNotExist('No existe el socio solicitado: ' + id);
             }
+            /* The form starts with a copy of the customer, preventing the propagation of the changes maded on the form before store it */
+            customer = JSON.parse(JSON.stringify(customer));
             customer = await dispatch('fetchCustomerImages', { customer: customer, sign: true, image: true });
             await commit('FETCH_FORM', { customer: customer, form: 'form' });
             setTimeout(() => NProgress.done(true), 500);
