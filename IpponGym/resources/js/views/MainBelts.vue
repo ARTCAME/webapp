@@ -1,18 +1,5 @@
 <template>
     <div>
-        <!-- Invoke the wizard -->
-        <wizard
-            name="wzd-cinturones-update"
-            v-show="updating"
-            :steps=wcuSteps></wizard>
-        <wizard
-            name="wzd-cinturones-download"
-            v-show="downloadGrades"
-            :steps=wcdSteps></wizard>
-        <wizard
-            name="wzd-main-cinturones"
-            v-show="!updating && !downloadGrades && !wizardOnModalOpen"
-            :steps=wmcSteps></wizard>
         <b-card>
             <b-form-group>
                 <h5 class="subtitle" md="4">Gestión y consulta de grados de Karate</h5>
@@ -29,13 +16,12 @@
             <b-collapse
                 id="collapse-update"
                 :visible="updating">
-                <h5 class="subtitle subtitle-sub" data-v-step="wzd-cinturones-update-0" md="4">
+                <h5 class="subtitle subtitle-sub" md="4">
                     Actualización masiva de grados
                 </h5>
                 <b-row class="mb-2" no-gutters>
                     <b-form-input
                         class="col col-12 col-md-3 mr-1 mb-1 px-2"
-                        data-v-step="wzd-cinturones-update-2"
                         id="date-cinturones"
                         key="trans-datepicker"
                         size="sm"
@@ -43,7 +29,6 @@
                         v-model="beltsNewDate"></b-form-input>
                     <span
                         class="col col-12 col-md-auto d-inline-block mb-1"
-                        data-v-step="wzd-cinturones-update-3"
                         key="trans-btns-update"
                         tabindex="0"
                         v-b-tooltip.hover.noninteractive
@@ -110,13 +95,12 @@
             <b-collapse
                 id="collapse-download"
                 :visible="downloadGrades">
-                <h5 class="subtitle subtitle-sub" data-v-step="wzd-cinturones-download-0" md="4">
+                <h5 class="subtitle subtitle-sub" md="4">
                     Descarga manual de archivo para diplomas
                 </h5>
                 <b-row class="mb-2" no-gutters>
                     <span
                         class="col col-12 col-sm-auto d-inline-block mb-1"
-                        data-v-step="wzd-cinturones-download-2"
                         tabindex="0"
                         v-b-tooltip.hover.noninteractive.top
                         :title="updateInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
@@ -200,7 +184,6 @@
                 <b-col>
                     <b-form-tags
                         class="filter-form-tags tags-cinturones p-0"
-                        data-v-step="wzd-main-cinturones-2"
                         no-outer-focus
                         v-model="filterTags">
                         <template>
@@ -242,7 +225,7 @@
                 </b-col>
             </b-row>
             <!-- Row with the filters, history and download data table -->
-            <b-row class="row-busqueda-table mb-2" data-v-step="wzd-main-cinturones-1" no-gutters>
+            <b-row class="row-busqueda-table mb-2" no-gutters>
                 <b-col class="mr-1 mt-1 px-0" cols="12" lg>
                     <b-form-input
                         id="table-cinturones-search"
@@ -359,7 +342,6 @@
                                 <!-- Disabled when no table content or if the download of the table data was started -->
                                 <b-button
                                     class="btn-fa-tiny"
-                                    data-v-step="wzd-main-cinturones-5"
                                     size="sm"
                                     variant="outline-success"
                                     :disabled="($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0) || beltsTableItems.length == 0 || downloadCsvTable == true"
@@ -379,8 +361,7 @@
                     </b-row>
                 </b-col>
             </b-row>
-            <div
-                :data-v-step="updating ? 'wzd-cinturones-update-1' : downloadGrades ? 'wzd-cinturones-download-1' : 'wzd-main-cinturones-0'">
+            <div>
                 <b-table
                     bordered
                     ref="beltsTable"
@@ -432,7 +413,7 @@
                     <template
                         #cell(name)="row">
                         <b-link
-                            class="d-block table-text-overflowed text-nowrap"
+                            class="d-block pl-1 table-text-overflowed text-nowrap"
                             positioning="top"
                             target="_blank"
                             title="Abre la ficha del socio"
@@ -592,11 +573,11 @@
                     { key: 'selected', label: '', },
                     { key: 'active', label: 'Activo', sortable: true, class: 'text-right', },
                     // { key: 'id', label: 'ID', sortable: true, },
-                    { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center', thAttr: { 'data-v-step': 'wzd-main-cinturones-3' } },
-                    { key: 'name', label: 'Socio', sortable: true, thAttr: { 'data-v-step': 'wzd-main-cinturones-4' } },
+                    { key: 'customerNumber', label: 'Nº Socio', sortable: true, class: 'text-center' },
+                    { key: 'name', label: 'Socio', sortable: true },
                     { key: 'grade', label: 'Grado actual', sortable: true, class: 'text-center', },
                     { key: 'nextGrade', label: 'Siguiente grado', sortable: true, class: 'text-center', },
-                    { key: 'editRow', label: 'Detalles', class: 'tableEditRow text-center'},
+                    { key: 'editRow', label: 'Detalles', class: 'tableEditRow text-center' },
                 ], /* Fields of the table beltsTable, some conditional showed fields are not included by default and it will be included in some function */
                 beltsUpdated: [], /* Array with the updated rows of the table during a update of grade */
                 deletingRow: false, /* Flag to activate/deactivate the delete grades button */
@@ -610,10 +591,6 @@
                 rowsSelected: [], /* Selected rows from beltsTable, its elements will be pushed on events at every row */
                 showingDetailsItems: [], /* Stores the elements wich are showing their details */
                 updateCsv: false, /* Flag to determine if a download csv was requested to apply visual modifications */
-                wcdSteps: null, /* Wizard cinturones update steps */
-                wcuSteps: null, /* Wizard cinturones update steps */
-                wmcSteps: null, /* Wizard cinturones update steps */
-                wizardOnModalOpen: false, /* Flag to detect if the modal of the history is opened to show its wizard */
             }
         },
         /**
@@ -765,10 +742,6 @@
             window.addEventListener('resize', () => { this.$forceUpdate() });
             /* Prevents leave the page when changes has been made */
             window.addEventListener('beforeunload', this.beforeUnload);
-            /* Initialize the wizard steps data */
-            this.wcdSteps = WzdSteps.wcdSteps;
-            this.wcuSteps = WzdSteps.wcuSteps;
-            this.wmcSteps = WzdSteps.wmcSteps;
         },
         destroyed() {
             /* Destroy de listeners */
