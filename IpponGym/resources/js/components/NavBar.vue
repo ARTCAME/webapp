@@ -601,9 +601,6 @@
         text-align: center;
         user-select: none;
     }
-    #nav-collapse {
-        padding-bottom: 62px; /* Giving visibility to nested absolute positioned nav */
-    }
     #nav-user {
         opacity: .2;
     }
@@ -653,6 +650,11 @@
     @media (min-width: 768px) {
         #ig-main-navbar #main-navbar-nav {
             padding-top: 0;
+        }
+    }
+    @media (max-width: 768px) {
+        #nav-collapse {
+            padding-bottom: 62px; /* Giving visibility to nested absolute positioned nav on collapsed nav */
         }
     }
     @media screen and (max-width: 480px) {
