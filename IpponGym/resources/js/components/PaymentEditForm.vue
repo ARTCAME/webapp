@@ -685,10 +685,10 @@
                     const filename = this.customer.name.replace(/\s/g, '-') + '__recibo__' + this.$moment().format('YYYY-MM-DD_HH_mm') + '.pdf';
                     NProgress.set(0.5);
                     await this.$html2print(filename, this.$refs.printableNPB);
-                    /* Hide the print component */
-                    this.print = false;
-                    /* Restore the flag to improve the UX */
                     setTimeout(() => {
+                        /* Hide the print component */
+                        this.print = false;
+                        /* Restore the flag to improve the UX */
                         this.saving = false;
                     }, 300);
                 }
