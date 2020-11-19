@@ -834,15 +834,20 @@
                         @click="manageEdit(row.item)">
                         <fa-icon icon="edit"></fa-icon>
                     </b-button>
-                    <b-button
-                        class="ig-small-btn"
-                        size="sm"
-                        title="Descargar recibo"
-                        variant="outline-dark"
+                    <span
+                        class="d-inline-block"
+                        tabindex="0"
                         v-b-tooltip.hover.left.noninteractive
-                        @click="printBill(row.item)">
-                        <fa-icon icon="file-download"></fa-icon>
-                    </b-button>
+                        :title="row.item.status != 'Confirmado' ? 'Pago no realizado' : 'Descargar recibo'">
+                        <b-button
+                            class="ig-small-btn"
+                            size="sm"
+                            variant="outline-dark"
+                            :disabled="row.item.status != 'Confirmado'"
+                            @click="printBill(row.item)">
+                            <fa-icon icon="file-download"></fa-icon>
+                        </b-button>
+                    </span>
                     <b-button
                         class="ig-small-btn"
                         size="sm"
@@ -1380,7 +1385,6 @@
                 /* Update the payment on the db via vuex */
                 this.updatePaymentData({ items: this.rowsSelected, action: this.newStateSelected })
                     .then(response => {
-                        console.log(response)
                         response.updated.forEach(item => {
                             /* Delete the selected row from the array of selected elements */
                             this.rowSelect(item, false);
