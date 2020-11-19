@@ -1,4 +1,5 @@
 <template>
+<!-- Disabled for now, the costs of deploy it on a lot of pages are bigger than the functionality. -->
     <span
         :class="{ 'mobile-wizard' : mobile }">
         <div
@@ -38,7 +39,7 @@
                 <transition-group name="wizard-blur-in">
                     <!-- Progress bar at the bottom of the window -->
                     <b-progress
-                        height="3px"
+                        height="5px"
                         id="wrp-wzd-progress-bar"
                         key="wrp-wzd-progress-bar"
                         variant="info"
@@ -70,7 +71,7 @@
                                         :title="tour.isFirst ? 'Salir' : 'Anterior'"
                                         @click.prevent="previousStep()">
                                         <fa-icon
-                                            :icon="tour.isFirst ? 'door-open' : 'chevron-left'"></fa-icon>
+                                            :icon="tour.isFirst ? 'door-open' : 'angle-left'"></fa-icon>
                                     </button>
                                     <button
                                         class="wzd-nav"
@@ -81,10 +82,11 @@
                                     </button>
                                     <button
                                         class="wzd-nav"
+                                        id="btn-wzd-next"
                                         :title="tour.isLast ? 'Finalizar' : 'Siguiente'"
                                         @click.prevent="nextStep()">
                                         <fa-icon
-                                            :icon="tour.isLast ? 'check' : 'chevron-right'"></fa-icon>
+                                            :icon="tour.isLast ? 'check' : 'angle-right'"></fa-icon>
                                     </button>
                                 </div>
                             </div>
@@ -126,6 +128,11 @@
             });
         },
         methods: {
+            changeIcon() {
+                if (this.tour.isLast) {
+                    this.icon = ''
+                }
+            },
             /**
              * Manage the key events to apropiate use of navigation
              */
@@ -151,7 +158,7 @@
             manageNav() {
                 /* If the step is on a navbar mantain the nav fixed and move the padding to top to correct the position of the v-step element */
                 if (this.currentEl.classList.contains('navbar')) {
-                    this.currentEl.style.position = 'fixed';
+                    // this.currentEl.style.position = 'fixed';
                     !document.body.classList.contains('nav-wzd') && document.body.classList.add('nav-wzd');
                 } else {
                     document.body.classList.contains('nav-wzd') && document.body.classList.remove('nav-wzd');
@@ -159,10 +166,8 @@
             },
             /**
              * Function to acquire the next step element for the vue-tour and to manage the custom class to the next/previous wizarded element that will be change its z-index to show it above the full overlay
-             *
-             * @param Object tour: includes the vue-tour step variables
              */
-            nextStep(tour) {
+            nextStep() {
                 if (this.tour.isLast) {
                     this.tour.finish();
                     this.stop();
@@ -171,6 +176,7 @@
                     this.currentEl.classList.remove('wizard-focused');
                     this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + (this.tour.currentStep) + '"]');
                     this.currentEl.classList.add('wizard-focused');
+                    this.currentEl.scrollIntoView();
                     this.manageNav();
                 }
             },
@@ -208,6 +214,9 @@
              * Function that launchs the wizard
              */
             start() {
+                // this.$scrollTo('[data-v-step="' + this.wizardName + '-' + 0 + '"]');
+                /* Html will not scroll during the wizard */
+                document.documentElement.style.overflow = 'hidden';
                 this.currentEl = document.querySelector('[data-v-step="' + this.wizardName + '-' + 0 + '"]');
                 /* Store the zIndex before modify the item to evaluate if its zIndex is bigger than the wizard elements */
                 const zIndex = parseInt(document.defaultView.getComputedStyle(this.currentEl).getPropertyValue('z-index'));
@@ -222,6 +231,8 @@
              * Stops the wizard
              */
             stop() {
+                /* Reset the scroll */
+                document.documentElement.style.overflow = null;
                 /* Delaying the time of the rest of the transition to avoid unesthetic z-index change */
                 setTimeout(() => this.currentEl.classList.remove('wizard-focused'), 1000);
                 this.wizardLaunched = false;
@@ -329,6 +340,9 @@
         transition: all .3s, background-position 1s;
         width: 40px;
     }
+    .wzd-nav svg {
+        transition: transform 1s;
+    }
     .wzd-nav:nth-child(1) {
         background: linear-gradient(65deg, rgba(0, 50, 131, .95) 1%, rgba(0, 131, 81, .95) 10%);
         background-position: 0%;
@@ -337,14 +351,14 @@
     .wzd-nav:nth-child(1):hover {
         background-position-x: 15%;
     }
+    .wzd-nav:nth-child(1):hover svg {
+        transform: translateX(-2px);
+    }
     .wzd-nav:nth-child(2) {
         background: rgba(0, 131, 81, .95);
     }
-    .wzd-nav:nth-child(2) svg {
-        transition: transform .3s;
-    }
     .wzd-nav:nth-child(2):hover svg {
-        transform: scale(1.3);
+        transform: scale(1.2);
     }
     .wzd-nav:nth-child(3) {
         background: linear-gradient(65deg, rgba(0, 131, 81, .95) 50%, rgba(0, 50, 131, .95) 59%);
@@ -354,6 +368,9 @@
     .wzd-nav:nth-child(3):hover {
         background-position-x: 40%;
     }
+    .wzd-nav:nth-child(3):hover svg {
+        transform: translateX(2px);
+    }
     #wrp-wzd-progress-bar {
         background-color: unset!important;
         border-radius: 0;
@@ -361,7 +378,7 @@
         left: 0;
         position: fixed;
         width: 100%;
-        z-index: 1001;
+        z-index: 1002;
     }
     #wrp-wzdnav-icon {
         box-sizing: border-box;
@@ -386,7 +403,7 @@
     }
     #wzd-full-face {
         /* background: linear-gradient(to right, rgba(250, 250, 250, .4) 0, rgba(250, 250, 250, .7) 50%, rgba(250, 250, 250, .95) 100%); */
-        background: linear-gradient(180deg, rgba(250, 250, 250, .7) 0%, rgba(250, 250, 250, 1) 70%);
+        background: linear-gradient(180deg, rgba(250, 250, 250, .7) 0%, rgba(250, 250, 250, .9) 70%);
         display: block;
         height: 100%;
         left: 0;
