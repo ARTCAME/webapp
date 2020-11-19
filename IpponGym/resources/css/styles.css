@@ -31,7 +31,7 @@ a.unformated-link:hover {
     text-decoration: none;
 }
 body {
-    margin-bottom: 100px;
+    /* margin-bottom: 100px; */
     padding-top: 132px; /* Gap of the navbars */
     transition: padding-top .3s;
 }
