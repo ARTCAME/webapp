@@ -187,7 +187,7 @@
         border-radius: .25rem;
         height: 100%;
         /* margin: 0 1px; */
-        padding: 0;
+        padding: 2px;
         transition: all .15s ease-in-out;
         width: 100%;
     }
