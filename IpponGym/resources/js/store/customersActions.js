@@ -107,7 +107,7 @@ export default {
             /* Get the customer updated */
             const customer = getters.getCustomerById(item._id);
             /* Get if the payment already exitsts */
-            const exists = customer.payments.some(payment => payment.payment_id == apiResponse.data.payment_id);
+            const exists = customer.payments && customer.payments.some(payment => payment.payment_id == apiResponse.data.payment_id);
             /* Convert the apiResponse dates */
             apiResponse.data.dategenerated = apiResponse.data.dategenerated != null && apiResponse.data.dategenerated.$date ? moment(parseInt(apiResponse.data.dategenerated.$date.$numberLong)).format('DD-MM-YYYY HH:mm:ss') : apiResponse.data.dategenerated;
             apiResponse.data.dateconfirmed = apiResponse.data.dateconfirmed != null && apiResponse.data.dateconfirmed.$date ? moment(parseInt(apiResponse.data.dateconfirmed.$date.$numberLong)).format('DD-MM-YYYY HH:mm:ss') : apiResponse.data.dateconfirmed;
