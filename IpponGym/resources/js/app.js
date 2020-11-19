@@ -1,14 +1,3 @@
-// import Toasted from 'vue-toasted';
-// Vue.use(Toasted)
-// import WebCam from 'vue-web-cam';
-// Vue.use(WebCam)
-// import VueAxios from 'vue-axios';
-// Vue.use(VueAxios, axios)
-// import VueDragResize from 'vue-drag-resize';
-// Vue.component('vue-drag-resize', VueDragResize);
-// import VueCookies from 'vue-cookies'; // https://github.com/cmp-cc/vue-cookies#readme
-// Vue.use(VueCookies)
-
 import store from './store/customers';
 import validations from './validator/validator';
 import Vue from 'vue';
@@ -190,42 +179,3 @@ function createVue() {
     }).$mount('#app')
     store.$app = app; /* Pass to the store the this instance to use as this.$app and provide a method to call this.$bvModal or similar */
 }
-//         })
-// //         // .catch(error => {
-// //         //     if (error.response.status !== 200) {
-// //         //         router.push('/');
-// //         //         // location.reload();
-// //         //         store.dispatch('auth/logout');  /* Force a log out */
-// //         //         console.log(error);
-// //         //     }
-// //         // });
-// } else {
-//     new Vue({
-//         created() {
-//             /* Avoiding to fake tokens on localStorage */
-//             http.interceptors.response.use(
-//                 response => response,
-//                 error => {
-//                     console.log(error)
-//                     if (error.response.status === 401) { /* If we catch a 401 error */
-//                         let message = 'Se ha cerrado la sesión';
-//                         if (error.response.data.message == 'login_error') {
-//                             message = 'Usuario o contraseña incorrectos';
-//                         }
-//                         if (error.response.data.message.includes('Token')) {
-//                             message = 'Sesión expirada';
-//                         }
-//                         this.$showToast('danger', message, 'Error de sesión', 12000);
-//                         NProgress.done();
-//                         store.dispatch('auth/logout');  /* Force a log out */
-//                     }
-//                     return Promise.reject(error); /* Reject the Promise, with the error as the reason */
-//                 }
-//             );
-//         },
-//         router,
-//         store,
-//         validations,
-//         render: h => h(App)
-//     }).$mount('#app')
-// }
