@@ -152,7 +152,7 @@
         text-align: center;
         transition: all .3s, background-position 1s;
         width: 30px;
-        z-index: 1000;
+        z-index: 999;
     }
     #to-top:hover {
         background-position: 100%;
