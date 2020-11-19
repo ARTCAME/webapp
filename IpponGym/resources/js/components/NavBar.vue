@@ -485,9 +485,6 @@
         position: relative;
         width: 88%;
     }
-    #ig-main-navbar.nav-expanded #main-nav-container.nav-container {
-        padding-bottom: 65px!important; /* Giving visibility to nested absolute positioned nav */
-    }
     .nav-desc-tools {
         border-radius: .25rem;
         color: rgba(0, 131, 81, 1);
@@ -603,6 +600,9 @@
         -webkit-text-fill-color: transparent;
         text-align: center;
         user-select: none;
+    }
+    #nav-collapse {
+        padding-bottom: 62px; /* Giving visibility to nested absolute positioned nav */
     }
     #nav-user {
         opacity: .2;
