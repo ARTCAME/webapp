@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="pt-2">
         <TransitionExpand>
             <div
                 key="form-warning-phones"
@@ -62,16 +62,18 @@
             </div>
         </TransitionExpand>
         <b-row
-            class="mb-4"
+            class="mb-2"
             no-gutters
             v-if="!isDisabled">
-            <b-button
+            <ButtonIcon
+                icon="plus"
                 variant="ig-gradient"
                 :class="'ig-add-button ml-auto' + (!inPhones || (inPhones && inPhones.length == 0) ? ' expanded' : '')"
                 @click="addNewElement({ _id: form._id, element: 'phones', entity: target, entityIndex: targetIndex })">
-                <fa-icon class="mr-3" icon="plus"></fa-icon>
-                Añadir teléfono
-            </b-button>
+                <span class="ml-1">
+                    Añadir teléfono
+                </span>
+            </ButtonIcon>
         </b-row>
     </div>
 </template>
