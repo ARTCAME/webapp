@@ -301,6 +301,7 @@ class PaymentsController extends Controller {
      */
     public function updatePayments(Request $request) {
         $arr_updated = [];
+        $interval_err = [];
         // if ($request->action == 'updating') {
         //     /* If the date is provided transforms it to the mongo format */
         //     $newDateConfirmed = $request->date == null ? $request->date : new \MongoDB\BSON\UTCDateTime(new \DateTime($request->date));
@@ -315,46 +316,68 @@ class PaymentsController extends Controller {
                     $newDateConfirmed = ($el['dateconfirmed'] == '' || $el['dateconfirmed'] == null) ? '' : new \MongoDB\BSON\UTCDateTime(new \DateTime($el['dateconfirmed']));
                     foreach($customer['payments'] as $idx => $payment) {
                         if ($payment['payment_id'] == $el['payment_id']) {
-                            $payment['type'] = $el['type'];
-                            $payment['interval'] = $el['interval'];
-                            $payment['rate'] = $el['rate'];
-                            $payment['amount'] = (float) $el['amount'];
-                            $payment['status'] = $el['status'];
-                            $payment['paymenttype'] = $el['paymenttype'];
-                            $payment['iban'] = $el['paymenttype'] == 'Domiciliación' ? $el['iban'] : null;
-                            $payment['ibanownername'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownername'] : null;
-                            $payment['ibanownerdni'] = $el['paymenttype'] == 'Domiciliación' ? $el['ibanownerdni'] : null;
-                            // $payment['dateconfirmed'] = $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
-                            $payment['dateconfirmed'] = $el['status'] == 'Pendiente' ? '' : $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
-                            $customer['payments.' . $idx] = $payment;
-                            $customer->save();
-                            /* Add the id of the customer for the front end process */
-                            $payment['_id'] = $customer['_id'];
-                            array_push($arr_updated, $payment);
-                            return [
-                                'message' => 'Se ha actualizado el pago.',
-                                'status' => 'success',
-                                'updated' => $arr_updated,
-                                // 'updated' => $payment,
-                            ];
+                            /* Only the bank payments can be 'Devueltos', throw an error if a no bank payment will be updated with this state */
+                            if ($el['status'] == 'Devuelto' && $el['paymenttype'] != 'Domiciliación') {
+                                throw new Exception('Un pago no domiciliado no puede guardarse como devuelto');
+                            /* The confirmed periodic payments are unique by they interval, cannot be two for the same interval/customer, if is attempting to do this throw an error */
+                            } else if ($el['type'] == 'periodic' && $el['status'] != 'Pendiente' && sizeof(array_filter($customer['payments'], function($payment) use($el) { return $payment['interval'] == $el['interval'] && $payment['payment_id'] !== $el['payment_id'] && $payment['status'] != 'Pendiente';})) > 0) {
+                                throw new Exception('No puede haber dos pagos periódicos para el mismo intervalo');
+                            } else {
+                                $payment['type'] = $el['type'];
+                                $payment['interval'] = $el['interval'];
+                                $payment['rate'] = $el['rate'];
+                                $payment['amount'] = (float) $el['amount'];
+                                $payment['status'] = $el['status'];
+                                $payment['paymenttype'] = $el['paymenttype'];
+                                if ($el['paymenttype'] == 'Domiciliación') {
+                                    $payment['iban'] = $el['iban'];
+                                    $payment['ibanownername'] = $el['ibanownername'];
+                                    $payment['ibanownerdni'] = $el['ibanownerdni'];
+                                } else {
+                                    if (isset($payment['iban'])) unset($payment['iban']);
+                                    if (isset($payment['ibanownername'])) unset($payment['ibanownername']);
+                                    if (isset($payment['ibanownerdni'])) unset($payment['ibanownerdni']);
+                                }
+                                // $payment['dateconfirmed'] = $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
+                                $payment['dateconfirmed'] = $el['status'] == 'Pendiente' ? '' : $newDateConfirmed; /* Can be null when the status is 'Pendiente' or a date when the new status is 'Confirmado' or 'Devuelto' */
+                                $customer['payments.' . $idx] = $payment;
+                                $customer->save();
+                                /* Add the id of the customer for the front end process */
+                                $payment['_id'] = $customer['_id'];
+                                array_push($arr_updated, $payment);
+                                return [
+                                    'message' => 'Se ha actualizado el pago.',
+                                    'status' => 'success',
+                                    'updated' => $arr_updated,
+                                    // 'updated' => $payment,
+                                ];
+                            }
                         }
                     }
                     return [
                         'message' => 'No se ha actualizado ningún pago.',
                         'status' => 'danger',
                     ];
-                /* If a confirmation of state of a payment was requested, these actions are called massively of some payments on the front end */
+                /* If a confirmation of state of a payment was requested, these actions are called massively on some payments */
                 } else if ($request->action == 'confirmado' || $request->action == 'devuelto') {
                     $newDateConfirmed = ($el['dateconfirmed'] == '' || $el['dateconfirmed'] == null) ? new \MongoDB\BSON\UTCDateTime(new \DateTime('now')) : new \MongoDB\BSON\UTCDateTime(new \DateTime($el['dateconfirmed']));
                     foreach($customer['payments'] as $idx => $payment) {
+                        /* Update the payments search by payment_id */
                         if ($payment['payment_id'] == $el['payment_id']) {
-                            $payment['status'] = ucFirst($request->action);
-                            $payment['dateconfirmed'] = $newDateConfirmed;
-                            $customer['payments.' . $idx] = $payment;
-                            $customer->save();
-                            /* Add the id of the customer for the front end process */
-                            $payment['_id'] = $customer['_id'];
-                            array_push($arr_updated, $payment);
+                            /* The confirmed periodic payments are unique by they interval, cannot be two for the same interval/customer, if is attempting to do this store does not store it at the db */
+                            if ($payment['type'] == 'periodic' && sizeof(array_filter($customer['payments'], function($inpayment) use($payment) { return $inpayment['interval'] == $payment['interval'] && $inpayment['payment_id'] !== $payment['payment_id'] && $inpayment['status'] != 'Pendiente' && $inpayment['type'] == 'periodic';})) > 0) {
+                                /* Add the id of the customer for the front end process */
+                                $payment['_id'] = $customer['_id'];
+                                array_push($interval_err, $payment);
+                            } else {
+                                $payment['status'] = ucFirst($request->action);
+                                $payment['dateconfirmed'] = $newDateConfirmed;
+                                $customer['payments.' . $idx] = $payment;
+                                $customer->save();
+                                /* Add the id of the customer for the front end process */
+                                $payment['_id'] = $customer['_id'];
+                                array_push($arr_updated, $payment);
+                            }
                         }
                     }
                 }
@@ -365,6 +388,7 @@ class PaymentsController extends Controller {
                 'status' => 'success',
                 'title' => 'Actualización de pagos',
                 'updated' => $arr_updated,
+                'interval_err' => $interval_err,
             ];
         } catch (Exception $e) {
             return response()->json([
