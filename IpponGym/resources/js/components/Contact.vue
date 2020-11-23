@@ -5,15 +5,17 @@
             <b-btn-close
                 tabindex="-1"
                 v-if="!isDisabled"
-                @click="delFormElement({ _id: form._id, entity: 'customer', field: 'contacts', index: index })"></b-btn-close>
+                @click="delFormElement({ _id: form._id, entity: 'customer', field: 'contacts', fieldIndex: index })"></b-btn-close>
             <b-form-group>
                 <h5 md="4" class="subtitle">Persona de contacto</h5>
             </b-form-group>
+            <br>
             <!-- Shown when the form is being edited  -->
             <SearchAtForm
                 field="contacto"
                 v-if="!isDisabled"
-                :contactIndex="index"></SearchAtForm>
+                :contactIndex="index"
+                @chosen="chooseAction(...arguments)"></SearchAtForm>
             <!-- Shown when the form is being edited and the contact is a customer too -->
             <b-button
                 class="mb-2"
@@ -83,8 +85,7 @@
                     :contactIndex="index"
                     :id="'sb-contacto-name-' + index"
                     :searchValue="name"
-                    @choosing="$validator.pause()"
-                    @chosen="$validator.resume()"></SearchBadge>
+                    @chosen="chooseAction(...arguments)"></SearchBadge>
             </b-form-group>
             <PhoneBase
                 target="contacts"
@@ -108,7 +109,7 @@
     </div>
 </template>
 <script>
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 /**
  * Add the getters and setters of the base fields provided
  *
@@ -167,20 +168,53 @@ export default {
         '$validator', /* Inject the main $validator from the parent */
     ],
     methods: {
-        ...mapActions(['addNewElement', 'delFormElement', 'setContactFields']),
-        ...mapMutations(['SET_FIELD']),
+        ...mapActions(['delFormElement', 'setContact', 'setContactFields', 'updateFormData']),
+        /**
+         * Defines the customer chosed as a contact for the customer edited on the form parent
+         *
+         * @param {Object} customer: the customer data from the customers state received via the search badge
+         */
+        async chooseAction(customer) {
+            let result = false;
+            if (this.contact.notes && this.contact.notes.length > 0) {
+                /* Advise the user that the notes will be deleted */
+                result = await this.$bvModal.msgBoxOk('Las notas del contacto se borrarán', {
+                    buttonSize: 'sm',
+                    centered: true,
+                    okTitle: 'Aceptar',
+                    cancelTitle: 'Volver',
+                    size: 'sm',
+                    title: '¿Seguro que quieres continuar?',
+                })
+            }
+            if ((this.contact.notes && this.contact.notes.length > 0 && result) || !this.contact.notes) {
+                /* Pause the current validator instance to avoid errors with the dynamic elements */
+                this.$validator.pause();
+                /* Call to the vuex action to set the chosen contact */
+                await this.setContact({ _id: this.form._id, customer: customer, index: this.index })
+                /* Resume the validator */
+                this.$validator.resume();
+            }
+        },
         /**
          * Resets the contact filled, is called from the MainForm parent when the contact is a customer too
          */
         resetContact() {
             /* Pause the current validator instance to avoid errors on dynamic components */
             this.$validator.pause();
-            this.SET_FIELD({ target: this.form.contacts, field: this.index, newVal: this.getDefaultState('contacts') });
+            this.updateFormData({ _id: this.form._id, field: 'contacts', arrayIndex: this.index, newVal: this.getDefaultState('contacts') });
             /* After fetch the data, reactive the current validator */
             this.$nextTick(() => {
                 this.$validator.resume();
             });
         },
+        /**
+         * Validate the form, usually called from the parent
+         */
+        async validate() {
+            await this.$validator.validate()
+            return this.errors.all();
+        }
     },
     props: [
         'index', /* The contact index on the array of contacts of the parent */
