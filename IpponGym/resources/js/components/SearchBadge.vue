@@ -6,7 +6,7 @@
             v-if="searchResult.length > 0">
             <b-badge
                 pill
-                variant="info"
+                variant="success"
                 :id="id">
                 <AnimatedNum
                     :numFounded="searchResult.length">
@@ -16,7 +16,7 @@
                 custom-class="p-0"
                 placement="topleft"
                 triggers="hover"
-                :id="'ig-sb-popover-' + id"
+                :id="'sb-popover-' + field + (contactIndex ? '-' + contactIndex : '')"
                 :target="id"
                 :title="'Coinciden con el ' + field + ' introducido'">
                 <TableResults
@@ -33,13 +33,21 @@
                             :to="{ name: 'customers.profile', params: { id: row.row.item._id } }">
                             <span class="text text-secondary">Abrir</span>
                         </b-link>
+                        <b-button
+                            class="ig-small-btn"
+                            size="sm"
+                            variant="outline-primary"
+                            v-if="contact || tutor"
+                            @click="chooseAction(row.row.item)">
+                            <span class="text">Añadir {{ tutor ? 'tutor' : 'contacto' }}</span>
+                        </b-button>
                     </template>
                     <template
                         #col="fields">
                         <col
                             v-for="field in fields.fields"
                             :key="field.key"
-                            :style="{ width: field.key == 'active' ? '40px' : field.key == 'actions' ? '50px' : 'auto' }">
+                            :style="{ width: field.key == 'active' ? '40px' : field.key == 'actions' ? contact || tutor ? '150px' : '50px' : 'auto' }">
                     </template>
                 </TableResults>
                 <b-form-text class="text-center">
@@ -57,9 +65,7 @@ export default {
             tableFields: [
                 { key: 'active', label: '', },
                 { key: 'name', label: '', },
-                { key: 'actions', label: '', },
-                // { key: 'use', label: '', },
-                // { key: 'see', label: '', },
+                { key: 'actions', label: '', class: 'text-nowrap text-right' },
             ], /* Table fields for the TableResults child */
         }
     },
@@ -117,30 +123,14 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['setContact', 'setTutor']),
         /**
-         * Checks the parent and assign to it the data of the customer selected
+         * Execute the emit to the parent and close the popover on select an element of the results provided
          *
-         * @param {Object} customer: the customer data from the customers state received via the searchEngine to assign to the entity
+         * @param {Object} customer: the customer data that has to be setted on the parent
          */
-        chooseAction(customer) {
-            /* Emit to the parent to pause the current validator instance to avoid errors on dynamic components */
-            this.$emit('choosing');
-            if (this.tutor) {
-                /* Call to the vuex action to set the chosen tutor */
-                this.setTutor({ _id: this.form._id, customer: customer })
-                    .then(() => {
-                        /* Emit to the parent to resume the validation */
-                        this.$emit('chosen');
-                    });
-            } else if (this.contact) {
-                /* Call to the vuex action to set the chosen contact */
-                this.setContact({ _id: this.form._id, customer: customer, index: this.contactIndex })
-                    .then(() => {
-                        /* Emit to the parent to resume the validation */
-                        this.$emit('chosen');
-                    });
-            }
+        async chooseAction(customer) {
+            this.$emit('chosen', customer);
+            this.$root.$emit('bv::hide::popover', 'sb-popover-' + this.field + (this.contactIndex ? '-' + this.contactIndex : ''));
         }
     },
     props: [
@@ -151,7 +141,7 @@ export default {
         'id', /* The dynamic id created at the parent, necessary to styles on the popovers */
         'searchField', /* The field to use for search */
         'searchValue', /* The value to use on the search */
-        'tutor', /* Boolean to determine if the parent is a contact */
+        'tutor', /* Boolean to determine if the parent is a tutor */
     ],
 }
 </script>
@@ -164,7 +154,7 @@ export default {
     .badge {
         cursor: pointer;
     }
-    [id^=ig-sb-popover] {
+    [id^=sb-popover] {
         min-width: 400px;
     }
 </style>
