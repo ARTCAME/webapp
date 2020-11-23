@@ -272,12 +272,9 @@ import Axios from 'axios';
     }
     .sides-login {
         box-sizing: border-box;
-        /* display: inline-block; */
         display: inline-flex!important;
         flex: 1;
         height: 100%;
-        /* position: fixed; */
-        /* width: 50% */
     }
     @media (max-width: 720px) {
         #login-logo * {
