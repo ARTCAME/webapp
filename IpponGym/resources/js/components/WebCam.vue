@@ -86,7 +86,7 @@
                 },
                 set(value) {
                     /* The id will be null on customers.new page, its managed at vuex */
-                    this.updateCustomerData({ _id: this.form._id, field: 'image', newVal: value });
+                    this.updateFormData({ _id: this.form._id, field: 'image', newVal: value });
                 }
             },
             /**
@@ -99,7 +99,7 @@
             },
         },
         methods: {
-            ...mapActions(['updateCustomerData']),
+            ...mapActions(['updateFormData']),
             /**
              * Cancel the shooting closing the video stream and cleaning the modifications. This function is also called from the parent in component route guards
              */
