@@ -484,6 +484,12 @@
         position: relative;
         width: 88%;
     }
+    @media screen and (min-width: 992px) {
+        .nav-container {
+            max-width: 78%;
+            width: 78%!important;
+        }
+    }
     .nav-desc-tools {
         border-radius: .25rem;
         color: rgba(0, 131, 81, 1);
@@ -542,7 +548,7 @@
     /* Correcting the misalignment */
     #col-tools {
         box-sizing: border-box;
-        border: 2px solid transparent;
+        /* border: 2px solid transparent; */
     }
     /* Alert used on the main form, when a edit is proceding */
     #edit-alert {
