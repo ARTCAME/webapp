@@ -58,8 +58,7 @@
 </template>
 
 <script>
-    import { http } from '../utils/http';
-    import { mapActions, mapMutations } from 'vuex';
+    import { mapActions } from 'vuex';
     export default {
         data() {
             return {
@@ -70,7 +69,6 @@
         methods: {
             /* Mapping vuex */
             ...mapActions(['deleteBelts', 'updateBelts', 'updateFormBelts']),
-            ...mapMutations(['UPDATE_FIELD']),
             /**
              * On delete belts (set its date as null) commit it at db via vuex. Depending on the route the changes are stored at the db (main.belts) or are vuex's only (rest)
              */
