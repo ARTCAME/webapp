@@ -11,7 +11,7 @@
                 if (event.type == 'paste') {
                     event.preventDefault();
                     let input = event.clipboardData.getData('text');
-                    input = input.replace(new RegExp('[^A-Za-z-]', 'g'), '');
+                    input = input.replace(/[^A-Za-z-\s]/g, '');
                     return input;
                 } else {
                     var charCode = (event.which) ? event.which : event.keyCode;
