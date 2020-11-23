@@ -1,11 +1,11 @@
-import store from './store/customers';
+import store from './store/store';
 import validations from './validator/validator';
 import Vue from 'vue';
 
 /* Import directives */
 import './directives/TextOverflown.js';
 
-Vue.config.devtools = false
+// Vue.config.devtools = false
 
 import BootstrapVue from 'bootstrap-vue'; /* https://www.npmjs.com/package/bootstrap-vue */
 import 'bootstrap/dist/css/bootstrap.css';
@@ -50,41 +50,19 @@ import VueTour from 'vue-tour'; /* https://www.npmjs.com/package/vue-tour */
 Vue.use(VueTour);
 require('vue-tour/dist/vue-tour.css');
 
-/* Plugins */
-/* Change the innerText of elements */
-import changeText from './plugins/ChangeText';
-Vue.use(changeText);
-/* Adds a class to focus elements */
-import giveShortFocus from './plugins/giveShortFocus';
-Vue.use(giveShortFocus);
-/* Using html2canvas and jsPdf, saves a document */
-import html2print from './plugins/html2print';
-Vue.use(html2print);
-/* Check if a value is alphanumeric */
-import isAlphaNum from './plugins/IsAlphaNum';
-Vue.use(isAlphaNum);
-/* Check if a value is alphabetical + dash */
-import isAlphaDash from './plugins/IsAlphaDash';
-Vue.use(isAlphaDash);
-/* Check if a value is numeric */
-import isNumber from './plugins/IsNumber';
-Vue.use(isNumber);
-import manageScrollBar from './plugins/ManageScrollBar';
-Vue.use(manageScrollBar);
-/* Generates random gradients for letters */
-import randomGradient from './plugins/RandomGradient';
-Vue.use(randomGradient);
-/* Smooth scroll */
-import scrollTo from './plugins/SmoothScroll';
-Vue.use(scrollTo);
-/* Shows toasts */
-import showToast from './plugins/ShowToast';
-Vue.use(showToast);
-/* Generates csv from the table data */
-import tableToCsv from './plugins/TableToCsv';
-Vue.use(tableToCsv);
+/* Import all the plugins from ./plugins */
+let requirePlugin = require.context(
+    './plugins',
+    true,
+    /[A-Z]\w+\.(vue|js)$/
+  )
+requirePlugin.keys().forEach(fileName => {
+    const pluginConfig = requirePlugin(fileName);
+    /* Manage fileName */
+    Vue.use(pluginConfig.default || pluginConfig);
+});
 
-/* Import all the components from ./components */
+/* Import all the components from ./components and subfolders */
 import upperFirst from 'lodash/upperFirst';
 import camelCase from 'lodash/camelCase';
 let requireComponent = require.context(
@@ -129,6 +107,10 @@ if (token) {
 //     store.dispatch('auth/logout');
 //     router.push({ name: 'maintenance' });
 // }
+
+// window.onerror = function (message, source, lineno, colno, error) {
+//     console.error(message);
+// };
 
 if (store.getters['auth/isLoggedIn']) {
     store.dispatch('getCustomers')
@@ -176,6 +158,7 @@ function createVue() {
         store,
         validations,
         render: h => h(App)
-    }).$mount('#app')
+    }).$mount('#app');
     store.$app = app; /* Pass to the store the this instance to use as this.$app and provide a method to call this.$bvModal or similar */
 }
+
