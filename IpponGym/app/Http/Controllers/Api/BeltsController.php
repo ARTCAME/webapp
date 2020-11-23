@@ -18,7 +18,7 @@ class BeltsController extends Controller {
     public function autoBelts(Request $request) {
         try {
             $result = [];
-            foreach($request->socios as $passed_customer) {
+            foreach($request->customers as $passed_customer) {
                 $customer = Socios::find($passed_customer['_id']);
                 foreach ($customer['belts'] as $idx => $belt) {
                     if (strcmp($belt['grade'], $passed_customer['nextGrade']) == 0 && $belt['date'] == null) {
@@ -27,14 +27,13 @@ class BeltsController extends Controller {
                         array_push($result, [
                             'message' => 'Se ha añadido el nuevo grado.',
                             'nextGrade' => $belt['grade'],
-                            'socio' => $customer,
+                            'customer' => $customer,
                             'status' => 'success',
                         ]);
-                        // return $result;
                     } else if (strcmp($belt['grade'], $passed_customer['nextGrade']) == 0 && $belt['date'] != null) {
                         array_push($result, [
                             'message' => 'No se ha actualizado el grado ya que, el socio ya lo tiene.',
-                            'socio' => $customer,
+                            'customer' => $customer,
                             'status' => 'error',
                         ]);
                     }
