@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="pt-2">
         <TransitionExpand>
             <div
                 key="form-warning-emails"
@@ -47,16 +47,18 @@
             </div>
         </TransitionExpand>
         <b-row
-            class="mb-4"
+            class="mb-2"
             no-gutters
             v-if="!isDisabled">
-            <b-button
+            <ButtonIcon
+                icon="plus"
                 variant="ig-gradient"
                 :class="'ig-add-button ml-auto' + (!inEmails || (inEmails && inEmails.length == 0) ? ' expanded' : '')"
                 @click="addNewElement({ _id: form._id, element: 'emails', entity: target, entityIndex: targetIndex })">
-                <fa-icon class="mr-3" icon="plus"></fa-icon>
-                Añadir email
-            </b-button>
+                <span class="ml-1">
+                    Añadir email
+                </span>
+            </ButtonIcon>
         </b-row>
     </div>
 </template>
