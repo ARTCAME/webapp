@@ -3,58 +3,54 @@
         <!-- Year selector -->
         <b-col class="pr-0" cols="12" md="auto">
             <b-row no-gutters>
-            <!--     <b-col> -->
-                    <b-form-group class="mr-2">
-                        <b-form-radio-group
-                            buttons
-                            button-variant="outline-secondary"
-                            id="interval-year"
-                            name="interval-year"
-                            size="sm"
-                            title="Año"
-                            v-b-tooltip.hover.noninteractive
-                            v-model="selectedYear"
-                            v-validate="!manual ? (selectedAlterYear == null || (selectedAlterYear != null && errors.has('alteryear')) ? 'required' : '') : ''"
-                            :class="'mr-2 w-100 radio-selector' + (errors.has('interval-year') ? ' is-invalid' : '')">
-                            <b-form-radio
-                                class="btn-year"
-                                v-for="btnYear in btnYears"
-                                :key="btnYear"
-                                :value="btnYear"
-                                @change="selectedAlterYear = null; selectedState = null">
-                                {{ btnYear }}
-                            </b-form-radio>
-                        </b-form-radio-group>
-                        <transition mode="out-in" name="liveFeedbacks">
-                            <b-form-invalid-feedback
-                                v-if="errors.has('interval-year')">
-                                {{ errors.first('interval-year') }}
-                            </b-form-invalid-feedback>
-                        </transition>
-                    </b-form-group>
-                <!-- </b-col> -->
-                <!-- <b-col cols="auto"> -->
-                    <b-form-group >
-                        <b-form-input
-                            id="alteryear"
-                            name="alteryear"
-                            placeholder="Otro año..."
-                            size="sm"
-                            title="Indica un año diferente..."
-                            v-b-tooltip.hover.noninteractive
-                            v-model="selectedAlterYear"
-                            v-validate="!manual ? 'year' + (selectedYear == null ? '|required' : '') : ''"
-                            :class="{ 'is-invalid' : errors.has('alteryear') }"
-                            @input="selectedYear = null"
-                            @keypress="$isNumber($event)"></b-form-input>
-                        <transition mode="out-in" name="liveFeedbacks">
-                            <b-form-invalid-feedback
-                                v-if="errors.has('alteryear')">
-                                {{ errors.first('alteryear') }}
-                            </b-form-invalid-feedback>
-                        </transition>
-                    </b-form-group>
-                <!-- </b-col>-->
+                <b-form-group class="mr-2">
+                    <b-form-radio-group
+                        buttons
+                        button-variant="outline-secondary"
+                        id="interval-year"
+                        name="interval-year"
+                        size="sm"
+                        title="Año"
+                        v-b-tooltip.hover.noninteractive
+                        v-model="selectedYear"
+                        v-validate="!manual ? (selectedAlterYear == null || (selectedAlterYear != null && errors.has('alteryear')) ? 'required' : '') : ''"
+                        :class="'mr-2 w-100 radio-selector' + (errors.has('interval-year') ? ' is-invalid' : '')">
+                        <b-form-radio
+                            class="btn-year"
+                            v-for="btnYear in btnYears"
+                            :key="btnYear"
+                            :value="btnYear"
+                            @change="selectedAlterYear = null">
+                            {{ btnYear }}
+                        </b-form-radio>
+                    </b-form-radio-group>
+                    <transition mode="out-in" name="liveFeedbacks">
+                        <b-form-invalid-feedback
+                            v-if="errors.has('interval-year')">
+                            {{ errors.first('interval-year') }}
+                        </b-form-invalid-feedback>
+                    </transition>
+                </b-form-group>
+                <b-form-group >
+                    <b-form-input
+                        id="alteryear"
+                        name="alteryear"
+                        placeholder="Otro año..."
+                        size="sm"
+                        title="Indica un año diferente..."
+                        v-b-tooltip.hover.noninteractive
+                        v-model="selectedAlterYear"
+                        v-validate="!manual ? 'year' + (selectedYear == null ? '|required' : '') : ''"
+                        :class="{ 'is-invalid' : errors.has('alteryear') }"
+                        @input="selectedYear = null"
+                        @keypress="$isNumber($event)"></b-form-input>
+                    <transition mode="out-in" name="liveFeedbacks">
+                        <b-form-invalid-feedback
+                            v-if="errors.has('alteryear')">
+                            {{ errors.first('alteryear') }}
+                        </b-form-invalid-feedback>
+                    </transition>
+                </b-form-group>
             </b-row>
         </b-col>
         <b-col cols="12" md="auto">
@@ -69,7 +65,6 @@
                             no-caret
                             size="sm"
                             variant="outline-secondary"
-                            v-validate="!manual ? 'dropdownRequired:' + selectedMonth : ''"
                             :class="'ig-dropdown w-100' + (!manual && selectedMonth == null && validated == true ? ' is-invalid' : '')">
                             <!-- The month will be disabled when is already used at a confirmed payment -->
                             <template #button-content>
@@ -88,20 +83,20 @@
                                     <b-form-radio
                                         v-b-tooltip.hover.right.noninteractive
                                         v-for="btn in btnMonths"
-                                        :class="(manual ? 'ig-dropdown-item' : 'ig-dropdown-item' + (((confirmed == true && getConfirmed(btn.value)) || (confirmed == false && !getConfirmed(btn.value))) ? ' ig-select-disabled' : ''))"
-                                        :disabled="manual || ((confirmed == true && getConfirmed(btn.value)) || (confirmed == false && !getConfirmed(btn.value)))"
+                                        :class="(manual ? 'ig-dropdown-item' : 'ig-dropdown-item' + (((confirmed == true && isConfirmed(btn.value)) || (confirmed == false && !isConfirmed(btn.value))) ? ' ig-select-disabled' : ''))"
+                                        :disabled="manual || ((confirmed == true && isConfirmed(btn.value)) || (confirmed == false && !isConfirmed(btn.value)))"
                                         :key="btn.value"
-                                        :title="manual ? '' : confirmed == true && getConfirmed(btn.value) ? 'Ya existe un pago confirmado para este mes y año' : ''"
+                                        :title="manual ? '' : confirmed == true && isConfirmed(btn.value) ? 'Ya existe un pago confirmado para este mes y año' : ''"
                                         :value="btn.value"
-                                        :style="((confirmed == true && getConfirmed(btn.value)) || (confirmed == false && !getConfirmed(btn.value))) ? 'pointer-events: auto' : ''"
-                                        @click="selectedMonth = btn.value; selectedState = null">
+                                        :style="((confirmed == true && isConfirmed(btn.value)) || (confirmed == false && !isConfirmed(btn.value))) ? 'pointer-events: auto' : ''"
+                                        @click="selectedMonth = btn.value;">
                                         <b-row align-h="between" no-gutters>
                                             {{ btn.text }}
                                             Shown when the payment is confirmed
                                             <fa-icon
                                                 class="mt-1 text-success"
                                                 icon="check-double"
-                                                v-if="!manual && confirmed == true && getConfirmed(btn.value)"></fa-icon>
+                                                v-if="!manual && confirmed == true && isConfirmed(btn.value)"></fa-icon>
                                         </b-row>
                                     </b-form-radio>
                                 </b-form-radio-group>
@@ -112,19 +107,21 @@
                                     variant="outline-secondary"
                                     v-b-tooltip.hover.right.noninteractive
                                     v-for="btn in btnMonths"
-                                    :title="manual ? '' : confirmed == true && getConfirmed(btn.value) ? 'Ya existe un pago confirmado para este mes y año' : ''"
-                                    :class="(manual ? 'ig-dropdown-item' : 'ig-dropdown-item' + (((confirmed == true && getConfirmed(btn.value)) || (confirmed == false && !getConfirmed(btn.value))) ? ' ig-select-disabled' : ''))"
-                                    :disabled="manual ? false : ((confirmed == true && getConfirmed(btn.value)) || (confirmed == false && !getConfirmed(btn.value)))"
+                                    :title="manual ? '' : confirmed == true && isConfirmed(btn.value) ? 'Ya existe un pago confirmado para este mes y año' : ''"
+                                    :class="(manual ? 'ig-dropdown-item' : 'ig-dropdown-item' + (confirmed == true && isConfirmed(btn.value) ? ' ig-select-disabled' : ''))"
+                                    :disabled="manual || confirmed === false ? false : confirmed == true && isConfirmed(btn.value)"
                                     :key="btn.value"
                                     :value="btn.value"
-                                    @click="selectedMonth = btn.value; selectedState = null;">
+                                    @click="selectedMonth = btn.value">
+                                    <!-- :class="(manual ? 'ig-dropdown-item' : 'ig-dropdown-item' + (((confirmed == true && isConfirmed(btn.value)) || (confirmed == false && !isConfirmed(btn.value))) ? ' ig-select-disabled' : ''))" -->
+                                    <!-- :disabled="manual ? false : ((confirmed == true && isConfirmed(btn.value)) || (confirmed == false && !isConfirmed(btn.value)))" -->
                                     <b-row align-h="between">
                                         {{ btn.text }}
                                         <!-- Shown when the payment is confirmed -->
                                         <fa-icon
                                             class="mt-1 text-success"
                                             icon="check-double"
-                                            v-if="!manual && confirmed == true && getConfirmed(btn.value)"></fa-icon>
+                                            v-if="!manual && confirmed == true && isConfirmed(btn.value)"></fa-icon>
                                     </b-row>
                                 </b-dropdown-item>
                             </b-dropdown-form>
@@ -173,7 +170,6 @@
                 btnYears: [ this.$moment().year() - 1, this.$moment().year(), this.$moment().year() + 1 ], /* Years selector only provides the current and +-1, is assumed that the user never would add a payment out of this ranges */
                 selectedAlterYear: null, /* v-model for the editable input year */
                 selectedMonth: null, /* v-model of the payment month */
-                selectedState: null, /* v-model of the payment status to apply on the bank payments */
                 selectedYear: this.$moment().year(), /* v-model of the new payment year */
                 validated: null, /* Dirty flag to determine if the validation was requested and fake the validation ux on dropdown */
             }
@@ -224,12 +220,13 @@
              *
              * @return {Boolean} Boolean that indicates if the option of the select element needs to be disabled
              */
-            getConfirmed(btnMonth) {
+            isConfirmed(btnMonth) {
                 /* Reveal if the customer has a payment confirmed with the month-year selected and if a paymentId is provided check if its different to this payment interval */
                 const result = this.customer.payments && this.customer.payments.filter(payment => payment.type != 'manual' && this.$moment(payment.interval, 'YYYY-MM').year() == this.year && this.$moment(payment.interval, 'YYYY-MM').month() == btnMonth && (payment.status == 'Confirmado' || payment.status == 'Devuelto') && (payment.payment_id != this.paymentId)).length > 0;
                 /* Unselect the month if it is selected previously */
                 if ((result && this.confirmed == true && this.selectedMonth == btnMonth) || (!result && this.confirmed == false && this.selectedMonth == btnMonth)) {
                     this.selectedMonth = null;
+                    this.$emit('unselected');
                 }
                 return result;
             },
@@ -257,12 +254,11 @@
             /* Emit the null interval on mounted */
             this.$emit('input', this.interval || '');
             /* Assign the parent interval value if exists */
-            // this.assignParentInterval(this.parentInterval);
         },
         props: [
             'customer', /* The customer to treat */
             'confirmed', /* The status of the payments to evaluate */
-            'manual', /* Flag for the manual payments wich no need confirmed checks */
+            'manual', /* Flag for the manual payments wich no need validation */
             'parentInterval', /* The interval setted on the parent */
             'paymentId', /* Is the payment_id of a payment editing on the parent wich needs to be discarted on editions */
         ],
