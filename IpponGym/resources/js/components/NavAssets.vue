@@ -70,10 +70,11 @@
             modal-class="ig-custom-modal"
             no-close-on-backdrop
             scrollable
+            ref="payments-nav-modal"
             title="Añade y actualiza pagos"
             @hidden="$manageScrollBar"
             @show="$manageScrollBar">
-            <PaymentEverywhere></PaymentEverywhere>
+            <PaymentNavBar></PaymentNavBar>
         </b-modal>
         <b-navbar-nav class="ig-assets-nav ml-1">
             <b-nav-item
@@ -175,7 +176,7 @@
         box-sizing: border-box;
     }
     .in-home #nav-newpayment {
-        border: 1px solid rgba(13, 0, 131, 1)!important;
+        border: 1px solid rgba(0, 50, 131, 1)!important;
     }
     .in-home #nav-printfile {
         border: 1px solid rgba(131, 0, 52, 1)!important;
@@ -253,7 +254,7 @@
         padding: 0;
     }
     #nav-newpayment:hover {
-        background-color: rgba(13, 0, 131, 1)!important;
+        background-color: rgba(0, 50, 131, 1)!important;
     }
     #nav-printfile:hover {
         background-color: rgba(131, 0, 52, 1)!important;
@@ -262,7 +263,7 @@
         background-color: rgba(118, 131, 0, 1)!important;
     }
     #nav-newpayment a {
-        color: rgba(13, 0, 131, 1)!important;
+        color: rgba(0, 50, 131, 1)!important;
     }
     #nav-newpayment:hover a {
         /* color: rgba(164, 159, 209, 1)!important; */
