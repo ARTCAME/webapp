@@ -129,7 +129,7 @@
                 },
                 set(value) {
                     /* The id will be null on customers.new page, its managed at vuex */
-                    this.updateCustomerData({ _id: this.form._id, field: 'sign', newVal: value });
+                    this.updateFormData({ _id: this.form._id, field: 'sign', newVal: value });
                 }
             },
         },
@@ -137,7 +137,7 @@
             '$validator', /* Inject the main $validator from the parent */
         ],
         methods: {
-            ...mapActions(['updateCustomerData']),
+            ...mapActions(['updateFormData']),
             /**
              * Active the signature and treat its value
              */
