@@ -5,8 +5,11 @@
         <br>
         <b-row>
             <b-col cols="4"><small>Número de recibo:</small></b-col>
-            <!-- <b-col><small>{{ billNumber }}</small></b-col> -->
-            <b-col><small>{{ customer._id.slice(0, 10) + '_' + printItem.interval + '_' + customer.customerNumber }}</small></b-col>
+            <b-col>
+                <small>
+                    {{ customer._id.slice(0, 10) + '_' + printItem.payment_id.slice(57, -1) + '_' + customer.customerNumber }}
+                </small>
+            </b-col>
         </b-row>
         <b-row>
             <b-col cols="4">Nombre del socio:</b-col>
@@ -29,6 +32,11 @@
             <b-col cols="4">Forma de pago:</b-col>
             <b-col>{{ printItem ? printItem.paymenttype : customer.paymentData.paymenttype }}</b-col>
         </b-row>
+        <b-row
+            v-if="printItem.paymenttype == 'Domiciliación'">
+            <b-col cols="4">Cuenta de pago:</b-col>
+            <b-col>{{ printItem.iban }}</b-col>
+        </b-row>
         <b-row>
             <b-col cols="4">Importe: </b-col>
             <b-col>{{ printItem ? printItem.amount : customer.paymentData.amount }}€ (IVA incluido)</b-col>
@@ -39,7 +47,7 @@
         </b-row>
         <b-row>
             <b-col cols="4">Fecha de pago: </b-col>
-            <b-col>{{ printItem ? printItem.dateconfirmed : getPaymentData(customer._id, printItem.interval).dateconfirmed }}</b-col>
+            <b-col>{{ printItem ? printItem.dateconfirmed : getPaymentByPaymentId(customer._id, printItem.payment_id).dateconfirmed }}</b-col>
         </b-row>
         <Footer
             :name="getUnderage(customer._id) && customer.tutor ? customer.tutor.name : customer.name"
@@ -56,12 +64,11 @@
             'Header': Header,
         },
         computed: {
-            ...mapGetters(['getPaymentData', 'getUnderage']),
+            ...mapGetters(['getPaymentByPaymentId', 'getUnderage']),
         },
         props: [
-            // 'billNumber', /* String with the bill number */
             'customer', /* Object with the customer data */
             'printItem', /* The item with the payment data of a payment edited or created */
-        ]
+        ],
     }
 </script>
