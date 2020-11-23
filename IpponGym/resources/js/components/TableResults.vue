@@ -13,6 +13,8 @@
         :fields="fields"
         :items="items"
         :per-page="pagination"
+        :sort-by="sortBy"
+        :sort-desc="true"
         :tbody-tr-class="clicableRows ? 'clicableRow' : ''"
         @row-clicked="clicableRows ? $emit('row-clicked', $event) : ''">
         <template
@@ -103,6 +105,7 @@ export default {
             type: Number,
             default: 5,
         }, /* Integer to apply on pagination, if its 0 the pagination is not enabled */
+        sortBy: String, /* The sort-by attr to the table */
     }
 }
 </script>
