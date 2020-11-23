@@ -1919,12 +1919,6 @@
                     }
                 }
             },
-            /* Watch to the table items changes to fetch the carts */
-            // paymentsItems(newVal, oldVal) {
-            //     if (JSON.stringify(newVal) != JSON.stringify(oldVal)) {
-            //         this.fetchChartData();
-            //     }
-            // },
         },
     }
 </script>
