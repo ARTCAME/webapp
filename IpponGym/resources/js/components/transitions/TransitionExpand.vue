@@ -37,7 +37,10 @@
             },
             afterEnter(element) {
                 /* Apply the height auto to the element after the appear transition time */
-                setTimeout(() => element.style.height = 'auto', 350);
+                setTimeout(() => {
+                    element.style.height = 'auto'
+                    element.style.overflow = null;
+                }, 350);
             },
             beforeEnter(element) {
                 !element.classList.contains('expandable') && element.classList.add('expandable');
@@ -56,7 +59,6 @@
                     element.style.height = height;
                     element.style.opacity = '1';
                     element.style.transform = 'scale(1)';
-                    element.style.overflow = null;
                 });
             },
             leave(element) {
@@ -93,7 +95,7 @@
     .expand-enter-active,
     .expand-leave-active {
         transition: all .35s ease;
-        overflow: hidden;
+        overflow: hidden!important;
     }
     .expand-enter,
     .expand-leave-to {
