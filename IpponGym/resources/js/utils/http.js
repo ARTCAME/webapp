@@ -1,5 +1,5 @@
 import axios from 'axios';
-import store from '../store/customers';
+import store from '../store/store';
 import NProgress from 'nprogress';
 
 // const URL = 'http://127.0.0.1:9090/'
