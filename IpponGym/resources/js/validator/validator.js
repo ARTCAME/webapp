@@ -112,7 +112,7 @@ Validator.extend('click', {
 })
 Validator.extend('date_custom_rule', {
     validate(value, args) {
-        let minDate = moment().set('year', moment().year() - 3).format('YYYY-MM-DD');
+        let minDate = moment().set('year', moment().year() - 1).format('YYYY-MM-DD');
         let maxDate = moment().set('year', moment().year() - 130).format('YYYY-MM-DD');
         return value > maxDate && value < minDate;
     }
