@@ -1,5 +1,7 @@
 <template>
-    <div>
+    <b-form-group class="mb-0 pt-2"
+        v-if="(isDisabled && inNotes && inNotes.length > 0) || !isDisabled">
+        <h5 md="4" class="subtitle">Notas</h5>
         <b-form-row
             v-if="!isDisabled">
             <b-col
@@ -8,21 +10,23 @@
                     class="d-block"
                     v-b-tooltip.hover.bottom.noninteractive
                     :title="!newNote ? 'Escribe una nota' : ''">
-                    <b-button
-                        variant="ig-outline-green"
+                    <ButtonIcon
+                        icon="plus"
+                        variant="outline-success"
                         :disabled="!newNote"
                         @click="addNote()">
-                        <fa-icon class="mr-3" icon="plus"></fa-icon>
-                        Añadir nota
-                    </b-button>
+                        <span class="ml-1">
+                            Añadir nota
+                        </span>
+                    </ButtonIcon>
                 </span>
             </b-col>
             <b-col>
                 <b-form-group>
                     <b-form-textarea
                         max-rows="1"
+                        rows="1"
                         placeholder="Escribe una nota..."
-                        style="height: 42px"
                         v-model="newNote"></b-form-textarea>
                 </b-form-group>
             </b-col>
@@ -30,7 +34,7 @@
         <TransitionExpand>
             <div
                 key="1"
-                v-if="!inNotes || (inNotes && inNotes.length == 0)">
+                v-if="!isDisabled && (!inNotes || (inNotes && inNotes.length == 0))">
                 <b-alert
                     class="py-1"
                     show
@@ -75,7 +79,7 @@
                 </b-form-group>
             </div>
         </TransitionExpand>
-    </div>
+    </b-form-group>
 </template>
 <script>
 import { mapActions } from 'vuex';
@@ -121,6 +125,12 @@ export default {
         .card-columns {
             -webkit-column-count: 1;
             column-count: 1;
+        }
+    }
+    @media screen and (max-width: 768px) {
+        .card-columns {
+            -webkit-column-count: 2;
+            column-count: 2;
         }
     }
     @media screen and (min-width: 1200px) {
