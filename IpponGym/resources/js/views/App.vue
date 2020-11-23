@@ -60,7 +60,7 @@
             window.removeEventListener('beforeunload', this.beforeUnload);
         },
         methods: {
-            ...mapActions(['setCustomerEdited']),
+            ...mapActions(['initEditForm', 'setCustomerEdited']),
             /**
              * Manages the localStarge changes to react on them on the diferent app pages to reload the customers data modified on other local tabs/windows
              *
@@ -75,7 +75,12 @@
                 }
                 // console.log('receiving ->' + data)
                 if (ev.key == 'customer_updated') {
+                    /* Update the customer */
                     this.setCustomerEdited(data);
+                    /* Update the form */
+                    if (this.$route.name == 'customers.edit' || this.$route.name == 'customers.profile') {
+                        this.initEditForm(data);
+                    }
                     /* Algorithm
                         Are using the editform state and the id is used as a customer, tutor or contact
                         Are using the form and the id is used a tutor or contact
@@ -113,6 +118,7 @@
     $font-family-sans-serif:      $ig-font, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     $font-family-base:            $font-family-sans-serif;
 
+    $blue:     #003283;
     $green:     #008351;
     $dangning:  #833000;
 
@@ -163,6 +169,13 @@
     }
     #to-top:hover svg {
         transform: translateY(-1px);
+    }
+    @media screen and (min-width: 992px) {
+        #main-container {
+            margin: 0 auto;
+            max-width: 80%;
+            width: 80%!important;
+        }
     }
 </style>
 
