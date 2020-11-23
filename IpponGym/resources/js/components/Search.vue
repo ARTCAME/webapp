@@ -32,7 +32,6 @@
     </div>
 </template>
 <script>
-    import * as WzdSteps from './wzdsteps/modalsearch';
     export default {
         data() {
             return {
