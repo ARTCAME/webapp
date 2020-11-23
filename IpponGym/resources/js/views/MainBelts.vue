@@ -34,25 +34,16 @@
                         v-b-tooltip.hover.noninteractive
                         :title="updateInCourse ? 'No puedes actualizar cinturones mientras editas una línea de la tabla' : rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : beltsNewDate == '' ? 'Selecciona una fecha' : updateCsv ? 'Descargando...' : 'Guardar y descargar archivo'">
                         <!-- Disabled when no grades are selected and no date was selected or if the process to save the file and download it has been started -->
-                        <b-button
+                        <ButtonIcon
                             class="w-100"
+                            icon="save"
                             size="sm"
                             :disabled="beltsNewDate == '' || rowsSelected.length == 0 || updateCsv == true"
+                            :spin="updateCsv == true"
                             :variant="beltsNewDate == '' || rowsSelected.length == 0 || updating == false ? 'outline-success' : 'success'"
                             @click="beltsMassUpdate()">
-                            <!-- Shown during the download of the file -->
-                            <b-spinner
-                                small
-                                type="grow"
-                                v-if="updateCsv == true"></b-spinner>
-                            <!-- If no download is being processed, shown this -->
-                            <fa-icon
-                                icon="save"
-                                v-else></fa-icon>
-                            <span class="d-inline-block save-csv">
-                                &ensp;Actualizar cinturones
-                            </span>
-                        </b-button>
+                            Actualizar cinturones
+                        </ButtonIcon>
                     </span>
                     <!-- Shown whe the process to update grades is actived and some grade are selected -->
                     <transition name="slide-fade">
@@ -105,26 +96,16 @@
                         v-b-tooltip.hover.noninteractive.top
                         :title="updateInCourse ? 'No puedes generar el archivo mientras editas una línea de la tabla' :  rowsSelected.length == 0 ? 'Selecciona algún socio en la tabla' : downloadCsvManual ? 'Descargando...' : 'Descargar archivo'">
                         <!-- Disabled when no grades are selected or if a row has an edit open or if the process to download the grades has been started -->
-                        <b-button
+                        <ButtonIcon
                             class="w-100"
+                            icon="file-download"
                             size="sm"
                             :disabled="rowsSelected.length == 0 || updateInCourse || downloadCsvManual"
+                            :spin="downloadCsvManual == true"
                             :variant="rowsSelected.length == 0 || updateInCourse  ? 'outline-success' : 'success'"
                             @click="$tableToCsv([ 'name', 'grade', 'date' ], beltsSelectedDownload, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')">
-                            <!-- @click="$tableToCsv([ 'name', 'grade', 'date' ], rowsSelected, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_manual_' + beltsNewDate + '.csv', 'downloadCsvManual')"> -->
-                            <!-- Shown during the download of the file -->
-                            <b-spinner
-                                small
-                                type="grow"
-                                v-if="downloadCsvManual == true"></b-spinner>
-                            <!-- If no download is being processed, shown this -->
-                            <fa-icon
-                                icon="file-download"
-                                v-else></fa-icon>
-                            <span class="d-inline-block save-csv">
-                                &ensp;Descargar fichero de diplomas
-                            </span>
-                        </b-button>
+                            Descargar fichero de diplomas
+                        </ButtonIcon>
                     </span>
                     <!-- Shown when some grade was selected -->
                     <transition name="slide-fade">
@@ -290,15 +271,16 @@
                                     </b-dropdown-form>
                                 </b-dropdown>
                                 <!-- Reset filters button -->
-                                <b-button
+                                <ButtonIcon
                                     class="btn-fa-tiny mt-1"
+                                    icon="sync-alt"
+                                    no-text
                                     size="sm"
                                     title="Restablecer los filtros"
                                     variant="outline-warning"
                                     v-b-tooltip.hover.noninteractive
                                     @click="resetFilters()">
-                                    <fa-icon icon="sync-alt"></fa-icon>
-                                </b-button>
+                                </ButtonIcon>
                             </b-row>
                         </b-col>
                         <b-col class="d-flex flex-nowrap ml-3 mt-1" cols="auto">
@@ -309,14 +291,15 @@
                                 v-b-tooltip.hover.noninteractive
                                 :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Mostrar detalles en todas las filas'">
                                 <!-- Disabled when the table hasn't content or if all the existing rows are showing their details -->
-                                <b-button
+                                <ButtonIcon
                                     class="btn-fa-tiny"
+                                    icon="angle-double-down"
+                                    no-text
                                     size="sm"
                                     :disabled="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetailsItems.length == beltsTableItems.length"
                                     :variant="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 || showingDetailsItems.length == beltsTableItems.length ? 'outline-info' : 'info'"
                                     @click="detailsExpandAll()">
-                                    <fa-icon icon="angle-double-down"></fa-icon>
-                                </b-button>
+                                </ButtonIcon>
                             </span>
                             <!-- Hide all row details button -->
                             <span
@@ -325,14 +308,15 @@
                                 v-b-tooltip.hover.noninteractive
                                 :title="$refs.beltsTable && $refs.beltsTable.filteredItems.length == 0 ? 'No hay datos en la tabla' : 'Ocultar detalles de todas las filas'">
                                 <!-- Disabled when the table hasn't content or if all the existing rows aren't showing their details -->
-                                <b-button
+                                <ButtonIcon
                                     class="btn-fa-tiny"
+                                    icon="angle-double-up"
+                                    no-text
                                     size="sm"
                                     :disabled="showingDetailsItems.length == 0 || ($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0)"
                                     :variant="showingDetailsItems.length == 0 ? 'outline-secondary' : 'secondary'"
                                     @click="detailsCollapseAll()">
-                                    <fa-icon icon="angle-double-up"></fa-icon>
-                                </b-button>
+                                </ButtonIcon>
                             </span>
                             <!-- Download table data button -->
                             <span
@@ -340,22 +324,16 @@
                                 v-b-tooltip.hover.noninteractive.topleft
                                 :title="($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0) ? 'No hay datos en la tabla para descargar' : downloadCsvTable ? 'Descargando...' : 'Descargar los datos de la tabla'">
                                 <!-- Disabled when no table content or if the download of the table data was started -->
-                                <b-button
+                                <ButtonIcon
                                     class="btn-fa-tiny"
+                                    icon="download"
+                                    no-text
                                     size="sm"
                                     variant="outline-success"
                                     :disabled="($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0) || beltsTableItems.length == 0 || downloadCsvTable == true"
+                                    :spin="downloadCsvTable == true && ($refs.beltsTable && $refs.beltsTable.filteredItems.length != 0)"
                                     @click="$tableToCsv([ '_id', 'customerNumber', 'name', 'belts' ], $refs.beltsTable.filteredItems, $moment().format('YYYY-MM-DD_HH.mm.ss') + '-grados.csv', 'downloadCsvTable')">
-                                    <!-- Shown during the download of the file -->
-                                    <b-spinner
-                                        small
-                                        type="grow"
-                                        v-if="downloadCsvTable == true && ($refs.beltsTable && $refs.beltsTable.filteredItems.length != 0)"></b-spinner>
-                                    <!-- By default, show an icon -->
-                                    <fa-icon
-                                        icon="download"
-                                        v-else></fa-icon>
-                                </b-button>
+                                </ButtonIcon>
                             </span>
                         </b-col>
                     </b-row>
@@ -376,17 +354,14 @@
                     :items="beltsTableItems">
                     <template
                         #head(selected)>
-                        <b-button
+                        <ButtonIcon
                             id="head-selectall"
+                            no-text
                             :class="'ig-table-checkbox' + (selectedAll ? ' ig-checked' : '')"
+                            :disabled="($refs.beltsTable && $refs.beltsTable.filteredItems.length == 0) || beltsTableItems.length == 0 || downloadCsvTable == true"
+                            :icon="selectedAll ? 'check' : selectedSome ? 'circle' : ''"
                             @click="rowSelectAll(!selectedAll)">
-                            <fa-icon
-                                icon="check"
-                                v-if="selectedAll"></fa-icon>
-                            <fa-icon
-                                icon="circle"
-                                v-else-if="selectedSome"></fa-icon>
-                        </b-button>
+                        </ButtonIcon>
                     </template>
                     <template
                         #cell(active)="row">
@@ -400,14 +375,13 @@
                         <span
                             v-b-tooltip.hover.noninteractive
                             :title="updating && row.item.belts.some(el => el.date == null) && row.item.nextGrade == '' ? 'No tiene marcado ningún Siguiente grado, revisa si tiene cinturones para otorgar y selecciona alguno' : ''">
-                            <b-button
+                            <ButtonIcon
+                                no-text
                                 :class="'ig-table-checkbox' + (isSelected(row.item) ? ' ig-checked' : '')"
                                 :disabled="(updating && (row.item.belts.some(el => el.date != null) && row.item.nextGrade == '')) || (downloadGrades && (row.item.belts.every(el => el.date == null)))"
+                                :icon="isSelected(row.item) ? 'check' : ''"
                                 @click="rowSelect(row.item, !isSelected(row.item))">
-                                <fa-icon
-                                    icon="check"
-                                    v-if="isSelected(row.item)"></fa-icon>
-                            </b-button>
+                            </ButtonIcon>
                         </span>
                     </template>
                     <template
@@ -443,16 +417,15 @@
                     </template>
                     <template
                         #cell(editRow)="row">
-                        <b-button
+                        <ButtonIcon
                             class="ig-small-btn"
-                            size="sm"
-                            v-b-tooltip.hover.noninteractive
+                            no-text
+                            v-b-tooltip.hover.left.noninteractive
+                            :icon="!row.item._showDetails ? 'angle-double-down' : 'angle-double-up'"
                             :title="!row.item._showDetails ? 'Mostrar detalles' : 'Ocultar detalles'"
                             :variant="!row.item._showDetails ? 'outline-info' : 'info'"
                             @click="detailsSet(row.item, !row.item._showDetails)">
-                            <fa-icon
-                                :icon="!row.item._showDetails ? 'angle-double-down' : 'angle-double-up'"></fa-icon>
-                        </b-button>
+                        </ButtonIcon>
                     </template>
                     <template
                         #row-details="row">
@@ -486,19 +459,15 @@
                                     tabindex="0"
                                     v-b-tooltip.hover.noninteractive
                                     :title="updating ? 'Para poder editar finaliza la actualización de grados' : downloadGrades ? 'Para poder editar finaliza la descarga de diplomas' : !isUpdating(row.item) ? 'Editar grados' : 'Cancelar la edición'">
-                                    <b-button
+                                    <ButtonIcon
                                         class="btn-edit-cinturones"
+                                        no-text
                                         size="sm"
                                         :disabled="updating || downloadGrades"
+                                        :icon="!isUpdating(row.item) ? 'edit' : 'times'"
                                         :variant="!isUpdating(row.item) ? 'outline-secondary' : 'danger'"
                                         @click="activateUpdate(row.item)">
-                                        <fa-icon
-                                            icon="edit"
-                                            v-if="!isUpdating(row.item)"></fa-icon>
-                                        <fa-icon
-                                            icon="times"
-                                            v-else></fa-icon>
-                                    </b-button>
+                                    </ButtonIcon>
                                 </span>
                             </b-col>
                         </b-row>
@@ -556,8 +525,7 @@
     </div>
 </template>
 <script>
-    import { http } from '../utils/http';
-    import { mapActions, mapGetters, mapMutations } from 'vuex';
+    import { mapActions, mapGetters } from 'vuex';
     import * as WzdSteps from '../components/wzdsteps/belts';
     const QS = require('qs'); /* Needed at axios.post function to pass array as params to the controller */
     const SPECIAL_CHARACTERS = { 'Ã': 'A', 'À': 'A', 'Á': 'A', 'Ä': 'A', 'Â': 'A', 'È': 'E', 'É': 'E', 'Ë': 'E', 'Ê': 'E', 'Ì': 'I', 'Í': 'I', 'Ï': 'I', 'Î': 'I', 'Ò': 'O', 'Ó': 'O', 'Ö': 'O', 'Ô': 'O', 'Ù': 'U', 'Ú': 'U', 'Ü': 'U', 'Û': 'U', 'ã': 'a', 'à': 'a', 'á': 'a', 'ä': 'a', 'â': 'a', 'è': 'e', 'é': 'e', 'ë': 'e', 'ê': 'e', 'ì': 'i', 'í': 'i', 'ï': 'i', 'î': 'i', 'ò': 'o', 'ó': 'o', 'ö': 'o', 'ô': 'o', 'ù': 'u', 'ú': 'u', 'ü': 'u', 'û': 'u', 'Ñ': 'N', 'ñ': 'n', 'Ç': 'c', 'ç': 'c' };
@@ -579,7 +547,6 @@
                     { key: 'nextGrade', label: 'Siguiente grado', sortable: true, class: 'text-center', },
                     { key: 'editRow', label: 'Detalles', class: 'tableEditRow text-center' },
                 ], /* Fields of the table beltsTable, some conditional showed fields are not included by default and it will be included in some function */
-                beltsUpdated: [], /* Array with the updated rows of the table during a update of grade */
                 deletingRow: false, /* Flag to activate/deactivate the delete grades button */
                 downloadCsvTable: false, /* Flag to conditional render an spinner or icon on a print button */
                 downloadCsvManual: false, /* Flag to conditional render an spinner or icon on a print button */
@@ -749,9 +716,8 @@
             window.removeEventListener('resize', () => { this.$forceUpdate() });
         },
         methods: {
-            ...mapActions(['deleteBelts']),
+            ...mapActions(['deleteBelts', 'updateBeltsMassive']),
             ...mapActions('navbar', ['endProcedures', 'setProcedureState']),
-            ...mapMutations(['UPDATE_BELTS']),
             /**
              * Function that 'starts' the delete action
              *
@@ -812,53 +778,28 @@
             /**
              * Function that takes the selected data by the user (rows of the table beltsTable) and store at the database its changes at his grades (cinturones).
              */
-            beltsMassUpdate() {
-                /* Reset to fill it with the updated elements, used to print the passed belts */
-                this.beltsUpdated = [];
+            async beltsMassUpdate() {
                 /* Will store all the updated rows to send it to vuex */
                 let newDate = this.$moment(this.beltsNewDate).format('DD-MM-YYYY');
-                http.post('/api/autoBelts', QS.stringify({ date: newDate, socios: this.rowsSelected }))
-                    .then(response => {
-                        response.data.forEach(item => {
-                            /* Get the row that has been updated */
-                            let row = this.beltsTableItems.filter(bti => bti._id == item.socio._id)[0];
-                            /* Commit on vuex the changes */
-                            this.UPDATE_BELTS({ customer: this.getCustomerById(item.socio._id), newVal: item.socio.belts });
-                            /* Trigger a modification on the localStorage to propagate the changes on other windows */
-                            localStorage.setItem('customer_updated', item.socio._id);
-                            localStorage.removeItem('customer_updated');
-                            /* Store a cookie with the saved data */
-                            /*  NOT USED FOR NOW
-                            this.guardarCookie(item, 'new'); */
-                            /* If the updated was made on the db add the current edited element to the edited arr with wich create a csv file */
-                            if (item.status == 'success') {
-                                this.beltsUpdated.push({ name: item.socio.name, grade: item.nextGrade, date: newDate });
-                            }
-                        });
-                    })
-                    .then(() => {
-                        /* Download the file with the updated data */
-                        if (this.beltsUpdated.length > 0 && (this.beltsUpdated.length == this.rowsSelected.length)) {
-                            this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
-                        }
-                        if (this.beltsUpdated.length > 0 && (this.beltsUpdated.length != this.rowsSelected.length)) {
-                            this.$showToast('warning', 'Se han guardado los cambios pero alguno de los grados seleccionados no han podido ser actualizados. Revisa el archivo descargado con los grados actualizados.', 'Grados actualizados correctamente', 7500);
-                        }
-                        if (this.beltsUpdated.length > 0) {
-                            this.$showToast('success', 'Se ha descargado el archivo para generar los diplomas.', 'Descarga de archivo de grados', 6500);
-                        }
-                        this.$tableToCsv(['name', 'grade', 'date'], this.beltsUpdated, this.$moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_diplomas_' + this.beltsNewDate + '.csv', 'updateCsv');
-                        if (this.beltsUpdated.length == 0) {
-                            this.$showToast('warning', 'No se ha guardado ningún cambio.', 'Atención', 6500);
-                        }
-                        /* Reset the involved vars */
-                        this.beltsNewDate = '';
-                        this.rowsSelected = [];
-                    })
-                    .catch(error => {
-                        this.$showToast('danger', 'No se han podido guardar los datos. Código de error: FESoCi@AuCi', 'Ha ocurrido un error')
-                        console.error(error.response ? error.response.data : error);
-                    });
+                const beltsUpdated = await this.updateBeltsMassive({ newDate: newDate, customers: this.rowsSelected })
+                /* Construct and show the message to the user based on the updated elements */
+                if (beltsUpdated.length > 0 && (beltsUpdated.length == this.rowsSelected.length)) {
+                    this.$showToast('success', 'Se han guardado los cambios.', 'Grados actualizados correctamente', 5000);
+                }
+                if (beltsUpdated.length > 0 && (beltsUpdated.length != this.rowsSelected.length)) {
+                    this.$showToast('warning', 'Se han guardado los cambios pero alguno de los grados seleccionados no han podido ser actualizados. Revisa el archivo descargado con los grados actualizados.', 'Grados actualizados correctamente', 7500);
+                }
+                if (beltsUpdated.length > 0) {
+                    this.$showToast('success', 'Se ha descargado el archivo para generar los diplomas.', 'Descarga de archivo de grados', 6500);
+                }
+                /* Download the csv file with the updated data */
+                this.$tableToCsv(['name', 'grade', 'date'], beltsUpdated, this.$moment().format('YYYY-MM-DD_HH.mm.ss') + '_cinturones_diplomas_' + this.beltsNewDate + '.csv', 'updateCsv');
+                if (beltsUpdated.length == 0) {
+                    this.$showToast('warning', 'No se ha guardado ningún cambio.', 'Atención', 6500);
+                }
+                /* Reset the involved vars */
+                this.beltsNewDate = '';
+                this.rowsSelected = [];
             },
             /**
              * Function called when a tag is removed from its interaction. It will splice the tag removed from the v-model of the tags element
