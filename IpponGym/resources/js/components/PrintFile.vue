@@ -161,15 +161,33 @@
                     <div
                         key="pf-payment-search"
                         v-if="fileType == 0 && paymentsConfirmed.length > 0">
-                        <h5 class="subtitle subtitle-sub" md="4">Busca y selecciona el pago</h5>
+                        <h5 class="subtitle subtitle-sub" md="4">Busca y selecciona entre los pagos realizados</h5>
                         <b-card class="mb-4">
                             <Payments
-                                :filters="['interval', 'type', 'paymenttype', 'creationdate']"
+                                :filters="['interval', 'type', 'paymenttype', 'creationdate', 'confirmationdate']"
                                 :itemsPerPage="10"
                                 :lite="true"
                                 :parentItems="paymentsConfirmed"
-                                :tableFields="tableFields"
-                                @choose="selectPayment(...arguments);"></Payments>
+                                :tableFields="tableFields">
+                                <template
+                                    #use="row">
+                                    <b-button
+                                        class="ig-modal-table-btn"
+                                        size="sm"
+                                        variant="outline-primary"
+                                        @click="selectPayment(row.row.item)">
+                                        Seleccionar
+                                    </b-button>
+                                </template>
+                                <template
+                                    #col="fields">
+                                    <col
+                                        v-for="field in fields.fields"
+                                        :key="field.key"
+                                        :style="{ width: field.key == 'use' ? '70px' : field.key == 'amount' || field.key == 'type' || field.key == 'interval' ? '70px' : field.key == 'paymenttype' ? '110px' : field.key == 'rate' ? '150px' : 'auto' }">
+                                </template>
+
+                            </Payments>
                         </b-card>
                         <transition name="fade">
                             <div
@@ -179,8 +197,7 @@
                                 <GroupList
                                     :customer="customer"
                                     :fileType="fileType"
-                                    :paymentData="paymentSelected"
-                                    :underage="underage"></GroupList>
+                                    :paymentData="paymentSelected"></GroupList>
                             </div>
                         </transition>
                         <b-row
@@ -218,8 +235,7 @@
                         <GroupList
                             :customer="customer"
                             :fileType="fileType"
-                            :paymentData="paymentSelected"
-                            :underage="underage"></GroupList>
+                            :paymentData="paymentSelected"></GroupList>
                         <TransitionExpand>
                             <!-- Advice the user that important customer data is missing, this miss doesn't disallow any action -->
                             <b-alert
@@ -313,152 +329,9 @@
     </div>
 </template>
 <script>
-/* Component to avoid repetition on show the payment data on the different places of the page */
-    var GroupList = {
-        data() {
-            return {
-                billFields: {
-                    rate: 'TARIFA',
-                    amount: 'IMPORTE',
-                    paymenttype: 'FORMA DE PAGO',
-                    interval: 'PERIODO DE PAGO',
-                    iban: 'IBAN',
-                },
-                commonFields: {
-                    name: 'NOMBRE',
-                    dni: 'DNI', /* On underages must check the dni of the customer and the tutor to show the apropiate*/
-                    sign: 'FIRMA',
-                },
-                rpFields: {
-                    RPaccept: 'ACEPTA CONSENTIMIENTO EXPRESO',
-                },
-                riFields: {
-                    RIaccept: 'ACEPTA CESIÓN DE IMAGEN',
-                },
-                tutorFields: {
-                    tutorName: 'NOMBRE DEL TUTOR',
-                    tutorDni: 'DNI DEL TUTOR',
-                },
-            }
-        },
-        computed: {
-            /**
-             * Build the bill number to print it on the bill
-             *
-             * @return {String} String formed by the 10 firsts chars of the customer id, the 6 last chars of the payment_id and the customer number
-             */
-            billNumber() {
-                return this.customer._id.slice(0, 10) + '_' + this.paymentData.payment_id.slice(57, -1) + '_' + this.customer.customerNumber
-            },
-            /**
-             * Agregate the fields to use on the current doctype
-             *
-             * @returns {Object} Object formed by the k,v for the current type of document
-             */
-            resumeKeys() {
-                let keys = { ...this.commonFields };
-                if (this.underage) {
-                    keys = { ...keys, ...this.tutorFields };
-                }
-                if (this.fileType == 0) {
-                    keys = { ...keys, ...this.billFields };
-                } else if (this.fileType == 1) {
-                    keys = { ...keys, ...this.rpFields };
-                } else if (this.fileType == 2) {
-                    keys = { ...keys, ...this.riFields };
-                }
-                return keys;
-            },
-        },
-        methods: {
-            /**
-             * Function to determine the text and the text class for the list-group elements
-             *
-             * @param {Object} elem: the payment element to evaluate
-             * @param {String} key: the key of the object
-             *
-             * @returns {Object} with the text and the flag to deterimne if the text-danger class is needed
-             */
-            evaluateListElement(elem, key) {
-                let result = {
-                    text: elem[key],
-                    class: ''
-                };
-                switch(key) {
-                    case 'dni':
-                        result.text = (this.customer.dni != '' && this.customer.dni != null) ? this.customer.dni : 'Falta el dni';
-                        break;
-                    case 'tutorName':
-                        result.text = this.customer.tutor && (this.customer.tutor.name != '' && this.customer.tutor.name != null) ? this.customer.tutor.name : 'Falta el nombre del tutor';
-                        if (this.customer.tutor && (this.customer.tutor.name == '' || this.customer.tutor.name == null)) {
-                            result.class = 'text-danger';
-                        }
-                        break;
-                    case 'tutorDni':
-                        result.text = this.customer.tutor && (this.customer.tutor.dni != '' && this.customer.tutor.dni != null) ? this.customer.tutor.dni : 'Falta el dni del tutor';
-                        if (this.customer.tutor && (this.customer.tutor.dni == '' || this.customer.tutor.dni == null)) {
-                            result.class = 'text-danger';
-                        }
-                        break;
-                    case 'sign':
-                        result.text = this.customer.sign ? 'Correcta' : 'Pendiente';
-                        if (!this.customer.sign) {
-                            result.class = 'text-danger';
-                        }
-                        break;
-                    /* The two below aren't visibles for the user because the summary is not rendered when this options are null or false */
-                    case 'RPaccept':
-                        result.text = this.customer.rightsProtect.RPaccept == false ? 'No' : this.customer.rightsProtect.RPaccept == null ? 'No indicado' : 'Sí';
-                        break;
-                    case 'RIaccept':
-                        result.text = this.customer.rightsImage.RIaccept == false ? 'No' : this.customer.rightsImage.RIaccept == null ? 'No indicado' : 'Sí';
-                        break;
-                }
-                return result;
-            },
-        },
-        props: [
-            'fileType',
-            'paymentData',
-            'customer',
-            'underage',
-        ],
-        template:
-            `
-            <b-list-group class="mx-1">
-                <b-list-group-item
-                    class="py-1"
-                    v-if="fileType == 0">
-                    <b-row>
-                        <b-col class="text-muted" cols="4">
-                            NÚMERO DE RECIBO
-                        </b-col>
-                        {{ billNumber }}
-                    </b-row>
-                </b-list-group-item>
-                <b-list-group-item
-                    class="py-1"
-                    v-for="(rV, rK) in resumeKeys"
-                    v-if="rK == 'iban' && paymentData.paymenttype == 'Domiciliación' || rK != 'iban'"
-                    :key="rK">
-                    <b-row>
-                        <b-col class="text-muted" cols="4">
-                            {{ rV }}
-                        </b-col>
-                        <span
-                            :class="evaluateListElement((Object.keys(billFields).includes(rK) ? paymentData : customer), rK).class">
-                            {{ evaluateListElement((Object.keys(billFields).includes(rK) ? paymentData : customer), rK).text }}
-                        </span>
-                    </b-row>
-                </b-list-group-item>
-            </b-list-group>
-            `
-    }
     import { mapActions, mapGetters } from 'vuex';
     import NProgress from 'nprogress';
-    import * as WzdSteps from './wzdsteps/modaldocuments';
     export default {
-        components: { GroupList },
         data() {
             return {
                 customer: null, /* Stores the data of the customer selected */
@@ -504,7 +377,7 @@
              */
             paymentsConfirmed() {
                 /* The inactives (last param) always will be true instead of the status of the customer because we can print documents of an inactive customer */
-                return this.getFilteredPaymentsById(this.customer._id, null, null, ['Confirmado'], null, ['manual', 'periodic'], null, true);
+                return this.getFilteredPaymentsById({ _id: this.customer._id, filterStatus: ['Confirmado'], filterType: ['manual', 'periodic'], inactives: true });
             },
             /**
              * Determines if the provided customer is underage checking to vuex customer data
@@ -524,7 +397,7 @@
                 NProgress.start();
                 /* Active the flag to userx and disallow multiple clicks */
                 this.downloading = true;
-                this.$html2print(this.filename, this.$refs.printable/* this.$refs.pdfPrinterRU.$refs.printable */)
+                this.$printDoc(this.filename, this.$refs.printable/* this.$refs.pdfPrinterRU.$refs.printable */)
                     .then(() => {
                         NProgress.set(0.8);
                         /* Restore the flag to userx and disallow multiple clicks */
