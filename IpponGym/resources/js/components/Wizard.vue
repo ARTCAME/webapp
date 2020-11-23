@@ -52,7 +52,7 @@
                     <v-step
                         v-for="(step, index) of tour.steps"
                         v-if="tour.currentStep === index"
-                        :key="index"
+                        :key="'step-' + index"
                         :step="step"
                         :previous-step="tour.previousStep"
                         :next-step="tour.nextStep"
