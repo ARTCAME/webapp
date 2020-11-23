@@ -5,8 +5,7 @@
             <b-btn-close
                 tabindex="-1"
                 v-if="underage == false && !isDisabled"
-                @click="DEL_OBJ_KEY({ state: form, target: 'tutor' })"></b-btn-close>
-                <!-- @click="DEL_TUTOR(form)"></b-btn-close> -->
+                @click="delFormObjElement({ state: form, target: 'tutor' })"></b-btn-close>
             <b-form-group>
                 <h5 md="4" class="subtitle">Tutor</h5>
             </b-form-group>
@@ -21,7 +20,8 @@
             <!-- Shown when the form is being edited -->
             <SearchAtForm
                 field="tutor"
-                v-if="!isDisabled"></SearchAtForm>
+                v-if="!isDisabled"
+                @chosen="chooseAction(...arguments)"></SearchAtForm>
             <b-button
                 class="mb-2"
                 size="sm"
@@ -90,8 +90,7 @@
                         v-if="!_id && !isDisabled"
                         :tutor="true"
                         :searchValue="name"
-                        @choosing="$validator.pause()"
-                        @chosen="$validator.resume()"></SearchBadge>
+                        @chosen="chooseAction(...arguments)"></SearchBadge>
                 </b-form-group>
                 <!-- Validation needs extra validation when the tutor is fetched from other customer and disabled because of this -->
                 <b-form-group class="wrapper-for-badge col-lg-4" label="Dni del tutor">
@@ -101,7 +100,7 @@
                         name="tutor-dni"
                         type="text"
                         v-model="dni"
-                        v-validate="!_id && !isDisabled ? (underage == true ? 'required' : '') + '|dnie|lengthDnie|dniTutorFounded:' + ($route.name != 'customers.new' ? getCustomerByField('dni', dni).filter(el => el._id != form._id).length : getCustomerByField('dni', dni).length) : ''"
+                        v-validate="!_id && !isDisabled ? (underage == true && !form.dni ? 'required' : '') + '|dnie|lengthDnie|dniTutorFounded:' + ($route.name != 'customers.new' ? getCustomerByField('dni', dni).filter(el => el._id != form._id).length : getCustomerByField('dni', dni).length) : ''"
                         :class="{ 'is-invalid' : (errors.has('tutor-dni') && (!_id && !isDisabled)) }"
                         :disabled="!!_id || isDisabled"
                         @drop.prevent
@@ -124,8 +123,7 @@
                         v-if="!_id && !isDisabled"
                         :searchValue="dni"
                         :tutor="true"
-                        @choosing="$validator.pause()"
-                        @chosen="$validator.resume()"></SearchBadge>
+                        @chosen="chooseAction(...arguments)"></SearchBadge>
                 </b-form-group>
             </span>
             <b-form-group label="Dirección del tutor">
@@ -164,7 +162,7 @@
     </div>
 </template>
 <script>
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
+import { mapActions, mapGetters, mapState } from 'vuex';
 /**
  * Add the getters and setters of the base fields provided
  *
@@ -218,16 +216,52 @@ export default {
         '$validator', /* Inject the main $validator from the parent */
     ],
     methods: {
-        ...mapActions(['addNewElement', 'setTutorFields']),
-        ...mapMutations(['DEL_OBJ_KEY', 'DEL_TUTOR', 'SET_FIELD']),
+        ...mapActions(['delFormObjElement', 'setTutor', 'setTutorFields', 'updateFormData']),
+        /**
+         * Defines the customer chosed as a tutor for the customer edited on the form parent
+         *
+         * @param {Object} customer: the customer data from the customers state received via the search badge
+         */
+        async chooseAction(customer) {
+            let result = false;
+            if (this.tutor.notes && this.tutor.notes.length > 0) {
+                /* Advise the user that the notes will be deleted */
+                result = await this.$bvModal.msgBoxOk('Las notas del tutor se borrarán', {
+                    buttonSize: 'sm',
+                    centered: true,
+                    okTitle: 'Aceptar',
+                    cancelTitle: 'Volver',
+                    size: 'sm',
+                    title: '¿Seguro que quieres continuar?',
+                })
+            }
+            if ((this.tutor.notes && this.tutor.notes.length > 0 && result) || !this.tutor.notes) {
+                /* Pause the current validator instance to avoid errors with the dynamic elements */
+                this.$validator.pause();
+                /* Call to the vuex action to set the chosen tutor */
+                await this.setTutor({ _id: this.form._id, customer: customer })
+                /* Resume the validator */
+                this.$validator.resume();
+            }
+        },
+        /**
+         * Reset every field of the tutor
+         */
         resetTutor() {
             /* Pause the current validator instance to avoid errors on dynamic components */
             this.$validator.pause();
-            this.SET_FIELD({ target: this.form, field: 'tutor', newVal: this.getDefaultState('tutor')});
+            this.updateFormData({ _id: this.form._id, field: 'tutor', newVal: this.getDefaultState('tutor') });
             /* After fetch the data, reactive the current validator */
             this.$nextTick(() => {
                 this.$validator.resume();
             });
+        },
+        /**
+         * Validate the form, usually called from the parent
+         */
+        async validate() {
+            await this.$validator.validate()
+            return this.errors.all();
         }
     },
     props: [
