@@ -8,7 +8,7 @@ import MainUsers from '../views/MainUsers';
 import MainTests from '../views/MainTests';
 import NProgress from 'nprogress';
 import Router from 'vue-router';
-import store from '../store/customers';
+import store from '../store/store';
 import UnderConstruct from '../views/UnderConstruct';
 import Vue from 'vue';
 
