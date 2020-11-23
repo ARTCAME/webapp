@@ -1,16 +1,7 @@
 <template>
     <div>
-        <b-form @submit.prevent="$route.name == 'customers.edit' ? submitEdit() : $route.name == 'customers.new' ? submit() : null">
-            <!-- <b-alert
-                class="py-2"
-                id="edit-alert"
-                show
-                variant="warning"
-                v-if="$route.name == 'customers.edit' && !isDisabled">
-                <h4 class="m-0">
-                    Estás editando la ficha del socio. Recuerda guardar los cambios.
-                </h4>
-            </b-alert> -->
+        <!-- <b-form @submit.prevent="$route.name == 'customers.edit' ? submitEdit() : $route.name == 'customers.new' ? submit() : null"> -->
+        <b-form @submit.prevent="submit">
             <b-skeleton-wrapper
                 :loading="loadingCustomer">
                 <!-- Loading skeleton -->
@@ -268,15 +259,13 @@
                             </b-row>
                         </b-container>
     <!-- Teléfono -->
-                        <!-- <TransitionExpand> -->
                         <PhoneBase
                             class="mt-2"
                             ref="telefono"
                             target="customer"
                             :inPhones="form.phones"
                             :isDisabled="isDisabled"
-                            @input="updateCustomerData({ field: 'phones', arrayIndex: $event.arrayIndex, newVal: $event.newVal, _id: form._id })"></PhoneBase>
-                        <!-- </TransitionExpand> -->
+                            @input="updateFormData({ field: 'phones', arrayIndex: $event.arrayIndex, newVal: $event.newVal, _id: form._id })"></PhoneBase>
     <!-- Email -->
                         <EmailBase
                             class="mt-2"
@@ -284,7 +273,7 @@
                             target="customer"
                             :inEmails="form.emails"
                             :isDisabled="isDisabled"
-                            @input="updateCustomerData({ field: 'emails', arrayIndex: $event.emailIndex, newVal: $event.email, _id: form._id })"></EmailBase>
+                            @input="updateFormData({ field: 'emails', arrayIndex: $event.emailIndex, newVal: $event.email, _id: form._id })"></EmailBase>
     <!-- Sexo -->
                         <b-form-row no-gutters>
                             <b-form-group
@@ -322,6 +311,8 @@
                                     v-model="dateofbirth"
                                     v-validate="'date_custom_rule|required'"
                                     :class="'mr-1' + (errors.has('fechanac') ? ' is-invalid' : '')"
+                                    :max="$moment().set('year', $moment().year() - 1).format('YYYY-MM-DD')"
+                                    :min="$moment().set('year', $moment().year() - 129).format('YYYY-MM-DD')"
                                     :disabled="isDisabled"></b-form-input>
                                 <transition mode="out-in" name="liveFeedbacks">
                                     <b-form-invalid-feedback
@@ -343,10 +334,18 @@
                                     :value="underage == null ? 'Fecha de nacimiento inválida' : underage == true ? 'Sí' : 'No'"></b-form-input>
                             </b-form-group>
     <!-- Dni -->
-                            <b-form-group
-                                class="col col-12 col-sm-6 col-lg"
-                                label="Dni"
-                                label-for="dni">
+                            <b-form-group class="col col-12 col-sm-6 col-lg">
+                                <label label-for="dni">
+                                    Dni
+                                    <transition appear name="slide-fade">
+                                        <span
+                                            title="Al ser menor puedes dejar este campo vacío e incluir solo el del tutor en los datos del tutor o poner aquí también el del tutor"
+                                            v-b-tooltip.hover.noninteractive
+                                            v-if="underage == true && !isDisabled">
+                                            <fa-icon class="ml-2 text-success" icon="info-circle"></fa-icon>
+                                        </span>
+                                    </transition>
+                                </label>
                                 <!-- The validation is discarted on the customers.profile because it makes a search unnecessary -->
                                 <b-form-input
                                     autocomplete="off"
@@ -361,15 +360,6 @@
                                     @drop.prevent
                                     @keypress="$isAlphaNum($event)"
                                     @paste="dni = $isAlphaNum($event)"></b-form-input>
-                                <b-tooltip
-                                    interactive="false"
-                                    placement="bottom"
-                                    show
-                                    target="dni"
-                                    trigger="hover"
-                                    v-if="underage == true && !isDisabled">
-                                    Al ser menor puedes dejar este campo vacío e incluir solo el del tutor en los datos del tutor o poner aquí también el del tutor
-                                </b-tooltip>
                                 <transition mode="out-in" name="liveFeedbacks">
                                     <b-form-invalid-feedback
                                         v-for="error in errors.collect('dni')"
@@ -401,10 +391,11 @@
     <!-- Contacto -->
                         <TransitionExpand>
                             <div
+                                class="mt-2"
                                 v-if="form.contacts && form.contacts.length > 0">
                                 <TransitionExpand group>
                                     <Contact
-                                        ref="contacto"
+                                        ref="contact"
                                         v-for="(contact, index) in form.contacts"
                                         :isDisabled="isDisabled"
                                         :key="'contact_' + index"
@@ -417,13 +408,15 @@
                             class="my-3"
                             no-gutters
                             v-if="!isDisabled">
-                            <b-button
+                            <ButtonIcon
+                                icon="plus"
                                 id="add-contacto"
                                 variant="ig-gradient-reverse"
                                 @click="addNewElement({ _id: form._id, element: 'contacts', entity: 'customer' })">
-                                <fa-icon class="mr-3" icon="plus"></fa-icon>
-                                Añadir persona de contacto
-                            </b-button>
+                                <span class="ml-1">
+                                    Añadir persona de contacto
+                                </span>
+                            </ButtonIcon>
                         </b-row>
     <!-- Gestión de pagos -->
                         <b-form-group class="my-4">
@@ -612,6 +605,18 @@
                         <b-form-group
                             :class="hasPayments ? 'mb-0' : 'mb-3'">
                             <h5 md="4" class="subtitle">Gestión de pagos</h5>
+                            <b-row
+                                class="mb-2"
+                                no-gutters
+                                v-if="$route.name == 'customers.profile'">
+                                <ButtonIcon
+                                    class="ml-auto"
+                                    icon="euro-sign"
+                                    variant="ig-gradient"
+                                    @click="newPaymentTrigger()">
+                                    Añadir nuevo pago
+                                </ButtonIcon>
+                            </b-row>
                             <b-alert
                                 class="py-1"
                                 show
@@ -791,14 +796,11 @@
                                 </b-col>
                             </b-row>
                         </b-form-group>
-                        <b-form-group>
-                            <h5 md="4" class="subtitle">Notas</h5>
-                                <NotesBase
-                                    target="customer"
-                                    :_id="form._id"
-                                    :inNotes="form.notes"
-                                    :isDisabled="isDisabled"></NotesBase>
-                        </b-form-group>
+                        <NotesBase
+                            target="customer"
+                            :_id="form._id"
+                            :inNotes="form.notes"
+                            :isDisabled="isDisabled"></NotesBase>
                         <!-- Hided printable docs -->
                         <div
                             class="printable-wrp">
@@ -830,7 +832,7 @@
                     <b-button
                         variant="outline-secondary"
                         v-if="$route.name == 'customers.new'"
-                        @click="CLEAR_FORM('form'); $ChangeText('empty-form-btn-text', '¡Vaciado!', 2500)">
+                        @click="clearForm('form'); $changeText('empty-form-btn-text', '¡Vaciado!', 2500)">
                         <fa-icon class="d-inline-block mr-2" icon="eraser"></fa-icon>
                         <span id="empty-form-btn-text">
                             Vaciar formulario
@@ -875,10 +877,8 @@
     </div>
 </template>
 <script>
-    import html2canvas from 'html2canvas';
     import { http } from '../utils/http';
-    import jsPDF from 'jspdf';
-    import { mapActions, mapGetters, mapMutations, mapState } from 'vuex';
+    import { mapActions, mapGetters, mapState } from 'vuex';
     import NProgress from 'nprogress';
     /**
      * Map the keys passed to mount their vuex getters and setters
@@ -900,12 +900,12 @@
                         value = value.toUpperCase();
                     }
                     /* The id will be null on customers.new page, this is managed at vuex */
-                    this.updateCustomerData({ _id: this.form._id, field: key, newVal: value });
+                    this.updateFormData({ _id: this.form._id, field: key, newVal: value });
                     /* A customer has be at minium 3 years old */
                     if (key == 'dateofbirth') {
                         /* Depending on if the customer is or not underage the tutor has to be shown or/and delete if its status is unmutated */
                         this.underage == true && !this.form.tutor && this.addNewElement({ _id: this.form._id, element: 'tutor', entity: 'customer' });
-                        this.underage == false && this.form.tutor && JSON.stringify(this.getDefaultState('tutor')) === JSON.stringify(this.form.tutor) && this.DEL_OBJ_KEY({ state: this.form, target: 'tutor' });
+                        this.underage == false && this.form.tutor && JSON.stringify(this.getDefaultState('tutor')) === JSON.stringify(this.form.tutor) && this.delFormObjElement({ state: this.form, target: 'tutor' });
                     }
                 }
             }
@@ -933,13 +933,13 @@
                         value = value.toUpperCase();
                     }
                     /* The id will be null on customers.new page, this is managed at vuex */
-                    this.updateCustomerData({ _id: this.form._id, objectKey: object, field: key, newVal: value });
+                    this.updateFormData({ _id: this.form._id, objectKey: object, field: key, newVal: value });
                     /* The legal accepts or declines needs to add the current date */
-                    (object == 'rightsImage' || object == 'rightsProtect' || object == 'rightsUnderage') && this.updateCustomerData({ _id: this.form._id, objectKey: object, field: 'date', newVal: this.$moment().format('DD-MM-YYYY HH:mm:ss') });
+                    (object == 'rightsImage' || object == 'rightsProtect' || object == 'rightsUnderage') && this.updateFormData({ _id: this.form._id, objectKey: object, field: 'date', newVal: this.$moment().format('DD-MM-YYYY HH:mm:ss') });
                     /* If the rate includes karate the form must have the belts if not has it already */
                     key == 'rate' && value.includes('Karate') && !this.form.belts && this.addNewElement({ _id: this.form._id, element: 'belts', entity: 'customer' });
                     /* If the rate doesn't include karate and the belts are added but remains in its pristine status delete it */
-                    key == 'rate' && !value.includes('Karate') && this.form.belts && (JSON.stringify(this.getDefaultState('belts')) === JSON.stringify(this.form.belts)) && this.DEL_OBJ_KEY({ state: this.form, target: 'belts' });
+                    key == 'rate' && !value.includes('Karate') && this.form.belts && (JSON.stringify(this.getDefaultState('belts')) === JSON.stringify(this.form.belts)) && this.delFormObjElement({ state: this.form, target: 'belts' });
                 }
             }
         });
@@ -1000,7 +1000,7 @@
                     vm.$validator.pause();
                     /* To reload the data between customers is mandatory clean before */
                     if (from.name == 'customers.profile' || from.name == 'customers.edit') {
-                        vm.CLEAR_FORM('editform');
+                        vm.clearForm('editform');
                     }
                     /* Load the customer */
                     vm.initEditForm(vm.$route.params.id)
@@ -1026,7 +1026,7 @@
                     vm.$validator.pause();
                     /* To reload the data between customers is mandatory clean before */
                     if (from.name == 'customers.profile' || from.name == 'customers.edit') {
-                        vm.CLEAR_FORM('editform');
+                        vm.clearForm('editform');
                     }
                     /* Load the customer */
                     vm.initEditForm(vm.$route.params.id)
@@ -1096,7 +1096,7 @@
                 if (to.name == 'customers.profile' || to.name == 'customers.edit') {
                     /* To reload the data between customers is mandatory clean before */
                     if (from.name == 'customers.profile' || from.name == 'customers.edit') {
-                        this.CLEAR_FORM('editform');
+                        this.clearForm('editform');
                     }
                     if (to.name == 'customers.profile'){
                         /* Disable all the editable fields of the form */
@@ -1175,7 +1175,7 @@
              * @return {Boolean|Null} If the age is under 3 years returns null, if the age is between 3 and 18 returns true, if is 18 or more returns false
              */
             underage() {
-                if (this.$moment(this.dateofbirth, 'YYYY-MM-DD').isValid() && 3 <= this.$moment().diff(this.$moment(this.dateofbirth, 'YYYY-MM-DD'), 'years')) {
+                if (this.$moment(this.dateofbirth, 'YYYY-MM-DD', true).isValid() && 3 <= this.$moment().diff(this.$moment(this.dateofbirth, 'YYYY-MM-DD', true), 'years')) {
                     return this.$moment().diff(this.$moment(this.dateofbirth, 'YYYY-MM-DD'), 'years') < 18;
                 }
                 return null;
@@ -1197,8 +1197,7 @@
         },
         methods: {
             /* Mapping vuex */
-            ...mapActions(['addNewCustomer', 'addNewElement', 'delFormElement', 'deleteBelts', 'getAllCustomers', 'initEditForm', 'initForm', 'setCustomerEdited', 'updateCustomerData']),
-            ...mapMutations(['ADD_FORM_ELEMENT', 'ADD_TUTOR', 'CLEAR_FORM', 'DEL_OBJ_KEY', 'UPDATE_FIELD']),
+            ...mapActions(['addNewElement', 'clearForm', 'cleanFormOnSubmit', 'delFormObjElement', 'initEditForm', 'initForm', 'submitFormAddCustomer', 'submitFormEditCustomer', 'updateFormData']),
             /**
              * Prevent leave the page with changes unsaved
              *
@@ -1216,6 +1215,86 @@
                     }
                 }
             },
+            // /**
+            //  * Searches the empty fields (phones, emails and contacts) and delete it if there are on their pristine state (empty). Also, check if a contact(s) or tutor are customers too and leave at vuex only their id and notes, the rest of data remains linked and will be setted when the profile of the main customer will be loaded. To this function will only arrive occasionally because vee-validate validation prevents sent empty fields that are cleaned here.
+            //  */
+            // async cleanDataOnSubmit() {
+            //     /* Delete the customer's emtpy phones and emails */
+            //     this.cleanFormPhoneEmails('customer', this.form);
+            //     /* Iterate over the contacts (if there is someone) to clean the contact's phones, emails and the contact itself if there is added but on its pristine value  */
+            //     if (this.form.contacts && this.form.contacts.length > 0) {
+            //         const contacts = this.form.contacts;
+            //         for (let i = 0; i < contacts.length; i++) {
+            //             let contactToSave = {};
+            //             /* If the contact has id store only it as reference and delete the rest of data, also store the notes because there are not of the linked customer */
+            //             if (contacts[i]._id) {
+            //                 contactToSave._id = contacts[i]._id;
+            //                 if (contacts[i].notes) {
+            //                     contactToSave.notes = contacts[i].notes;
+            //                 }
+            //             } else {
+            //                 /* Clean the empty phones and emails */
+            //                 this.cleanFormPhoneEmails('contacts', contacts[i], i);
+            //                 contactToSave = contacts[i];
+            //             }
+            //             /* If the recent cleaned contact is also empty, delete it or if is not, store at the state the new value */
+            //             if (JSON.stringify(this.getDefaultState('contacts')) === JSON.stringify(contactToSave)) {
+            //                 await this.delFormElement({ _id: this.form._id, field: 'contacts', index: i });
+            //                 i--;
+            //             } else {
+            //                 await this.UPDATE_FIELD({ target: this.form.contacts, field: i, newVal: contactToSave });
+            //             }
+            //         }
+            //     }
+            //     /* If the tutor has its pristine state and the customer is not underage, delete the tutor */
+            //     if (this.underage == false && this.form.tutor && JSON.stringify(this.getDefaultState('tutor')) === JSON.stringify(this.form.tutor)) {
+            //         await this.DEL_OBJ_KEY({ state: this.form, target: 'tutor' });
+            //     } else if (this.form.tutor) {
+            //         let tutorToSave = {};
+            //         /* If the tutor has id store only it as reference, also store the notes because there are not of the linked customer */
+            //         if (this.form.tutor._id) {
+            //             tutorToSave._id = this.form.tutor._id;
+            //             if (this.form.tutor.notes) {
+            //                 tutorToSave.notes = this.form.tutor.notes;
+            //             }
+            //         } else {
+            //             /* Clean the empty phones and emails */
+            //             this.cleanFormPhoneEmails('tutor', this.form.tutor);
+            //             tutorToSave = this.form.tutor;
+            //         }
+            //         await this.UPDATE_FIELD({ target: this.form, field: 'tutor', newVal: tutorToSave });
+            //     }
+            // },
+            // /**
+            //  * Clean the empty phones, emails or contacts
+            //  *
+            //  * @param {String} field: name of the field to delete (phones | emails)
+            //  * @param {Array} elem: the object to iterate it to delete the data
+            //  * @param {String} target: name of the target (customer | contacts | tutor)
+            //  * @param {String} targetIndex: if the target is contacts we need it index on the mutation
+            //  */
+            // cleanEmptiesOnSubmit(field, elem, target, targetIndex = null) {
+            //     for (let i = 0; elem && i < elem.length; i++) {
+            //         if (JSON.stringify(this.getDefaultState(field)) === JSON.stringify(elem[i])) {
+            //             this.delFormElement({ _id: this.form._id, entity: target, entityIndex: targetIndex, field: field, fieldIndex: i });
+            //             i--;
+            //         }
+            //     }
+            // },
+            // /**
+            //  * Clean phones and emails on customer, tutor and contacts
+            //  *
+            //  * @param {String} entity: can be 'customer', 'tutor' or 'contacts'
+            //  * @param {Object} target: the object on the element has to be cleaned
+            //  * @param {Number|Optional} targetIndex: will be the index of the entity (usually for the contacts)
+            //  */
+            // cleanFormPhoneEmails(entity, target, targetIndex = null) {
+            //     ['emails', 'phones'].forEach(key => {
+            //         if (target[key] && target[key].length > 0) {
+            //             this.cleanEmptiesOnSubmit(key, target[key], entity, targetIndex)
+            //         }
+            //     });
+            // },
             /**
              * Fill the iban owner data with the customer data
              */
@@ -1225,6 +1304,46 @@
                 if (this.iban == '' || this.iban == null) {
                     this.$validator.validate('iban');
                 }
+            },
+            /**
+             * Launch the front end validation
+             */
+            async formValidation() {
+                /* First of all validate de form (at the backend it will be validated too) */
+                await this.$validator.validateAll();
+                let errors = this.errors.all().length;
+                // **NO VALIDATE THE SIGN FOR NOW
+                // const signErrors = await this.$refs.wacomsign.validate();
+                // errors += signErrors;
+                /* Validate the tutor errors */
+                if (this.form.tutor) {
+                    const tutorErrors = await this.$refs['tutor'].validate();
+                    errors += tutorErrors.length;
+                }
+                /* Validate the contact(s) errors */
+                if (this.form.contacts && this.form.contacts.length > 0) {
+                    let contactErrors;
+                    await Promise.all(this.form.contacts.map(async (contact, index) => {
+                            contactErrors = await this.$refs.contact[index].validate();
+                        })
+                    );
+                    if (contactErrors) {
+                        errors += contactErrors.length;
+                    }
+                }
+                if (errors > 0) {
+                    /* Change the submit flag */
+                    this.submitting = false;
+                    await this.$bvModal.msgBoxOk('Se han encontrado ' + errors + ' errores en el formulario. Revisa los campos marcados.', {
+                        buttonSize: 'sm',
+                        centered: true,
+                        okTitle: 'Aceptar',
+                        size: 'sm',
+                        title: 'Hay campos incorrectos',
+                    })
+                    return false;
+                }
+                return true;
             },
             /**
              * Prompt to the user a confirm message when the edition of the customer wants to be cancelled
@@ -1237,6 +1356,15 @@
                 } else {
                     return this.$router.push({ name: 'customers.edit', params: { id: this.form._id } });
                 }
+            },
+            /**
+             * Triggers the new payment form for the current customer
+             */
+            newPaymentTrigger() {
+                this.$bvModal.show('payments-nav-modal')
+                this.$nextTick(() => {
+                    this.$root.$emit('newPaymentFromCustomer', this.form);
+                })
             },
             /**
              * Download the documentation
@@ -1252,7 +1380,7 @@
                     /* Active the flag to userx and disallow multiple downloads */
                     this[variable] = true;
                     this.$showToast('success', 'En breve se iniciará la descarga del fichero', 'Descarga de fichero solicitada');
-                    this.$html2print(filename, this.$refs['printableMF' + file])
+                    this.$printDoc(filename, this.$refs['printableMF' + file])
                         .then(() => {
                             /* Restore the flag to userx and disallow multiple downloads */
                             setTimeout(() => {
@@ -1276,247 +1404,63 @@
              */
             stackRadios() {
                 if (!this.loadingCustomer) {
-                    // if (window.innerWidth < 870) {
                     if (window.innerWidth < 470) {
-                        // document.getElementById('tarifa').classList.add('btn-group-vertical');
                         document.getElementById('tipoPago').classList.add('btn-group-vertical');
-                        // document.getElementById('tarifa').classList.remove('btn-group');
                         document.getElementById('tipoPago').classList.remove('btn-group');
-                    // } else if (window.innerWidth >= 870 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
                     } else if (window.innerWidth >= 470 && (document.getElementById('tarifa').classList.contains('btn-group-vertical') || document.getElementById('tipoPago').classList.contains('btn-group-vertical'))) {
-                        // document.getElementById('tarifa').classList.remove('btn-group-vertical');
                         document.getElementById('tipoPago').classList.remove('btn-group-vertical');
-                        // document.getElementById('tarifa').classList.add('btn-group');
                         document.getElementById('tipoPago').classList.add('btn-group');
                     }
                 }
             },
             /**
-             * Submits the form
+             * Submits the form with the new customer data
              */
-            submit() {
-                /* First of all validate de form (at the backend it will be validated too) */
-                this.$validator.validateAll()
-                    .then(async result => {
-                        /* If the form isn't shows modal and mark the incorrect fields */
-                        if (!result) {
-                            this.submitting = false;
-                            this.$bvModal.msgBoxOk('Se han encontrado ' + this.errors.all().length + ' errores en el formulario. Revisa los campos marcados.', {
-                                buttonSize: 'sm',
-                                centered: true,
-                                okTitle: 'Aceptar',
-                                size: 'sm',
-                                title: 'Hay campos incorrectos',
-                            });
-                        } else {
-                            /* Change the submit flag */
-                            this.submitting = true;
-                            try {
-                                /* Clean the form to store it */
-                                this.submitCleanData();
-                                /* Save the form on the database */
-                                const response = await http.post('/api/newCustomer', this.form);
-                                /* Add the new customer to the customers state */
-                                this.addNewCustomer(response.data.newCustomer)
-                                    .then(async id => {
-                                        /* Clear the form state */
-                                        this.CLEAR_FORM('form');
-                                        await this.$router.push({ name: 'customers.profile', params: { id : id } });
-                                        /* Print the documentation */
-                                        /* NOT FOR NOW */
-                                        // await this.printFile('RI');
-                                        // await this.printFile('RP');
-                                        /* Trigger a modification on the localStorage to propagate the changes on other windows */
-                                        localStorage.setItem('customer_updated', id);
-                                        localStorage.removeItem('customer_updated');
-                                        this.$showToast(response.data.status, response.data.message, response.data.title);
-                                    });
-                            } catch(error) {
-                                this.submitting = false;
-                                if (error.response) {
-                                    let message = error.response.data.message;
-                                    /* Check if a validation errors occurs on the backend */
-                                    if (error.response.status == 422) {
-                                        let errors = error.response.data.validationErrors;
-                                        for (let error in errors) {
-                                            message += '<br><span class="text-danger">- ' + errors[error][0]; + '</span>'
-                                        };
-                                        const errorMessage = this.$createElement('div',
-                                        {
-                                            domProps: { innerHTML: message }
-                                        })
-                                        /* If a validation error on the backend occurs, show the info on a modal */
-                                        this.$bvModal.msgBoxOk(errorMessage, {
-                                            buttonSize: 'sm',
-                                            centered: true,
-                                            okTitle: 'Aceptar',
-                                            size: 'sm',
-                                            title: error.response.data.title,
-                                        })
-                                        NProgress.done();
-                                    }
-                                    console.error(error.response.data.trace);
-                                } else {
-                                    this.$showToast('danger', 'No se han podido guardar los datos correctamente. Código de error: FESoFo@Su', 'Ha ocurrido un error');
-                                    console.error(error);
-                                }
-                            }
-                        }
-                    });
-                this.submitting = false;
-            },
-            /**
-             * Searches the empty fields (phones, emails and contacts) and delete it if there are on their pristine state (empty). Also, check if a contact(s) or tutor are customers too and leave at vuex only their id and notes, the rest of data remains linked and will be setted when the profile of the main customer will be loaded. Vee-validate redound on this because it will prevent to leave empty fields too.
-             */
-            submitCleanData() {
-                /* Delete the customer's emtpy phones and emails */
-                this.submitCleanEmpties('phones', this.form.phones, 'customer');
-                this.submitCleanEmpties('emails', this.form.emails, 'customer');
-                /* Iterate over the contacts (if there is someone) to clean the contact's phones, emails and the contact itself if there is added but on its pristine value  */
-                if (this.form.contacts && this.form.contacts.length > 0) {
-                    let contacts = this.form.contacts;
-                    for (let i = 0; i < contacts.length; i++) {
-                        let contactToSave = [];
-                        /* If we have id store only leave it as reference, also store the notes because there are not of the linked customer */
-                        if (contacts[i]._id) {
-                            contactToSave = {
-                                _id: contacts[i]._id,
-                                notes: contacts[i].notes,
-                            }
-                        } else {
-                            /* Clean the empty phones and emails */
-                            this.submitCleanEmpties('phones', contacts[i].phones, 'contacts', i);
-                            this.submitCleanEmpties('emails', contacts[i].emails, 'contacts', i);
-                            contactToSave = contacts[i];
-                        }
-                        /* If the cleaned contact is also empty, delete it or if is not, assign the new values */
-                        if (JSON.stringify(this.getDefaultState('contacts')) === JSON.stringify(contactToSave)) {
-                            this.delFormElement({ _id: this.form._id, field: 'contacts', index: i });
-                            i--;
-                        } else {
-                            console.log(contactToSave)
-                            this.UPDATE_FIELD({ target: this.form.contacts, field: this.index, newVal: contactToSave });
-                        }
-                    }
-                }
-                /* If we have added a tutor clean it up */
-                /* If the tutor has its pristine state and the customer is not underage, delete the tutor */
-                if (this.underage == false && this.form.tutor && JSON.stringify(this.getDefaultState('tutor')) === JSON.stringify(this.form.tutor)) {
-                    this.DEL_OBJ_KEY({ state: this.form, target: 'tutor' });
-                } else if (this.form.tutor) {
-                    let tutorToSave = {};
-                    /* If we have id store only leave it as reference, also store the notes because there are not of the linked customer */
-                    if (this.form.tutor._id) {
-                        tutorToSave = {
-                            _id: this.form.tutor._id,
-                            notes: this.form.tutor._notes,
-                        }
-                    } else {
-                        this.submitCleanEmpties('phones', this.form.tutor.phones, 'tutor');
-                        this.submitCleanEmpties('emails', this.form.tutor.emails, 'tutor');
-                        tutorToSave = this.form.tutor;
-                    }
-                    this.UPDATE_FIELD({ target: this.form, field: 'tutor', newVal: tutorToSave });
-                }
-            },
-            /**
-             * Clean the empty fields for phones or emails
-             *
-             * @param {String} field: name of the field to delete (phones | emails)
-             * @param {Array} value: the object to iterate it to delete the data
-             * @param {String} target: name of the target (customer | contacts | tutor)
-             * @param {String} contactIndex: if the target is contacts we need it index on the mutation
-             */
-            submitCleanEmpties(field, value, target, contactIndex = null) {
-                for (let i = 0; value && i < value.length; i++) {
-                    if (JSON.stringify(this.getDefaultState(field)) === JSON.stringify(value[i])) {
-                        this.delFormElement({ _id: this.form._id, entity: target, entityIndex: contactIndex, field: field, fieldIndex: i });
-                        i--;
-                    }
-                }
-            },
-            /**
-             * Saves the existing customer changes
-             */
-            submitEdit() {
+            async submit() {
                 /* Change the submit flag */
                 this.submitting = true;
-                /* First of all validate de form (at the backend it will be validated too) */
-                this.$validator.validateAll()
-                    .then(result =>{
-                        /* If the form isn't shows modal and mark the incorrect fields */
-                        if (!result) {
-                            this.$bvModal.msgBoxOk('Se han encontrado ' + this.errors.all().length + ' errores en el formulario. Revisa los campos marcados.', {
-                                buttonSize: 'sm',
-                                centered: true,
-                                okTitle: 'Aceptar',
-                                size: 'sm',
-                                title: 'Hay campos incorrectos',
-                            });
-                        } else {
-                            /* Clean the form data */
-                            this.submitCleanData();
-                            http.put('/api/customer/' + this.form._id + '/edit', this.form)
-                                .then(response =>{
-                                    /* Save the modifications to the store */
-                                    this.setCustomerEdited(this.form);
-                                    /* Go to the customers profile */
-                                    this.$router.push({ name: 'customers.profile', params: { id : this.form._id } });
-                                    /* Trigger a modification on the localStorage to propagate the changes on other windows */
-                                    localStorage.setItem('customer_updated', this.form._id);
-                                    localStorage.removeItem('customer_updated');
-                                    this.$showToast(response.data.status, response.data.message, response.data.title);
-                                })
-                                .catch(error =>{
-                                    this.submitting = false;
-                                    if (error.response) {
-                                        let message = error.response.data.message;
-                                        /* Check if a validation errors occurs on the backend */
-                                        if (error.response.status == 422) {
-                                            let errors = error.response.data.validationErrors;
-                                            for (let error in errors) {
-                                                message += '<br><span class="text-danger">- ' + errors[error][0]; + '</span>'
-                                            };
-                                            const errorMessage = this.$createElement('div',
-                                            {
-                                                domProps: { innerHTML: message }
-                                            })
-                                            /* If a validation error on the backend occurs, show the info to on a modal */
-                                            this.$bvModal.msgBoxOk(errorMessage, {
-                                                buttonSize: 'sm',
-                                                centered: true,
-                                                okTitle: 'Aceptar',
-                                                size: 'sm',
-                                                title: error.response.data.title,
-                                            })
-                                            NProgress.done();
-                                        }
-                                        console.error(error.response.data.trace);
-                                    } else {
-                                        this.$showToast('danger', 'No se han podido guardar los datos correctamente. Código de error: FESoFo@SuEd', 'Error al guardar los datos');
-                                        console.error(error);
-                                    }
-                                });
+                /* Check if the font validations was passed before call the api (the api will do its own validation) */
+                const isValid = await this.formValidation();
+                if (isValid === true) {
+                    try {
+                        this.loadingCustomer = true;
+                        /* Call to apply the changes to a existing customer or create one depending on the current route */
+                        if (this.$route.name == 'customers.edit') {
+                            this.submitFormEditCustomer();
+                        } else if (this.$route.name == 'customers.new') {
+                            this.submitFormAddCustomer();
                         }
-                });
-            },
-            /**
-             * Search the invalid fields on the children elements launching its validations functions
-             */
-            async validateForm() {
-                /* Validate the signature */
-                const errorSign = await this.$refs.wacomsign.validate();
-                const result = await this.$validator.validateAll();
-                if (!result) {
-                    this.$bvModal.msgBoxOk('Se han encontrado ' + (this.errors.all().length + errorSign) + ' errores en el formulario. Revisa los campos marcados.', {
-                        buttonSize: 'sm',
-                        centered: true,
-                        okTitle: 'Aceptar',
-                        size: 'sm',
-                        title: 'Hay campos incorrectos',
-                    });
-                } else {
-                    return true;
+                    } catch(error) {
+                        this.submitting = false;
+                        this.loadingCustomer = false;
+                        if (error.response) {
+                            let message = error.response.data.message;
+                            /* Check if a validation errors occurs on the backend */
+                            if (error.response.status == 422) {
+                                let errors = error.response.data.validationErrors;
+                                for (let error in errors) {
+                                    message += '<br><span class="text-danger">- ' + errors[error][0]; + '</span>'
+                                };
+                                const errorMessage = this.$createElement('div',
+                                {
+                                    domProps: { innerHTML: message }
+                                })
+                                /* If a validation error on the backend occurs, show the info on a modal */
+                                this.$bvModal.msgBoxOk(errorMessage, {
+                                    buttonSize: 'sm',
+                                    centered: true,
+                                    okTitle: 'Aceptar',
+                                    size: 'sm',
+                                    title: error.response.data.title,
+                                })
+                                NProgress.done();
+                            }
+                            console.error(error.response.data.trace);
+                        } else {
+                            this.$showToast('danger', 'No se han podido guardar los datos correctamente. Código de error: FESoFo@Su', 'Ha ocurrido un error');
+                            console.error(error);
+                        }
+                    }
                 }
             },
         },
