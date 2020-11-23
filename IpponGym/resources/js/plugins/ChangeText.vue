@@ -6,7 +6,7 @@
              *
              * @param {Array} id: The id of the elements to change
              */
-            Vue.prototype.$ChangeText = function(id, newText, ms) {
+            Vue.prototype.$changeText = function(id, newText, ms) {
                 const elem = document.getElementById(id);
                 const prevText = elem.innerText;
                 elem.innerText = newText;
