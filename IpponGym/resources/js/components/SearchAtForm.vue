@@ -3,21 +3,20 @@
         <b-row
             class="mb-4"
             no-gutters>
-            <b-button
+            <ButtonIcon
                 class="ml-auto"
+                icon="search-plus"
                 variant="ig-gradient2-reverse"
                 :id="'sat-' + field + (contactIndex ? '-' + contactIndex : '')">
-                <fa-icon class="mr-2" icon="search-plus"></fa-icon>
                 Buscar socio
-            </b-button>
+            </ButtonIcon>
         </b-row>
         <b-popover
-            custom-class="p-0"
             placement="left"
-            :id="'sat-popover-search' + (contactIndex ? '-' + contactIndex : '')"
+            :id="'sat-popover-search' + field + (contactIndex ? '-' + contactIndex : '')"
             :show.sync="searchActive"
             :target="'sat-' + field + (contactIndex ? '-' + contactIndex : '')"
-            :title="'Buscar ' + field">
+            :title="null">
             <b-button-close
                 @click="searchActive = false"></b-button-close>
             <SearchEngine
@@ -58,7 +57,7 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 export default {
     data() {
         return {
@@ -67,9 +66,7 @@ export default {
             tableFields: [
                 { key: 'active', label: '', class: 'text-center'},
                 { key: 'name', label: '', class: 'text-nowrap' },
-                { key: 'actions', label: '', class: 'text-nowrap' },
-                // { key: 'use', label: '', },
-                // { key: 'see', label: '', },
+                { key: 'actions', label: '', class: 'text-nowrap text-right' },
             ], /* Table fields to the search engine results table */
         }
     },
@@ -116,26 +113,16 @@ export default {
         '$validator', /* Inject the main $validator from the parent */
     ],
     methods: {
-        ...mapActions(['setContact', 'setTutor']),
         /**
-         * Checks the parent and assign to it the data of the customer selected
+         * Execute the emit to the parent and close the popover on select an element of the results provided
          *
-         * @param {Object} customer: the customer data from the customers state received via the searchEngine to assign to the entity
+         * @param {Object} customer: the customer data that has to be setted on the parent
          */
         chooseAction(customer) {
-            /* Pause the current validator instance to avoid errors on dynamic components */
-            this.$validator.pause();
-            if (this.field == 'contacto') {
-                this.setContact({ _id: this.form._id, index: this.contactIndex, customer: customer });
-            } else if (this.field == 'tutor') {
-                this.setTutor({ _id: this.form._id, customer: customer });
-            }
-            /* Hide the search popover */
-            this.$root.$emit('bv::hide::popover', 'sat-popover-search' + (this.contactIndex ? '-' + this.contactIndex : ''));
-            /* After fetch the data, reactive the current validator */
-            this.$nextTick(() => {
-                this.$validator.resume();
-            });
+            this.$emit('chosen', customer);
+            this.$root.$emit('bv::hide::popover', 'sat-popover-search' + this.field + (this.contactIndex ? '-' + this.contactIndex : ''));
+            /* Reset the result of the previous search when an action was maded */
+            this.searchResult = null;
         },
     },
     props: [
@@ -152,5 +139,6 @@ export default {
     }
     [id^=sat-popover-search] {
         min-width: 400px;
+        padding-top: 1.75rem;
     }
 </style>
