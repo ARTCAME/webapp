@@ -113,8 +113,6 @@
                                     :key="btn.value"
                                     :value="btn.value"
                                     @click="selectedMonth = btn.value">
-                                    <!-- :class="(manual ? 'ig-dropdown-item' : 'ig-dropdown-item' + (((confirmed == true && isConfirmed(btn.value)) || (confirmed == false && !isConfirmed(btn.value))) ? ' ig-select-disabled' : ''))" -->
-                                    <!-- :disabled="manual ? false : ((confirmed == true && isConfirmed(btn.value)) || (confirmed == false && !isConfirmed(btn.value)))" -->
                                     <b-row align-h="between">
                                         {{ btn.text }}
                                         <!-- Shown when the payment is confirmed -->
