@@ -49,24 +49,18 @@
                             key="trans-btn-save-confirm"
                             tabindex="0"
                             v-b-tooltip.hover.noninteractive
-                            :title="newStateSelected == false && rowsSelected.length == 0 ? 'Selecciona un estado y algún pago de la tabla' : newStateSelected == false ? 'Selecciona un estado' : rowsSelected.length == 0 ?  'Selecciona algún pago de la tabla' : csvDownloadConfirmation ? 'Descargando...' : ''">
+                            :title="newStateSelected == false && rowsSelected.length == 0 ? 'Selecciona un estado y algún pago de la tabla' : newStateSelected == false ? 'Selecciona un estado' : rowsSelected.length == 0 ?  'Selecciona algún pago de la tabla' : paymentsTableBusy ? 'Descargando...' : ''">
                             <!-- It will be disabled when the user hasn't selected a new state for the payment or if he hasn't select a row in the table or if a row in the table is being edited or if the flag wich controls the download of the file is actived -->
-                            <b-button
+                            <ButtonIcon
                                 class="w-100"
+                                icon="check-double"
                                 size="sm"
-                                :disabled="!newStateSelected || rowsSelected.length == 0 || csvDownloadConfirmation"
-                                :variant="csvDownloadConfirmation == false && (newStateSelected && rowsSelected.length > 0) ? 'success' : 'outline-success'"
+                                :disabled="!newStateSelected || rowsSelected.length == 0 || paymentsTableBusy"
+                                :spin="paymentsTableBusy == true"
+                                :variant="paymentsTableBusy == false && (newStateSelected && rowsSelected.length > 0) ? 'success' : 'outline-success'"
                                 @click="confirmingState()">
-                                <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
-                                <b-spinner
-                                    small
-                                    type="grow"
-                                    v-if="csvDownloadConfirmation == true"></b-spinner>
-                                <fa-icon
-                                    icon="check-double"
-                                    v-else></fa-icon>
-                                &ensp;Confirmar estado
-                            </b-button>
+                                Confirmar estado
+                            </ButtonIcon>
                         </span>
                     </b-row>
                 </b-col>
@@ -130,23 +124,16 @@
                         v-b-tooltip.hover.noninteractive
                         :title="rowsSelected.length == 0 ? 'Selecciona algún pago de la tabla' : csvDownloadManual ? 'Descargando...' : ''">
                         <!-- Disabled when any row on the table has been selected or if the edition of some row is actived or if the process of manual download hasn't been started of if the flag wich controls the download of the file is true -->
-                        <b-button
+                        <ButtonIcon
                             class="w-100"
+                            icon="file-download"
                             size="sm"
-                            key="trans-btn-save-confirm"
                             :disabled="rowsSelected.length == 0 || !manualDownload || csvDownloadManual"
+                            :spin="csvDownloadManual == true"
                             :variant="csvDownloadManual == false && (rowsSelected.length != 0 && manualDownload) ? 'success' : 'outline-success'"
                             @click="paymentsToCsv()">
-                            <!-- Shown if the flag to control the download of the file is true -->
-                            <b-spinner
-                                small
-                                type="grow"
-                                v-if="csvDownloadManual == true"></b-spinner>
-                            <fa-icon
-                                icon="file-download"
-                                v-else></fa-icon>
-                            &ensp;Descargar archivo de remesa
-                        </b-button>
+                            Descargar archivo de remesa
+                        </ButtonIcon>
                     </span>
                 </b-col>
                 <!-- Shown whe the process to update grades is actived and some grade are selected -->
@@ -636,15 +623,16 @@
                 </b-button>
             </span>
             <b-col class="ml-auto ml-sm-0 mt-1" cols="auto">
-                <b-button
+                <ButtonIcon
                     class="btn-fa-tiny"
+                    icon="sync-alt"
+                    no-text
                     size="sm"
                     title="Restablecer los filtros"
                     variant="outline-warning"
                     v-b-tooltip.hover.noninteractive
                     @click="resetFilters()">
-                    <fa-icon icon="sync-alt"></fa-icon>
-                </b-button>
+                </ButtonIcon>
                 <!-- Show all row details button -->
                 <span
                     class="ml-1"
@@ -652,14 +640,15 @@
                     v-b-tooltip.hover.noninteractive
                     :title="paymentsItems.length == 0 ? 'No hay datos en la tabla' : 'Mostrar detalles de todas las filas'">
                     <!-- Disabled when the table hasn't content or if all the existing rows are showing their details -->
-                    <b-button
+                    <ButtonIcon
                         class="btn-fa-tiny"
+                        icon="angle-double-down"
+                        no-text
                         size="sm"
                         :disabled="paymentsItems.length == 0 || paymentsItems.every(pt => pt._showDetails == true)"
                         :variant="paymentsItems.length == 0 || paymentsItems.every(pt => pt._showDetails == true) ? 'outline-info' : 'info'"
                         @click="detailsExpandAll()">
-                        <fa-icon icon="angle-double-down"></fa-icon>
-                    </b-button>
+                    </ButtonIcon>
                 </span>
                 <!-- Hide all row details button -->
                 <span
@@ -668,14 +657,15 @@
                     v-b-tooltip.hover.noninteractive
                     :title="paymentsItems.length == 0 ? 'No hay datos en la tabla' : 'Ocultar detalles de todas las filas'">
                     <!-- Disabled when the table hasn't content or if all the existing rows aren't showing their details -->
-                    <b-button
+                    <ButtonIcon
                         class="btn-fa-tiny"
+                        icon="angle-double-up"
+                        no-text
                         size="sm"
                         :disabled="paymentsItems.length == 0 || !paymentsItems.some(pt => pt._showDetails == true)"
                         :variant="paymentsItems.length == 0 || !paymentsItems.some(pt => pt._showDetails == true) ? 'outline-secondary' : 'secondary'"
                         @click="detailsCollapseAll()">
-                        <fa-icon icon="angle-double-up"></fa-icon>
-                    </b-button>
+                    </ButtonIcon>
                 </span>
                 <span
                     class="d-inline-block"
@@ -683,22 +673,16 @@
                     v-b-tooltip.hover.noninteractive.topleft
                     :title="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) ? 'No hay datos en la tabla para descargar' : csvDownloadTable ? 'Descargando...' : 'Descargar los datos de la tabla'">
                     <!-- It will be disabled when there are no rows on the table or if the flag wich controls the download of the file is on -->
-                    <b-button
+                    <ButtonIcon
                         class="btn-fa-tiny"
+                        icon="download"
+                        no-text
                         size="sm"
                         variant="outline-success"
                         :disabled="($refs.paymentsTable && $refs.paymentsTable.filteredItems.length == 0) || csvDownloadTable"
+                        :spin="csvDownloadTable == true"
                         @click="$tableToCsv(['_id', 'customerNumber', 'name', 'rate', 'amount', 'paymenttype', 'iban', 'interval', 'dateconfirmed'], paymentsItems, $moment().format('YYYY-MM-DD_HH.mm.ss') + '_pagos_tabla.csv', 'csvDownloadTable')">
-                        <!-- Shown if the flag to control de download is true. It means that the download file has begun  -->
-                        <b-spinner
-                            small
-                            type="grow"
-                            v-if="csvDownloadTable == true"></b-spinner>
-                        <!-- By default, show plain text -->
-                        <fa-icon
-                            icon="download"
-                            v-else></fa-icon>
-                    </b-button>
+                    </ButtonIcon>
                 </span>
             </b-col>
         </b-row>
@@ -727,31 +711,28 @@
                 <!-- :tbody-transition-props="{ mode: 'out-in', name: 'fade' }"> will cause jumps between filtered states -->
                 <template
                     #head(selected)>
-                    <b-button
+                    <ButtonIcon
+                        no-text
                         :class="'ig-table-checkbox' + (selectedAll ? ' ig-checked' : '')"
+                        :icon="selectedAll ? 'check' : selectedSome ? 'circle' : ''"
                         @click="rowSelectAll(!selectedAll)">
-                        <fa-icon
-                            icon="check"
-                            v-if="selectedAll"></fa-icon>
-                        <fa-icon
-                            icon="circle"
-                            v-else-if="selectedSome"></fa-icon>
-                    </b-button>
+                    </ButtonIcon>
                 </template>
                 <!-- The selected elems are managed locally, don't depend on vuex and the table events, it will be evaluated by local functions -->
                 <template
                     #cell(selected)="row">
                     <span
                         v-b-tooltip.hover.noninteractive
-                        :title="(confirming && (row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación')) ? 'Este pago no se puede confirmar. El estado no es Pendiente y/o la forma de pago Domiciliación' :  (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación'))) ? 'No puedes descargar archivo de remesa de un pago que no sea por domiciliación o si lo es, que esté pendiente' : ''">
-                        <b-button
+                        :title="confirming || manualDownload ? evaluateRowSelectedBtn(row.item).title : ''">
+                        <!-- :title="confirming && (row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación') ? 'Este pago no se puede confirmar. El estado no es Pendiente y/o la forma de pago Domiciliación' : confirming && row.item.type == 'periodic' && getFilteredPaymentsById({ _id: row.item._id, filterYears: [$moment(row.item.interval, 'YYYY-MM').year()], filterMonths: [$moment(row.item.interval, 'YYYY-MM').month()], filterStatus: ['Confirmado'], filterType: ['periodic'] }).length > 0 ? 'Este pago no se puede confirmar. Ya existe un pago periódico confirmado para el mismo intervalo' : (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación'))) ? 'No puedes descargar archivo de remesa de un pago que no sea por domiciliación o si lo es, que esté pendiente' : ''"> -->
+                        <ButtonIcon
+                            no-text
                             :class="'ig-table-checkbox' + (isSelected(row.item) ? ' ig-checked' : '')"
-                            :disabled="(confirming && (row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación')) || (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación')))"
+                            :disabled="confirming || manualDownload ? evaluateRowSelectedBtn(row.item).disabled : false"
+                            :icon="isSelected(row.item) ? 'check' : ''"
                             @click="rowSelect(row.item, !isSelected(row.item))">
-                            <fa-icon
-                                icon="check"
-                                v-if="isSelected(row.item)"></fa-icon>
-                        </b-button>
+                        </ButtonIcon>
+                            <!-- :disabled="(confirming && ((row.item.status != 'Pendiente' || row.item.paymenttype != 'Domiciliación') || (row.item.type == 'periodic' &&  getFilteredPaymentsById({ _id: row.item._id, filterYears: [$moment(row.item.interval, 'YYYY-MM').year()], filterMonths: [$moment(row.item.interval, 'YYYY-MM').month()], filterStatus: ['Confirmado'], filterType: ['periodic'] }).length > 0))) || (manualDownload && (row.item.paymenttype != 'Domiciliación' || (row.item.status != 'Pendiente' && row.item.paymenttype == 'Domiciliación')))" -->
                     </span>
                 </template>
                 <template
@@ -777,7 +758,7 @@
                 <template
                     #cell(rate)="row">
                     <div
-                        class="table-text-overflowed text-nowrap"
+                        class="pl-1 table-text-overflowed text-nowrap"
                         :title="row.value">
                         {{ row.value }}
                     </div>
@@ -801,50 +782,56 @@
                 </template>
                 <template
                     #cell(actions)="row">
-                    <b-button
+                    <ButtonIcon
                         class="ig-small-btn"
+                        icon="edit"
+                        no-text
                         size="sm"
                         title="Editar el pago"
                         variant="outline-secondary"
                         v-b-tooltip.hover.left.noninteractive
                         :id="'tooltip_edit_row' + row.index"
                         @click="manageEdit(row.item)">
-                        <fa-icon icon="edit"></fa-icon>
-                    </b-button>
+                    </ButtonIcon>
                     <span
                         class="d-inline-block"
                         tabindex="0"
                         v-b-tooltip.hover.left.noninteractive
                         :title="row.item.status != 'Confirmado' ? 'Pago no realizado' : 'Descargar recibo'">
-                        <b-button
+                        <ButtonIcon
                             class="ig-small-btn"
+                            icon="file-download"
+                            no-text
                             size="sm"
                             variant="outline-dark"
                             :disabled="row.item.status != 'Confirmado'"
                             @click="printBill(row.item)">
-                            <fa-icon icon="file-download"></fa-icon>
-                        </b-button>
+                        </ButtonIcon>
                     </span>
-                    <b-button
+                    <ButtonIcon
                         class="ig-small-btn"
+                        no-text
                         size="sm"
                         v-b-tooltip.hover.left.noninteractive
+                        :icon="!row.item._showDetails ? 'angle-double-down' : 'angle-double-up'"
                         :title="!row.item._showDetails ? 'Mostrar detalles' : 'Ocultar detalles'"
                         :variant="!row.item._showDetails ? 'outline-info' : 'info'"
                         @click="row.toggleDetails">
-                        <fa-icon
-                            :icon="!row.item._showDetails ? 'angle-double-down' : 'angle-double-up'"></fa-icon>
-                    </b-button>
+                    </ButtonIcon>
                 </template>
                 <template
                     #cell(use)="row">
-                    <b-button
-                        class="ig-modal-table-btn"
-                        size="sm"
-                        variant="outline-primary"
-                        @click="$emit('choose', row.item)">
-                        Usar
-                    </b-button>
+                    <slot
+                        name="use"
+                        :row="row">
+                        <b-button
+                            class="ig-modal-table-btn"
+                            size="sm"
+                            variant="outline-primary"
+                            @click="$emit('choose', row.item)">
+                            Usar
+                        </b-button>
+                    </slot>
                 </template>
                 <!-- Shown only when other procedures are not initiated -->
                 <template
@@ -893,10 +880,14 @@
                 </template>
                 <template
                     #table-colgroup="scope">
-                    <col
-                        v-for="field in scope.fields"
-                        :key="field.key"
-                        :style="{ width: field.key == 'name' ? '200px' : field.key == 'active' ? '60px' : field.key == 'use' ? '50px' : field.key == 'selected' ? '30px' : field.key == 'amount' || field.key == 'type' || field.key == 'interval' ? '70px' : field.key == 'actions' ? '125px' : field.key == 'paymenttype' ? '110px' : field.key == 'status' ? '90px' : field.key == 'rate' ? '150px' :  field.key == 'dateconfirmed' ? '180px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                    <slot
+                        name="col"
+                        v-bind:fields="scope.fields">
+                        <col
+                            v-for="field in scope.fields"
+                            :key="field.key"
+                            :style="{ width: field.key == 'name' ? '200px' : field.key == 'active' ? '60px' : field.key == 'use' ? '50px' : field.key == 'selected' ? '30px' : field.key == 'amount' || field.key == 'type' || field.key == 'interval' ? '70px' : field.key == 'actions' ? '125px' : field.key == 'paymenttype' ? '110px' : field.key == 'status' ? '90px' : field.key == 'rate' ? '150px' :  field.key == 'dateconfirmed' ? '180px' : field.key == 'customerNumber' ? '75px' : 'auto' }">
+                    </slot>
                 </template>
                 <template
                     #table-caption>
@@ -954,6 +945,11 @@
                     </b-form-text>
                 </template>
             </b-table>
+            <!-- Payments edit action -->
+            <PaymentEdit
+                :editingItem="editingItem"
+                @successEdit="evaluateRowSelectedState(...arguments)"></PaymentEdit>
+                <!-- @successEdit="evaluateRowSelectedState(...arguments); fetchChartData();"></PaymentEdit> -->
         </div>
         <!-- Hided printable bill -->
         <div class="printable-wrp">
@@ -964,10 +960,6 @@
                     :printItem="printItem"></Bill>
             </div>
         </div>
-        <PaymentsEdit
-            :editingItem="editingItem"
-            @editSuccess="evaluateRowSelectedState(...arguments)"></PaymentsEdit>
-            <!-- @editSuccess="evaluateRowSelectedState(...arguments); fetchChartData();"></PaymentsEdit> -->
     </div>
 </template>
 <script>
@@ -1110,7 +1102,6 @@
 						intersect: true,
 					},
                 }, /* Chart options */
-                csvDownloadConfirmation: false, /* Flag to conditional render an spinner or icon on the confirmation button */
                 csvDownloadManual: false, /* Flag to conditional render an spinner or icon on the manual download button */
                 csvDownloadTable: false, /* Flag to conditional render an spinner or icon on a manual print table button */
                 editingItem: {}, /* Stores the data of a row when it is edited to allow recover it */
@@ -1143,8 +1134,8 @@
                 detailFields: [
                     { key: 'ID', value: '_id' },
                     { key: 'Número de socio', value: 'customerNumber' },
-                    { key: 'Fecha pago', value: 'dateconfirmed' },
-                    { key: 'Fecha creación', value: 'dategenerated' },
+                    { key: 'Fecha de pago', value: 'dateconfirmed' },
+                    { key: 'Fecha de creación', value: 'dategenerated' },
                 ], /* Values to show on row-details */
                 filterTags: [], /* v-model that contains the filters applied on the table */
                 getSelectedDateConfirmed: '', /* v-model for a b-checkbox-group, it stores the dateconfirmed */
@@ -1220,7 +1211,7 @@
                 return this.getProcedureState('paymentsPrinting');
             },
             /**
-             * Compute all the payments for each type parent
+             * Compute all the payments for each parent type
              *
              * @return {Array} Array with the paymets objects
              */
@@ -1230,10 +1221,10 @@
                     return this.parentItems;
                 /* If the parent provide and id to search the payments return its search */
                 } else if (this.parentId) {
-                    return this.getFilteredPaymentsById(this.parentId, null, null, null, null, null, null, true);
+                    return this.getFilteredPaymentsById({ _id: this.parentId, inactives: true });
                 }
                 /* Else return all the payments without any filter */
-                return this.getFilteredPaymentsAll();
+                return this.getFilteredPaymentsAll({ filterYears: this.getSelectedYear, filterMonths: this.getSelectedMonth, filterStatus: this.getSelectedState, filterPaytype: this.getSelectedPayType, filterType: this.getSelectedType, creationRange: this.dateCreationRange, confirmationRange: this.dateConfirmationRange, inactives: this.inactives });
             },
             /**
              * Initialize the payments data from the store. Determine the value of local variables.
@@ -1242,7 +1233,7 @@
              */
             paymentsItems() {
                 /* If the parent provides the items use it. If the parent provides the id then search the payments related with it. For this options always active the inactives flag (last param of the filter action call) to acquire all the payments of this customer althought is inactive (this options are provided from the customer profile or from payment print and always want to print this documents regardless of the state of the customer). If not parent id or items are provided acquire all the payments of every customer */
-                let payments = this.parentItems ? this.filterPayments(this.parentItems, this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.getSelectedType, this.dateCreationRange, this.dateConfirmationRange, true) : this.parentId ? this.getFilteredPaymentsById(this.parentId, this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.getSelectedType, this.dateCreationRange, this.dateConfirmationRange, true) : this.getFilteredPaymentsAll(this.getSelectedYear, this.getSelectedMonth, this.getSelectedState, this.getSelectedPayType, this.getSelectedType, this.dateCreationRange, this.dateConfirmationRange, this.inactives);
+                let payments = this.parentItems ? this.filterPayments({ payments: this.parentItems, filterYears: this.getSelectedYear, filterMonths: this.getSelectedMonth, filterStatus: this.getSelectedState, filterPaytype: this.getSelectedPayType, filterType: this.getSelectedType, creationRange: this.dateCreationRange, confirmationRange: this.dateConfirmationRange, inactives: true }) : this.parentId ? this.getFilteredPaymentsById({ _id: this.parentId, filterYears: this.getSelectedYear, filterMonths: this.getSelectedMonth, filterStatus: this.getSelectedState, filterPaytype: this.getSelectedPayType, filterType: this.getSelectedType, creationRange: this.dateCreationRange, confirmationRange: this.dateConfirmationRange, inactives: true }) : this.getFilteredPaymentsAll({ filterYears: this.getSelectedYear, filterMonths: this.getSelectedMonth, filterStatus: this.getSelectedState, filterPaytype: this.getSelectedPayType, filterType: this.getSelectedType, creationRange: this.dateCreationRange, confirmationRange: this.dateConfirmationRange, inactives: this.inactives });
                 if (this.allSelected) {
                     /* Get only the selected rows */
                     payments = payments.filter(payment => this.rowsSelected.some(rs => rs._id == payment._id && rs.payment_id == payment.payment_id) == true);
@@ -1268,7 +1259,10 @@
                 const filteredItems = this.$refs.paymentsTable && this.$refs.paymentsTable.filteredItems;
                 if (this.rowsSelected.length > 0 && filteredItems.length > 0) {
                     if (this.confirming || this.manualDownload) {
-                        const usefulRows = filteredItems.filter(el => el.paymenttype == 'Domiciliación' && el.status == 'Pendiente');
+                        let usefulRows = filteredItems.filter(el => el.paymenttype == 'Domiciliación' && el.status == 'Pendiente');
+                        if (this.confirming) {
+                            usefulRows.filter(rowItem => this.getFilteredPaymentsById({ _id: rowItem._id, filterYears: [this.$moment(rowItem.interval, 'YYYY-MM').year()], filterMonths: [this.$moment(rowItem.interval, 'YYYY-MM').month()], filterStatus: ['Confirmado'], filterType: ['periodic'] }).length == 0);
+                        }
                         return usefulRows.every(ur => this.rowsSelected.some(rs => rs._id == ur._id && rs.payment_id == ur.payment_id) == true);
                     }
                     if (!this.confirming && !this.manualDownload) {
@@ -1311,7 +1305,7 @@
             '$validator', /* Inject the main $validator from the parent */
         ],
         methods: {
-            ...mapActions(['deletePayment', 'fetchCustomerImages', 'updatePaymentData']),
+            ...mapActions(['fetchCustomerImages', 'updatePaymentData']),
             ...mapActions('navbar', ['endProcedures', 'setProcedureState']),
             /**
              * Function that add the tags to the array v-model. Is called when a filter on the table is selected and on the mounted hook to apply the current year and month
@@ -1363,11 +1357,29 @@
                             // localStorage.setItem('customer_updated', item._id);
                             // localStorage.removeItem('customer_updated');
                         });
+                        if (response.interval_err.length > 0) {
+                            let errors = response.interval_err;
+                            let message = 'Los siguientes pagos no se han actualizado debido a que el intervalo coincide con otros pagos ya confirmados:'
+                            errors.forEach(error => {
+                                /* Delete the selected row from the array of selected elements */
+                                this.rowSelect(error, false);
+                                message += '<br><span class="text-danger">' + error.payment_id + '</span>'
+                            });
+                            const errorMessage = this.$createElement('div', { domProps: { innerHTML: message } });
+                            /* If a validation error on the backend occurs, show the info on a modal */
+                            this.$bvModal.msgBoxOk(errorMessage, {
+                                buttonSize: 'sm',
+                                centered: true,
+                                okTitle: 'Aceptar',
+                                title: 'Algunos pagos no se han actualizado',
+                            });
+                        }
                         /* Reset the used vars */
                         this.newStateSelected = false;
                         this.$showToast(response.status, response.message, 'Confirmación masiva de pagos');
                         /* Regenerate the charts data */
                         // this.fetchChartData();
+
                     })
                     .then(() => {
                         this.paymentsTableBusy = false;
@@ -1439,9 +1451,35 @@
              */
             evaluateRowSelectedState(payment_id = null) {
                 if (payment_id) {
+                    /* Update the payment on the array with the new data from the edit process */
                     this.rowsSelected = this.rowsSelected.map(rs => rs.payment_id == payment_id ? this.paymentsAll.find(pa => pa.payment_id == payment_id) : rs);
                 }
-                this.rowsSelected = this.rowsSelected.filter(rs => ((this.confirming || this.manualDownload) && (rs.paymenttype == 'Domiciliación' && rs.status == 'Pendiente')));
+                /* Filter the payments that has the status 'Pendiente' and the pay type is 'Domiciliación'. If the procedure actived is 'confiming' also check if exists a confirmed payment for the same interval of a pending payment */
+                this.rowsSelected = this.rowsSelected.filter(rs => (this.confirming || this.manualDownload) && (rs.paymenttype == 'Domiciliación' && rs.status == 'Pendiente') && ((this.confirming && this.getFilteredPaymentsById({ _id: rs._id, filterYears: [this.$moment(rs.interval, 'YYYY-MM').year()], filterMonths: [this.$moment(rs.interval, 'YYYY-MM').month()], filterStatus: ['Confirmado'], filterType: ['periodic'] }).length == 0) || this.manualDownload));
+            },
+            /**
+             * Evaluate the status and the title props of every row checkbox when a procedure is started
+             *
+             * @param {Object} rowItem: contains the row data
+             */
+            evaluateRowSelectedBtn(rowItem) {
+                let result = {
+                    disabled: false,
+                    title: '',
+                };
+                if (this.confirming && (rowItem.status != 'Pendiente' || rowItem.paymenttype != 'Domiciliación')) {
+                    result.title = 'Este pago no se puede confirmar. El estado no es Pendiente y/o la forma de pago Domiciliación';
+                    result.disabled = true;
+                }
+                if (this.confirming && rowItem.type == 'periodic' && this.getFilteredPaymentsById({ _id: rowItem._id, filterYears: [this.$moment(rowItem.interval, 'YYYY-MM').year()], filterMonths: [this.$moment(rowItem.interval, 'YYYY-MM').month()], filterStatus: ['Confirmado'], filterType: ['periodic'] }).length > 0) {
+                    result.title = 'Este pago no se puede confirmar. Ya existe un pago periódico confirmado para el mismo intervalo';
+                    result.disabled = true;
+                }
+                if (this.manualDownload && (rowItem.paymenttype != 'Domiciliación' || (rowItem.status != 'Pendiente' && rowItem.paymenttype == 'Domiciliación'))) {
+                    result.title = 'No puedes descargar archivo de remesa de un pago que no sea por domiciliación o si lo es, que esté pendiente';
+                    result.disabled = true;
+                }
+                return result;
             },
             /**
              * Function that fetch the chart data with the table data. The data can be generated inside of the function when is called from a initial load of the table data or can be passed as a param when is called from an update of the table data
@@ -1720,7 +1758,7 @@
                 return this.rowsSelected.some(el => el._id == row._id && el.payment_id == row.payment_id);
             },
             /**
-             * Function to fill the object with the row to edit. This object will be passed to the component PaymentsEdit where will be modified.
+             * Function to fill the object with the row to edit. This object will be passed to the component PaymentEdit where will be modified.
              *
              * @param {Object} row: contains the row from the table with the customer data that will be deleted
              */
@@ -1768,7 +1806,7 @@
                     /* Call the plugin to capture and download the component document */
                     const filename = this.printCustomer.name.replace(/\s/g, '-') + '__recibo__' + this.$moment().format('YYYY-MM-DD_HH_mm') + '.pdf';
                     NProgress.set(0.5);
-                    await this.$html2print(filename, this.$refs.printableNPB);
+                    await this.$printDoc(filename, this.$refs.printableNPB);
                     NProgress.done();
                     /* Reset the involved variables */
                     this.print = null;
@@ -1825,7 +1863,7 @@
                 this.$refs.paymentsTable.filteredItems.forEach(rowItem => {
                     if (checked == true && !this.rowsSelected.some(el => el._id == rowItem._id && el.payment_id == rowItem.payment_id)) {
                         /* Evaluate separetly to select the rows in every procedure actived (they cannot be active simultaneously), in some way this overload the conditions on rowSelect() */
-                        if ((this.confirming && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (this.manualDownload && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (!this.confirming && !this.manualDownload)) {
+                        if ((this.confirming && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación' && this.getFilteredPaymentsById({ _id: rowItem._id, filterYears: [this.$moment(rowItem.interval, 'YYYY-MM').year()], filterMonths: [this.$moment(rowItem.interval, 'YYYY-MM').month()], filterStatus: ['Confirmado'], filterType: ['periodic'] }).length == 0) || (this.manualDownload && rowItem.status == 'Pendiente' && rowItem.paymenttype == 'Domiciliación') || (!this.confirming && !this.manualDownload)) {
                             this.rowSelect(rowItem, true);
                         }
                     } else if (checked == false && this.rowsSelected.some(el => el._id == rowItem._id && el.payment_id == rowItem.payment_id)) {
@@ -1891,9 +1929,6 @@
     }
 </script>
 <style>
-    .date-range-payments {
-        min-width: 265px
-    }
     .table-responsive-lg {
         overflow-x: auto!important;
     }
