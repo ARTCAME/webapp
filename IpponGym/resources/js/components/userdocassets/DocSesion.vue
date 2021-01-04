@@ -3,6 +3,7 @@
         <h1 class="subtitle">
             Inicio de sesión y página de bienvenida
         </h1>
+        <small class="text-muted">Última actualización 2020-01-04</small>
         <p>
             Introduciremos nuestro nombre de usuario y contraseña suministrados por el administrador del servicio. Si tuviéramos cualquier inconveniente con nuestro usuario deberemos contactar con el administrador del servicio.
         </p>
