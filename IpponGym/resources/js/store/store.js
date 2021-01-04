@@ -8,7 +8,7 @@ import gettersBelts from './gettersBelts';
 import gettersForms from './gettersForms';
 import gettersPayments from './gettersPayments';
 import mutations from './mutations';
-import constants from './storeCONSTANTS';
+import constants from '../utils/constants';
 import navbar from './modules/navbar';
 import Vue from 'vue';
 import Vuex from 'vuex'
