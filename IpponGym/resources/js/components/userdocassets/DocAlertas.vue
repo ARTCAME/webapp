@@ -3,6 +3,7 @@
         <h1 class="subtitle">
             Avisos y alertas
         </h1>
+        <small class="text-muted">Última actualización 2020-01-04</small>
         <p>
             La aplicación mantendrá un formato similar a la hora de mostrar alertas con resultados relacionados con las diferentes acciones que realicemos. Estas alertas se mostrarán centrados en la parte inferior de la pantalla.
         </p>
