@@ -613,7 +613,6 @@
              * @param {Object} row: contains the row from the table with the customer data that will be deleted
              */
             delPayment() {
-                // this.deletePayment(this.editingItem)
                 /* Confirm to the user that the action can not be undoed */
                 this.$bvModal.msgBoxConfirm('Estás seguro de que quieres borrar el pago?', {
                     title: 'ATENCIÓN',
