@@ -1,4 +1,4 @@
-import constants from './storeCONSTANTS';
+import constants from '../utils/constants';
 import moment from 'moment';
 import { http } from '../utils/http';
 
