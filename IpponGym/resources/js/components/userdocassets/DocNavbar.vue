@@ -3,6 +3,7 @@
         <h1 class="subtitle">
             Barra de navegación
         </h1>
+        <small class="text-muted">Última actualización 2020-01-04</small>
         <p>
             La barra de navegación es el elemento principal para acceder a todas las herramientas de la aplicación. La encontramos visible en la parte superior de la pantalla independientemente de la sección en la que nos encontremos (exceptuando esta documentación y cuando accedamos a las utilidades globales).
         </p>
