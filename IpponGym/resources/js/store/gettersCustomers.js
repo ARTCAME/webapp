@@ -1,5 +1,5 @@
 import moment from 'moment';
-import utils from './storeUTILS';
+import utils from '../utils/helpers';
 
 export default {
     /**
@@ -13,16 +13,15 @@ export default {
             return [];
         }
         let customers = [];
-        let filter = utils.manageSpecialCharacters(value.toString().toLowerCase());
 
         /* Iterate over the state customers */
         state.customers.forEach(customer => {
             /* The search by phones, paymentData or emails IS NOT TESTED because is not used! */
             if (['phones', 'paymentData', 'emails'].includes(key)) {
-                (utils.checkCoincidence(utils.cleanData(JSON.stringify(customer[key])), filter) && customers.push(customer))
+                (utils.checkCoincidence(utils.cleanData(JSON.stringify(customer[key])), value) && customers.push(customer))
             /* Always check the possibility of doesn't exists of the key */
             } else if (customer[key]) {
-                (utils.checkCoincidence(customer[key], filter) && customers.push(customer))
+                (utils.checkCoincidence(customer[key], value) && customers.push(customer))
             }
         })
         return customers;
@@ -74,15 +73,14 @@ export default {
             return [];
         }
         let customers = [];
-        let filter = utils.manageSpecialCharacters(value.toString().toLowerCase());
         /* Iterate over the state customers */
         state.customers.forEach(customer => {
-            (customer['name'] && utils.checkCoincidence(customer['name'], filter) && customers.push(customer)) ||
-            (customer['dni'] && utils.checkCoincidence(customer['dni'], filter) && customers.push(customer)) ||
-            (customer['address'] && utils.checkCoincidence(customer['address'], filter) && customers.push(customer)) ||
-            (customer['_id'] && utils.checkCoincidence(customer['_id'], filter) && customers.push(customer)) ||
-            (customer['phones'] && utils.checkCoincidence(utils.cleanData(JSON.stringify(customer['phones'])), filter) && customers.push(customer)) ||
-            (customer['emails'] && utils.checkCoincidence(utils.cleanData(JSON.stringify(customer['emails'])), filter) && customers.push(customer));
+            (customer['name'] && utils.checkCoincidence(customer['name'], value) && customers.push(customer)) ||
+            (customer['dni'] && utils.checkCoincidence(customer['dni'], value) && customers.push(customer)) ||
+            (customer['address'] && utils.checkCoincidence(customer['address'], value) && customers.push(customer)) ||
+            (customer['_id'] && utils.checkCoincidence(customer['_id'], value) && customers.push(customer)) ||
+            (customer['phones'] && utils.checkCoincidence(utils.cleanData(JSON.stringify(customer['phones'])), value) && customers.push(customer)) ||
+            (customer['emails'] && utils.checkCoincidence(utils.cleanData(JSON.stringify(customer['emails'])), value) && customers.push(customer));
         })
         return customers;
     },
