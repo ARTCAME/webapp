@@ -1,4 +1,4 @@
-import constants from './storeCONSTANTS';
+import constants from '../utils/constants';
 import exceptions from '../Exceptions';
 import NProgress from 'nprogress';
 import { http } from '../utils/http';
