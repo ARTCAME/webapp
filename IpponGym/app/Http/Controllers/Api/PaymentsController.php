@@ -147,17 +147,16 @@ class PaymentsController extends Controller {
                 }
             }
         };
-
         /* Iterate over all the active customers */
         foreach ($customers as $customer) {
             $newPayment = []; /* Will store the new payment data for the customer */
             $auxPaymentData = $customer['paymentData'];
-            /* Iterate over the customer payments to check if has a payment for the current period. On the periodic payments the period will be the interval, on the manual payments the period can be the interval or if it is null the dategenerated */
+            /* Iterate over the customer payments to check if has a payment for the current period. On the periodic payments the period will be the interval, on the manual payments the period can be the interval and the dategenerated or if it the interval is null only use the dategenerated */
             $alreadyGenerated = false; /* Flag to avoid generate a new payment if a periodic was previosly generated for this customer*/
             /* If the customer has payments, if not the payment will be created directly */
             if (isset($customer['payments'])) {
                 foreach ($customer['payments'] as $payment) {
-                    if ((($payment['type'] === 'periodic' && $payment['interval'] === date('Y-m')) || ($payment['type'] === 'manual' && ($payment['interval'] === date('Y-m') || ($payment['interval'] == null && $payment['dategenerated']->toDateTime()->format('Y-m') === date('Y-m')))))) {
+                    if ((($payment['type'] === 'periodic' && $payment['interval'] === date('Y-m')) || ($payment['type'] === 'manual' && (((!isset($payment['interval']) || $payment['interval'] === date('Y-m')) && $payment['dategenerated']->toDateTime()->format('Y-m') === date('Y-m')))))) {
                         /* If the payment is periodic, activate the flag to avoid creating a new payment for this customer. Just in case, the manuals doesn't count */
                         if ($payment['type'] === 'periodic') {
                             $alreadyGenerated = true;
