@@ -1,30 +1,28 @@
 <template>
-    <div id="doc-alertas">
-        <b-form-group>
-            <h1 class="subtitle">
-                Avisos y alertas
-            </h1>
-            <p>
-                La aplicación mantendrá un formato similar a la hora de mostrar mostrar resultados a las diferentes acciones que realicemos. Estos resultados se mostrarán centrados en la parte inferior de la pantalla.
-            </p>
-            <p>
-                A continuación mostramos algunos ejemplos, es importante notar que en el caso de los errores se nos facilitará un código de error que puede sernos útil para determinar qué ha sucedido:
-            </p>
-            <b-row>
-                <DocImg alt="Alerta de error" class="col" desc="Alerta de error" img="Alerta1.png" type="image/png"></DocImg>
-                <DocImg alt="Alerta de guardado" class="col" desc="Alerta de guardado" img="Alerta2.png" type="image/png"></DocImg>
-            </b-row>
-            <b-row no-gutters>
-                <b-button
-                    class="col col-12"
-                    size="sm"
-                    variant="ig-outline-green"
-                    @click="randomAlert()">
-                    Generar una alerta
-                </b-button>
-            </b-row>
-        </b-form-group>
-    </div>
+    <section id="doc-alertas">
+        <h1 class="subtitle">
+            Avisos y alertas
+        </h1>
+        <p>
+            La aplicación mantendrá un formato similar a la hora de mostrar alertas con resultados relacionados con las diferentes acciones que realicemos. Estas alertas se mostrarán centrados en la parte inferior de la pantalla.
+        </p>
+        <p>
+            A continuación mostramos algunos ejemplos, es importante notar que, en el caso de que se produzca y se nos informe de un error, se nos facilitará un código que lo identificará y que será útil para determinar qué ha sucedido:
+        </p>
+        <b-row>
+            <DocImg alt="Alerta de error" class="col" desc="Alerta de error" img="Alerta1.png" type="image/png"></DocImg>
+            <DocImg alt="Alerta de guardado" class="col" desc="Alerta de guardado" img="Alerta2.png" type="image/png"></DocImg>
+        </b-row>
+        <b-row no-gutters>
+            <b-button
+                class="col col-12"
+                size="sm"
+                variant="ig-outline-green"
+                @click="randomAlert()">
+                Generar una alerta
+            </b-button>
+        </b-row>
+    </section>
 </template>
 <script>
     export default {
