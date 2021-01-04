@@ -1,4 +1,4 @@
-import constants from './storeCONSTANTS';
+import constants from '../utils/constants';
 export default {
     /****************************************************/ /* HELPERS */ /****************************************************/
     /**
