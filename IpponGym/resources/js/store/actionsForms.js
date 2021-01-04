@@ -1,4 +1,4 @@
-import constants from './storeCONSTANTS';
+import constants from '../utils/constants';
 import exceptions from '../Exceptions';
 import moment from 'moment';
 import NProgress from 'nprogress';
