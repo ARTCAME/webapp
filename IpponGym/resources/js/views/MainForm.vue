@@ -817,7 +817,7 @@
                 </b-card>
             </b-skeleton-wrapper>
             <b-row
-                class="my-3"
+                class="py-3"
                 no-gutters
                 v-if="!loadingCustomer">
                 <!-- <b-col cols="auto">
