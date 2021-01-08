@@ -128,7 +128,7 @@
                     </li>
                 </ul>
                 <p class="no-search note">
-                    <fa-icon class="pr-1" icon="asterisk"></fa-icon>Nota: En la sección <a href="doc-pagos" @click.prevent="$scrollTo('#doc-pagos')">Pagos</a> veremos más detalles sobre los procesos de edición y creación de pagos que se pueden hacer desde allí, básicamente son los mismos procesos pero generados desde otro origen.
+                    <fa-icon class="pr-1" icon="asterisk"></fa-icon>Nota: En la sección <a href="#doc-pagos" @click.prevent="$scrollTo('#doc-pagos')">Pagos</a> veremos más detalles sobre los procesos de edición y creación de pagos que se pueden hacer desde allí, básicamente son los mismos procesos pero generados desde otro origen.
                 </p>
             </article>
         </section>
