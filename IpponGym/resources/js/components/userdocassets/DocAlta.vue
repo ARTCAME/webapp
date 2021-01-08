@@ -356,7 +356,7 @@
                         <br>
                         - Desde este apartado podremos consultar y editar los pagos del socio y descargar los recibos, el apartado de pagos dispone de filtros y buscador para que podamos navegar fácilmente por todos los pagos del socio
                         <br>
-                        - Más adelante explicaremos cómo gestionamos la edición de pagos en el apartado <a href="#doc-alta-pagos">pagos</a>
+                        - Más adelante explicaremos cómo gestionamos la edición de pagos en el apartado <a href="#doc-alta-pagos" @click.prevent="$scrollTo('#doc-alta-pagos')">pagos</a>
                     </p>
                 </article>
                 <article>
@@ -431,7 +431,7 @@
                     Para editar un pago iremos a la línea que lo contiene y pulsaremos en el botón de editar situado en el margen derecho para que se nos abra el formulario de edición con los datos del pago cargados.
                 </p>
                 <p>
-                    En el <a href="#doc-utils-pagos-edit-create">apartado de creación y edición de pagos</a> se explica en detalle el formulario de creación y edición de pagos.
+                En el <a href="#doc-utils-pagos-edit-create"  @click.prevent="$scrollTo('#doc-utils-pagos-edit-create')">apartado de creación y edición de pagos</a> se explica en detalle el formulario de creación y edición de pagos.
                 </p>
                 <DocImg alt="Editando un pago" desc="Al editar un pago podremos cambiar cualquier campo que necesitemos, los campos siempre aparecerán rellenados con los datos del pago" img="Alta11.png" type="image/png"></DocImg>
                 <p>
