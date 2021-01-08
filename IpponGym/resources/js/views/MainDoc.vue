@@ -27,11 +27,11 @@
                                 @click.prevent="$scrollTo('#doc-alertas')">
                                 Avisos y alertas
                             </b-nav-item>
-                            <b-nav-item
+                            <!-- <b-nav-item
                                 href="#doc-tutoriales"
                                 @click.prevent="$scrollTo('#doc-tutoriales')">
                                 Tutoriales
-                            </b-nav-item>
+                            </b-nav-item> -->
                             <b-nav-item
                                 href="#doc-navbar"
                                 @click.prevent="$scrollTo('#doc-navbar')">
@@ -52,6 +52,23 @@
                                 @click.prevent="$scrollTo('#doc-utils-pagos')">
                                 Actualiza y genera pagos
                             </b-nav-item>
+                            <b-nav pills vertical>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-utils-pagos-selection"
+                                    @click.prevent="$scrollTo('#doc-utils-pagos-selection')">
+                                    Selección del socio
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-utils-pagos-confirm-update"
+                                    @click.prevent="$scrollTo('#doc-utils-pagos-confirm-update')">
+                                    Revisión de pagos anteriores
+                                </b-nav-item>
+                                <b-nav-item class="ml-3"
+                                    href="#doc-utils-pagos-edit-create"
+                                    @click.prevent="$scrollTo('#doc-utils-pagos-edit-create')">
+                                    Formulario de creación y edición de pagos
+                                </b-nav-item>
+                            </b-nav>
                             <b-nav-item
                                 href="#doc-alta"
                                 @click.prevent="$scrollTo('#doc-alta')">
@@ -117,11 +134,11 @@
                                     @click.prevent="$scrollTo('#doc-pagos-descargar')">
                                     Descarga manual de archivo de remesa
                                 </b-nav-item>
-                                <b-nav-item class="ml-3"
+                                <!-- <b-nav-item class="ml-3"
                                     href="#doc-pagos-gráficos"
                                     @click.prevent="$scrollTo('#doc-pagos-gráficos')">
                                     Gráficos
-                                </b-nav-item>
+                                </b-nav-item> -->
                             </b-nav>
                             <b-nav-item
                                 href="#doc-usuarios"
@@ -151,10 +168,14 @@
                     v-for="(doc, index) in roleDoc"
                     :key="index">
                     <component
-                        :is="doc"></component>
+                        :is="doc"
+                        :ref="doc"></component>
                 </div>
             </div>
         </div>
+        <!-- <TextSearch
+            :html="htmlOfDocs"
+            :text="textOfDocs"></TextSearch> -->
     </div>
 </template>
 <script>
@@ -165,10 +186,20 @@
         data() {
             return {
                 adminDoc: ['DocUsuarios'],
-                commonDoc: ['DocSesion', 'DocAlertas', 'DocWizard', 'DocNavbar', 'DocUtilsBusqueda', 'DocUtilsDocumentos', 'DocUtilsPagos', 'DocAlta', 'DocCinturones', 'DocPagos'],
+                commonDoc: ['DocSesion', 'DocAlertas', 'DocNavbar', 'DocUtilsBusqueda', 'DocUtilsDocumentos', 'DocUtilsPagos', 'DocAlta', 'DocCinturones', 'DocPagos'], /*  'DocWizard', */
+                htmlOfDocs: {},
                 rootDoc: ['DocUsuarios', 'DocTests'],
                 testerDoc: ['DocTests'],
+                textOfDocs: {},
             }
+        },
+        mounted() {
+            this.roleDoc.forEach(doc => {
+                if (this.$refs[doc]) {
+                    this.textOfDocs[doc] = this.$refs[doc][0].$el.innerText;
+                    this.htmlOfDocs[doc] = this.$refs[doc][0].$el.innerHTML;
+                }
+            });
         },
         computed: {
             ...mapGetters('auth', ['authenticatedRole']),
@@ -214,6 +245,7 @@
 <style scoped>
     .doc-article {
         margin: 0 auto;
+        margin-bottom: 1.5rem;
         max-width: 800px;
     }
     #doc-sidebar-navbar .nav-item.active .nav-link.active {
