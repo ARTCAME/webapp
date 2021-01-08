@@ -1,45 +1,136 @@
 <template>
-    <div id="doc-utils-pagos">
-        <b-form-group>
-            <h1 class="subtitle">
-                Actualiza y genera pagos
-            </h1>
-            <p>
-                Esta utilidad está orientada a gestionar los pagos que los socios nos realicen físicamente en el centro aunque sus opciones nos permite gestionar cualquier tipo de pago. Debemos tener en cuenta que tenemos la sección para la <a href="doc-pagos" @click.prevent="$scrollTo('#doc-pagos')">gestión global de Pagos</a> desde la que podremos gestionar masivamente los pagos domiciliados.
-            </p>
-            <p>
-                Está pensada para llevar el control de quién nos abona las cuotas y poder generar recibos de pago en el momento ya que la propia utilidad nos permite descargar el recibo en el mismo momento para poder conservarlo o entregárselo al cliente.
-            </p>
-            <p>
-                Los pagos que no hayan sido confirmados aparecerán en el estado ‘Pendiente’, los pagos con tarjeta y efectivo que hayan sido completados cambiarán al estado ‘Confirmado’ y los pagos domiciliados, una vez hayan sido completados, podrán aparecer como ‘Confirmado’ o ‘Devuelto’, según el caso concreto. Cuando usemos esta utilidad marcaremos los pagos pendientes a estos nuevos estados.
-            </p>
-            <p>
-                Podremos actualizar los pagos ya generados o generar pagos nuevos si estos no existen, la aplicación nos advertirá de si estamos generando o actualizando un pago. Que un pago se genere o se actualice depende directamente de la fecha en que se pretenda crear desde esta utilidad ya que los pagos se generarán automáticamente para todos los socios a principios de cada mes.
-            </p>
-            <p>
-                Vamos a contextualizar mejor estos procesos con unos ejemplos genéricos: un socio/a viene a abonarnos el día 25 de enero la cuota de febrero (al ser antes de principio de mes esta cuota no ha sido generada aún por el sistema y por lo tanto, al guardarla la crearemos nosotros en el momento del registro del pago). Al generar en el momento la cuota, ésta se generará con los datos de pago que existen en la ficha del socio/a en el momento de generarlo por lo que, si queremos hacer algún cambio, deberemos ir a la ficha del socio/a, realizar las modificaciones necesarias y finalmente guardar el pago desde la utilidad de pagos.
-            </p>
-            <p>
-                Otro ejemplo: un socio/a viene a abonarnos el día 5 de septiembre la cuota de septiembre (al haber pasado principio de mes la cuota ya se ha generado automáticamente y procederemos a actualizarla para quitarle el estado 'Pendiente'), la cuota se generó con la forma de pago que existía en la ficha del socio/a que es Tarjeta pero el cliente viene a pagar en efectivo, este pago deberá ser modificado desde la ficha del socio/a o desde la sección de pagos antes de marcarlo como completado y una vez modificada la forma de pago a Efectivo se podrá actualizar el pago para marcarlo como pagado.
-            </p>
-            <p>
-                <u>Nota</u>: En la sección Pagos veremos más detalles sobre los procesos de edición y creación de pagos.
-            </p>
-            <p>
-                El proceso para actualizar un pago es tan sencillo como buscar y seleccionar el cliente para posteriormente seleccionar el intervalo de pago. La aplicación actualiza en tiempo real los pagos disponibles para actualizar ya que si un pago ha sido confirmado y ya no consta en estado 'Pendiente' no podremos actualizarlo con esta utilidad y deberemos acceder a la ficha del socio para modificar lo que necesitemos
-            </p>
-            <p>
-                A continuación, presentamos unas capturas que ilustran lo que hemos explicado. En la siguiente vemos como sería la generación de un recibo de un pago en tarjeta, podemos ver como la aplicación nos advierte de que el pago será creado:
-            </p>
-            <DocImg alt="Generando un nuevo pago con tarjeta" desc="Estamos generando un nuevo pago con tarjeta para agosto de 2021" img="Recibos1.png" type="image/png"></DocImg>
-            <p>
-                En la siguiente captura vemos otro ejemplo pero en este caso la forma de pago es mediante domiciliación bancaria, podemos ver que tenemos más datos como el iban. Además en este caso vemos como la aplicación nos advierte por un lado de que los datos del pago difieren de los actuales en la ficha de socio y que el pago ya existía por lo que se actualizará. Este ejemplo puede ser uno de los que menos usemos en el día a día pero cabe remarcar que el sistema validará que el iban exista y todo sea correcto antes de permitirnos realizar el registro del pago:
-            </p>
-            <DocImg alt="Actualizando un pago domiciliado" desc="Actualizamos un pago domiciliado que tiene datos diferentes a los que hay en la ficha de socio" img="Recibos2.png" type="image/png"></DocImg>
-            <p>
-                Finalmente, cuando decidamos registrar el pago veremos la pantalla de confirmación definitiva en la que podremos guardar generando un recibo o simplemente guardar:
-            </p>
-            <DocImg alt="Confirmación de guardado de datos de pago" desc="Confirmación de guardado de datos de pago" img="Recibos3.png" noexpandable="true" type="image/png" width="500"></DocImg>
-        </b-form-group>
-    </div>
+    <section id="doc-utils-pagos">
+        <h1 class="subtitle">
+            Actualiza y genera pagos
+        </h1>
+        <small class="text-muted">Última actualización 2020-01-04</small>
+        <p>
+            Esta utilidad está orientada a gestionar los pagos que los socios nos realicen físicamente en el centro aunque sus opciones nos permite gestionar cualquier tipo de pago. Debemos tener en cuenta que tenemos la sección para la <a href="doc-pagos" @click.prevent="$scrollTo('#doc-pagos')">gestión global de Pagos</a> desde la que podremos gestionar masivamente los pagos domiciliados.
+        </p>
+        <p>
+            Está pensada para llevar el control de quién nos abona las cuotas, productos o servicios del centro y poder generar recibos de pago en el momento ya que la propia utilidad nos va a permitir descargar el recibo en el mismo momento para poder conservarlo o entregárselo al cliente.
+        </p>
+        <p>
+            Vamos a poder generar, modificar o actualizar pagos basados, por un lado, en la cuota que tiene el socio para su pago mensual que escogiéramos durante el proceso de alta (o modificásemos después), y por otro, basados en pagos sobre algún producto o servicio concreto no basado en la cuota mensual: un campus, material, un pago parcial de una cuota, matrícula, etc.
+        </p>
+        <p>
+            Los pagos podrán tener tres estados: 'Pendiente', 'Devuelto' o 'Confirmado' (el estado 'Devuelto' solo existe para pagos domiciliados). Los pagos que no hayan sido confirmados aparecerán en el estado ‘Pendiente’, los pagos con tarjeta y efectivo que hayan sido completados cambiarán al estado ‘Confirmado’ y los pagos domiciliados, una vez hayan sido completados, podrán aparecer como ‘Confirmado’ o ‘Devuelto’, según el caso concreto. Cuando usemos esta utilidad marcaremos los pagos 'Pendientes' a 'Confirmado' o 'Devuelto'.
+        </p>
+        <section>
+            <h4 id="doc-utils-pagos-procedure">
+                Pasos para la gestión de un pago
+            </h4>
+            <article>
+                <h5 id="doc-utils-pagos-selection">
+                    Selección del socio
+                </h5>
+                <p>
+                    El primer paso siempre será seleccionar el socio sobre el que queremos gestionar un pago. Al iniciar la utilidad de gestión de un nuevo pago nos aparecerá directamente el buscador de socios para que podamos seleccionar el deseado.
+                </p>
+                <p>
+                    Existe la opción de abrir directamente la gestión de un pago desde la sección 'Gestión de pagos' de la ficha de un socio como se ve en la siguiente imagen:
+                </p>
+                <DocImg alt="Botón de generación de pago en la ficha del socio" desc="Botón para generar un pago nuevo directamente desde la ficha de un socio" img="PagosUtils1.png" type="image/png"></DocImg>
+                <p>
+                    Independientemente del camino seguido para seleccionar al socio sobre el que queremos gestionar un pago, los siguientes pasos serán idénticos.
+                </p>
+            </article>
+            <article>
+                <h5 id="doc-utils-pagos-confirm-update">
+                    Revisión de pagos anteriores
+                </h5>
+                <p>
+                    Este paso <u>no siempre</u> lo deberemos realizar ya que solo será necesario si el socio tiene pagos pendientes. Es importante tener que cuenta que <u>nunca deberemos</u> crear pagos que ya existan para no duplicarlos y asi evitar desvirtuar los datos de la aplicación.
+                </p>
+                <DocImg alt="Aviso de pagos pendiente durante la creación de un nuevo pago" desc="Aviso de pagos pendiente durante la creación de un nuevo pago" img="PagosUtils2.png" type="image/png"></DocImg>
+                <p>
+                    El sistema nos advertirá de qué pagos tiene el socio pendientes por si alguno de ellos es el mismo que pretendemos crear. Si alguno de estos pagos se aviene al que queremos crear deberemos seleccionar el pago y en vez de crearlo podremos confirmarlo o editarlo.
+                </p>
+                <DocImg alt="Datos de pago ya existente, podemos confirmarlo o editarlo" desc="Datos de pago ya existente, podemos confirmarlo o editarlo" img="PagosUtils3.png" type="image/png"></DocImg>
+                <p>
+                    Si seleccionamos la opción 'Marcar como pagado' o 'Marcar como pagado y descargar recibo' el pago quedará automáticamente en estado 'Confirmado' (y podremos o no descargar el recibo). Tanto si usamos la opción 'Editar el pago' como 'Omitir y gestionar nuevo pago' iremos a la edición/creación de pagos que se explica en el apartado siguiente.
+                </p>
+            </article>
+            <article>
+                <h5 id="doc-utils-pagos-edit-create">
+                    Formulario de creación y edición de pagos
+                </h5>
+                <p>
+                    A este formulario llegaremos directamente desde los socios que no tengan pagos anteriores pendientes o si los tienen hemos escogido omitir y crear un pago nuevo y también llegaremos a este formulario si hemos seleccionado un pago anterior.
+                </p>
+                <p>
+                    El formulario de edición y creación de pagos es el mismo, la única diferencia será que en un pago editado la mayoría de campos estarán rellenados y en un pago nuevo no.
+                </p>
+                <DocImg alt="Formulario de creación de un nuevo pago" desc="Formulario de creación de un nuevo pago" img="PagosUtils4.png" type="image/png"></DocImg>
+                <h6>
+                    <u>Glosario de los datos del formulario</u>
+                </h6>
+                <ul>
+                    <li>
+                        - <u>Socio</u>: Es el nombre del socio al que corresponde el pago
+                    </li>
+                    <br>
+                    <li>
+                        - <u>Tipo de pago</u>: Escogeremos entre 'Cuota periódica' (pagos basados en la cuota mensual que tiene el socio) y 'Pago manual' (pagos manuales en los que indicaremos un importe y un concepto)
+                    </li>
+                    <br>
+                    <li>
+                        - <u>Tarifa</u>: Es la tarifa mensual del socio en pagos periódicos o el concepto de pago en pagos manuales
+                    </li>
+                    <br>
+                    <li>
+                        - <u>Importe</u>: La cantidad a pagar en euros
+                    </li>
+                    <br>
+                    <li>
+                        - <u>Estado</u>: Es el nuevo estado, escogeremos entre 'Confirmado', 'Pendiente' o 'Devuelto' (solo pagos domiciliados)
+                    </li>
+                    <br>
+                    <li>
+                        - <u>Periodo de pago</u>: Es el periodo mes-año al que corresponde el pago. En pagos periódicos es obligatorio indicarlo no siéndolo en los pagos manuales
+                    </li>
+                    <br>
+                    <li>
+                        - <u>Fecha de confirmación</u>: Es la fecha en la que el pago se efectúa. Se rellena automáticamente al seleccionar un estado diferente a 'Pendiente' con la fecha actual pero podremos editarla
+                    </li>
+                    <br>
+                    <li>
+                        - <u>Forma de pago</u>: Escogeremos entre 'Efectivo', 'Tarjeta' y 'Domiciliación', si escogemos 'Domiciliación' deberemos rellenar el IBAN y el nombre y dni del titular del IBAN
+                    </li>
+                    <br>
+                </ul>
+                <h6>
+                    <u>Características para la creación y edición de pagos:</u>
+                </h6>
+                <ul>
+                    <li>
+                        - Si seleccionamos un pago de 'Cuota periódica', que hace referencia a la cuota mensual establecida para el socio, se cargarán al formulario ciertos datos de la ficha del socio: tarifa, importe mensual y datos de pago
+                    </li>
+                    <br>
+                    <li>
+                        - Si seleccionamos un pago del tipo 'Pago manual', que se referirá a un concepto que deberemos indicar como matrícula, cuota parcial, material, etc., se cargarán al formulario los datos del pago registrados en la ficha del socio
+                    </li>
+                    <br>
+                    <li>
+                        - Los datos cargados en el formulario se pueden editar, es decir, un pago de 'Cuota periódica' puede generarse con una tarifa, importe o datos de pago diferentes a los que se carguen desde la ficha del socio; este cambio solo se aplica al pago específico que estamos gestionando y no se guarda permanentemente en la ficha del socio
+                    </li>
+                    <br>
+                    <li>
+                        - Si estamos editando un pago, además de los datos ya indicados, se cargarán también el periodo de pago y el concepto, dependiendo de si es un pago manual o periódico
+                    </li>
+                    <br>
+                    <li>
+                        - Siempre deberemos indicar un estado para poder guardar el pago. Si el nuevo estado es 'Confirmado' o 'Devuelto' se asignará una fecha de confirmación que hará referencia al momento de la creación, podemos modificarla si lo necesitamos
+                    </li>
+                    <br>
+                    <li>
+                        - Al guardar la creación o edición de un recibo podremos escoger si queremos descargar o no el recibo de ese pago (lo podremos descargar en otro momento si fuera necesario)
+                    </li>
+                </ul>
+                <p class="no-search note">
+                    <fa-icon class="pr-1" icon="asterisk"></fa-icon>Nota: En la sección <a href="doc-pagos" @click.prevent="$scrollTo('#doc-pagos')">Pagos</a> veremos más detalles sobre los procesos de edición y creación de pagos que se pueden hacer desde allí, básicamente son los mismos procesos pero generados desde otro origen.
+                </p>
+            </article>
+        </section>
+    </section>
 </template>
