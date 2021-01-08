@@ -32,24 +32,15 @@
                 Al igual que hemos visto en la sección de edición de un socio, desde la gestión global de pagos también podremos realizar modificaciones a los pagos.
             </p>
             <p>
-                Recordemos que, para localizar un pago concreto podemos usar los filtros y búsqueda disponibles:
-            </p>
-            <p>
-                Realmente la edición de un pago desde la ficha de un socio no requiere que activemos la edición del socio ya que directamente podremos usar el botón de edición del pago. Los cambios en los pagos se guardarán en el momento de aplicarlos y no es necesario editar/guardar la ficha de socio para que se apliquen.
-            </p>
-            <p>
                 A la hora de consultar pagos podemos usar los filtros disponibles para localizar rápidamente un pago:
             </p>
-            <DocImg alt="Edición de pagos" desc="Tenemos disponibles filtros para localizar un pago y podremos descargar los recibos de los pagos confirmados" img="Alta10.png" type="image/png"></DocImg>
+            <DocImg alt="Edición de pagos" desc="Tenemos disponibles filtros para localizar un pago y podremos descargar los recibos de los pagos confirmados, las columnas de la tabla pueden diferir" img="Alta10.png" type="image/png"></DocImg>
             <p>
                 Para editar un pago iremos a la línea que lo contiene y pulsaremos en el botón de editar situado en el margen derecho para que se nos abra el formulario de edición con los datos del pago cargados.
             </p>
-            <p>
-            En el <a href="#doc-utils-pagos-edit-create"  @click.prevent="$scrollTo('#doc-utils-pagos-edit-create')">apartado de creación y edición de pagos</a> se explica en detalle el formulario de creación y edición de pagos.
-            </p>
             <DocImg alt="Editando un pago" desc="Al editar un pago podremos cambiar cualquier campo que necesitemos, los campos siempre aparecerán rellenados con los datos del pago" img="Alta11.png" type="image/png"></DocImg>
             <h6>
-                <u>Glosario de los datos del formulario</u>
+                <u>Glosario de los datos del formulario de edición</u>
             </h6>
             <ul>
                 <li>
