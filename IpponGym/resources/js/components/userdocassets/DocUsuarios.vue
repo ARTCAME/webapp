@@ -3,6 +3,7 @@
         <h1 class="subtitle">
             Registro de usuarios
         </h1>
+        <small class="text-muted">Última actualización 2020-01-04</small>
         <p>
             El formulario de registro de usuarios nos servirá para dar de alta nuevos usuarios a la aplicación.
         </p>
