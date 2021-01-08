@@ -1,25 +1,23 @@
 <template>
-    <div id="doc-tutoriales">
-        <b-form-group>
-            <h1 class="subtitle" data-v-step="wzd-doc-tests-0">
-                Tutoriales
-            </h1>
-            <p>
-                Algunas secciones pueden suponer un reto en cuanto a la cantidad de información que contienen, en ellas existirá el icono de acceso directo a un tutorial que nos guiará por el proceso a realizar y nos indicará datos relevantes sobre la información que vemos por pantalla.
-            </p>
-            <p>
-                Durante el tutorial iremos navegando por los pasos disponibles durante los que se nos dará la información necesaria para conocer bien el proceso que pretendemos llevar a cabo. Esta navegación puede hacerse usando los botones de avanzar, retroceder y salir o usando las flechas del teclado para avanzar y retroceder o la tecla 'Esc' para salir
-            </p>
-            <p>
-                El icono de acceso directo lo encontraremos siempre en el margen inferior derecho de las secciones, herramientas o utilidades en las que esté disponible. Tiene el formato que puedes ver a continuación, si pulsas sobre el icono podrás ver un ejemplo del funcionamiento de un tutorial:
-            </p>
-            <div id="wzd-doc-wrp">
-                <Wizard
-                    name="wzd-doc-tests"
-                    :steps="steps"></Wizard>
-            </div>
-        </b-form-group>
-    </div>
+    <section id="doc-tutoriales">
+        <h1 class="subtitle" data-v-step="wzd-doc-tests-0">
+            Tutoriales
+        </h1>
+        <p>
+            Algunas secciones pueden suponer un reto en cuanto a la cantidad de información que contienen, en ellas existirá el icono de acceso directo a un tutorial que nos guiará por el proceso a realizar y nos indicará datos relevantes sobre la información que vemos por pantalla.
+        </p>
+        <p>
+            Durante el tutorial iremos navegando por los pasos disponibles durante los que se nos dará la información necesaria para conocer bien el proceso que pretendemos llevar a cabo. Esta navegación puede hacerse usando los botones de avanzar, retroceder y salir o usando las flechas del teclado para avanzar y retroceder o la tecla 'Esc' para salir
+        </p>
+        <p>
+            El icono de acceso directo lo encontraremos siempre en el margen inferior derecho de las secciones, herramientas o utilidades en las que esté disponible. Tiene el formato que puedes ver a continuación, si pulsas sobre el icono podrás ver un ejemplo del funcionamiento de un tutorial:
+        </p>
+        <div id="wzd-doc-wrp">
+            <Wizard
+                name="wzd-doc-tests"
+                :steps="steps"></Wizard>
+        </div>
+    </section>
 </template>
 <script>
     export default {
