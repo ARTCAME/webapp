@@ -3,6 +3,7 @@
         <h1 class="subtitle">
             Tester
         </h1>
+        <small class="text-muted">Última actualización 2020-01-04</small>
         <p>
             Esta sección contiene los tests a realizar sobre la aplicación y los ya realizados por el usuario que ha iniciado sesión.
         </p>
