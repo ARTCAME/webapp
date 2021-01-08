@@ -33,11 +33,9 @@
                 <h1>Novedades y actualización de errores</h1>
             </template>
             <b-container>
-                <h4>
-                    📢Se han liberado una gran cantidad de mejoras y cambios, los más relevantes son:
-                </h4>
+                <h5>Se ha publicado <router-link class="h5" target="_blank" to="/wiki">la documentación actualizada</router-link> con todos estos cambios.</h5>
                 <p>
-                    <h5>Mejoras visuales:</h5>
+                    <h5>Recordamos los cambios recientes:</h5>
                     &emsp;- Se ha mejorado y estandarizado el funcionamiento de animaciones y transiciones
                     <br>&emsp;- Se han estandarizado el funcionamiento y estilo de algunos botones
                     <br>&emsp;- Se han añadido mejoras para facilitar el uso en pantallas de menor tamaño
@@ -59,8 +57,7 @@
                     <h5>Otras mejoras:</h5>
                     &emsp;- Se han aplicado mejoras en el rendimiento al cargar los socios
                     <br>&emsp;- Se han aplicado mejoras en el rendimiento al buscar socios
-                    <br><br>
-                    <h5>Durante los próximos días se publicará <router-link class="h5" target="_blank" to="/wiki">la documentación</router-link> relacionada con todos estos cambios.</h5>
+                    <br>
                 </p>
             </b-container>
         </b-modal>
