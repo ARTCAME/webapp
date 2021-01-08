@@ -3,6 +3,7 @@
         <h1 class="subtitle" data-v-step="wzd-doc-tests-0">
             Tutoriales
         </h1>
+        <small class="text-muted">Última actualización 2020-01-04</small>
         <p>
             Algunas secciones pueden suponer un reto en cuanto a la cantidad de información que contienen, en ellas existirá el icono de acceso directo a un tutorial que nos guiará por el proceso a realizar y nos indicará datos relevantes sobre la información que vemos por pantalla.
         </p>
