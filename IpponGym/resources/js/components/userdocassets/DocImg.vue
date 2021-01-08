@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="doc-img">
         <b-form-group
             class="doc-attch-img-wrp"
             :description="desc">
