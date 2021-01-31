@@ -212,13 +212,13 @@ class PaymentsController extends Controller {
         $mail->CharSet = 'UTF-8';
         $mail->SMTPDebug = SMTP::DEBUG_SERVER;
         $mail->isSMTP();
-        $mail->Host     = 'smtp.gmail.com';
+        $mail->Host     = env('MAIL_HOST');
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'ippongymzaragoza@gmail.com';
+        $mail->Username   = env('MAIL_USERNAME', '');
         /* Using Google app password */
-        $mail->Password   = 'iuxkxryeenthqcju';
+        $mail->Password   = env('MAIL_PASSWORD', '');
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->Port       = env('MAIL_PORT', '');
         $mail->setFrom('ippongymzaragoza@gmail.com', 'IPPONGYM ZARAGOZA');
         $mail->addAddress('arzzz@hotmail.es', 'Arturo Casas');
         $mail->addAddress('ippongymzaragoza@gmail.com', 'IPPONGYM ZARAGOZA');
